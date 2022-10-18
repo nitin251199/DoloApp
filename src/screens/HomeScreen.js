@@ -14,14 +14,15 @@ import DoctorCard from '../components/DoctorCard';
 import {getData} from '../API';
 import {useSelector} from 'react-redux';
 import DoctorPlaceholder from '../placeholders/DoctorPlaceholder';
+import {dummyAppointments} from './test';
 
 export default function HomeScreen({navigation}) {
   const user = useSelector(state => state.user);
 
-  const [doctorData, setDoctorData] = React.useState([]);
+  const [appointments, setAppointments] = React.useState([]);
   const [profileData, setProfileData] = React.useState();
-  const [pending, setPending] = React.useState([]);
-  const [approved, setApproved] = React.useState([]);
+  const [past, setPast] = React.useState([]);
+  const [future, setFuture] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
 
   const fetchProfileInfo = async () => {
@@ -34,22 +35,29 @@ export default function HomeScreen({navigation}) {
 
   const fetchDoctorInfo = async () => {
     setLoading(true);
-    let res = await getData(`agent/doctorview/${user?.userid}`);
-    if (res.success) {
-      let approved = res?.data?.filter(item => item?.status === '1');
-      let pending = res?.data?.filter(item => item?.status === '0');
-      setApproved(approved);
-      setPending(pending);
-      setDoctorData(res.data);
-    }
-    setLoading(false);
+    setTimeout(() => {
+      setAppointments(
+        dummyAppointments
+          .filter(
+            item =>
+              `${new Date(item.date).getDate()}/${new Date(
+                item.date,
+              ).getMonth()}/${new Date(item.date).getFullYear()}` ==
+              `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
+          )
+          .sort((a, b) => new Date(a.date) - new Date(b.date)),
+      );
+      setPast(
+        dummyAppointments.filter(
+          item => new Date(item.date) < new Date().setHours(0, 0, 0, 0),
+        ),
+      );
+      setFuture(
+        dummyAppointments.filter(item => new Date(item.date) > new Date()),
+      );
+      setLoading(false);
+    }, 1000);
   };
-
-  useEffect(() => {
-    let eventListener = navigation.addListener('focus', () =>
-      fetchDoctorInfo(),
-    );
-  }, []);
 
   useEffect(() => {
     fetchDoctorInfo();
@@ -89,67 +97,11 @@ export default function HomeScreen({navigation}) {
         }}>
         <View style={styles.cardContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Profile')}
-            style={{
-              ...styles.card,
-              backgroundColor: '#25CCF7',
-              shadowColor: Color.black,
-            }}>
-            <MaterialCommunityIcons
-              name="account"
-              size={32}
-              color={'#fff'}
-              style={{...styles.icon, textShadowColor: '#FFF'}}
-            />
-            <Text style={styles.subText}>My Profile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => navigation.navigate('AddDoctor')}>
-            <MaterialCommunityIcons
-              name="plus-circle-outline"
-              size={32}
-              color={'#25CCF7'}
-              style={styles.icon}
-            />
-            <Text
-              style={{
-                ...styles.subText,
-                fontSize: 14,
-                textAlign: 'center',
-                color: '#25CCF7',
-              }}>
-              Add Doctor
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('DoctorHistory')}
-            style={{
-              ...styles.card,
-              backgroundColor: '#25CCF7',
-              shadowColor: '#000',
-            }}>
-            <MaterialCommunityIcons
-              name="history"
-              size={32}
-              color={'#fff'}
-              style={{...styles.icon, textShadowColor: '#FFF'}}
-            />
-            <Text
-              style={{
-                ...styles.subText,
-                fontSize: 14,
-                textAlign: 'center',
-                color: '#fff',
-              }}>
-              History
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.cardContainer}>
-          <TouchableOpacity
             onPress={() =>
-              navigation.navigate('DoctorList', {doctors: pending, type: 0})
+              navigation.navigate('AppointmentList', {
+                appointments: past,
+                type: 0,
+              })
             }
             style={{
               ...styles.card,
@@ -166,14 +118,17 @@ export default function HomeScreen({navigation}) {
                 fontFamily: Fonts.primaryBold,
                 lineHeight: 46 * 1.2,
               }}>
-              {pending?.length}
+              {past?.length}
             </Text>
-            <Text style={styles.subText}>Pending</Text>
+            <Text style={styles.subText}>Past Appointments</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
             onPress={() =>
-              navigation.navigate('DoctorList', {doctors: approved, type: 1})
+              navigation.navigate('AppointmentList', {
+                appointments: future,
+                type: 1,
+              })
             }>
             <Text
               style={{
@@ -183,7 +138,7 @@ export default function HomeScreen({navigation}) {
                 fontFamily: Fonts.primaryBold,
                 lineHeight: 46 * 1.2,
               }}>
-              {approved?.length}
+              {future?.length}
             </Text>
             <Text
               style={{
@@ -192,12 +147,12 @@ export default function HomeScreen({navigation}) {
                 textAlign: 'center',
                 color: '#25CCF7',
               }}>
-              Approved
+              Future Appointments
             </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.list}>
-          <Text style={styles.title}>Recently Added Doctors</Text>
+          <Text style={styles.title}>Appointments Today</Text>
           {loading ? (
             <View
               style={{
@@ -209,17 +164,17 @@ export default function HomeScreen({navigation}) {
               <DoctorPlaceholder />
             </View>
           ) : (
-            doctorData.map((item, index) => {
+            appointments.map((item, index) => {
               return (
                 <DoctorCard
                   item={item}
                   key={index}
-                  onPress={() => navigation.navigate('Doctor', {id: item.id})}
+                  onPress={() => navigation.navigate('Appointment', {item})}
                 />
               );
             })
           )}
-          {!loading && doctorData.length === 0 && (
+          {!loading && appointments.length === 0 && (
             <View
               style={{
                 flex: 1,
@@ -232,7 +187,7 @@ export default function HomeScreen({navigation}) {
                   fontSize: 16,
                   fontFamily: Fonts.primarySemiBold,
                 }}>
-                No doctors added
+                No appointments today
               </Text>
             </View>
           )}

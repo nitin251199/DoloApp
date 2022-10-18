@@ -1,12 +1,9 @@
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
-import DoctorHistory from '../screens/DoctorHistory';
-import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Color} from '../theme';
-import ClinicHistory from '../screens/ClinicHistory';
 import {HomeStack} from './HomeStack';
-import {HistoryStack} from './HistoryStack';
+import {ScheduleStack} from './ScheduleStack';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -32,10 +29,10 @@ function TabNavigator() {
       />
 
       <Tab.Screen
-        name="DoctorHistory"
-        component={HistoryStack}
+        name="MySchedule"
+        component={ScheduleStack}
         options={{
-          tabBarLabel: 'Doctors',
+          tabBarLabel: 'Schedule',
           tabBarIcon: ({color}) => (
             <MaterialCommunityIcons
               name="stethoscope"

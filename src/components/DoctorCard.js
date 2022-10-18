@@ -2,10 +2,16 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {Color, Fonts} from '../theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {Button} from 'react-native-paper';
 
 export default function DoctorCard({item, onPress}) {
+  const [status, setStatus] = React.useState(item?.status);
+
   return (
-    <TouchableOpacity style={styles.listItem} onPress={onPress}>
+    <TouchableOpacity
+      activeOpacity={1}
+      style={styles.listItem}
+      onPress={onPress}>
       <View
         style={{
           flexDirection: 'row',
@@ -14,13 +20,40 @@ export default function DoctorCard({item, onPress}) {
           style={styles.listImage}
           source={{
             uri: item.profileimage
-              ? `data:image/png;base64,${item.profileimage}`
+              ? item.profileimage.length < 20
+                ? `data:image/png;base64,${item.profileimage}`
+                : item.profileimage
               : 'https://www.w3schools.com/w3images/avatar6.png',
           }}
         />
         <View style={styles.listItemText}>
           <Text style={styles.listItemTitle}>{item.name}</Text>
-          <Text style={styles.listItemSubTitle}>{item.specialization}</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginVertical: 2,
+            }}>
+            <MaterialCommunityIcons
+              name="calendar"
+              size={17}
+              color={Color.primary}
+              style={{
+                marginRight: 5,
+              }}
+            />
+            <Text style={styles.listItemSubTitle}>{item.date}</Text>
+            <MaterialCommunityIcons
+              name="clock"
+              size={17}
+              color={Color.primary}
+              style={{
+                marginRight: 5,
+                marginLeft: 10,
+              }}
+            />
+            <Text style={styles.listItemSubTitle}>{item.time}</Text>
+          </View>
           <View
             style={{
               flexDirection: 'row',
@@ -37,24 +70,114 @@ export default function DoctorCard({item, onPress}) {
           </View>
         </View>
       </View>
-      <View>
-        {item.status == '0' && (
-          <Text
+      {!status ? (
+        <View
+          style={{
+            flexDirection: 'row',
+          }}>
+          <Button
+            mode="contained"
+            onPress={() => setStatus(-1)}
+            icon={({size, color}) => (
+              <MaterialCommunityIcons name="close" size={24} style={{color}} />
+            )}
+            labelStyle={{
+              fontFamily: Fonts.primaryBold,
+              fontSize: 14,
+            }}
+            dark
             style={{
-              color: Color.red,
-              fontFamily: Fonts.primarySemiBold,
+              backgroundColor: Color.red,
+              marginTop: 15,
+              borderRadius: 8,
+              marginRight: 10,
+              flex: 1,
             }}>
-            Pending
-          </Text>
-        )}
-      </View>
+            Cancel
+          </Button>
+          <Button
+            mode="contained"
+            onPress={() => setStatus(1)}
+            icon={({size, color}) => (
+              <MaterialCommunityIcons name="check" size={24} style={{color}} />
+            )}
+            labelStyle={{
+              fontFamily: Fonts.primaryBold,
+              fontSize: 14,
+            }}
+            dark
+            style={{
+              backgroundColor: Color.green,
+              marginTop: 15,
+              borderRadius: 8,
+              flex: 1,
+            }}>
+            Confirm
+          </Button>
+        </View>
+      ) : status == -1 ? (
+        <View
+          style={{
+            flexDirection: 'row',
+          }}>
+          <Button
+            mode="outlined"
+            onPress={() => {}}
+            pointerEvents="none"
+            icon={({size, color}) => (
+              <MaterialCommunityIcons name="close" size={24} style={{color}} />
+            )}
+            labelStyle={{
+              fontFamily: Fonts.primaryBold,
+              fontSize: 14,
+              lineHeight: 14 * 1.4,
+            }}
+            color={Color.red}
+            dark
+            style={{
+              borderWidth: 1,
+              borderColor: Color.red,
+              marginTop: 15,
+              borderRadius: 8,
+              flex: 1,
+            }}>
+            Cancelled
+          </Button>
+        </View>
+      ) : (
+        <View
+          style={{
+            flexDirection: 'row',
+          }}>
+          <Button
+            mode="outlined"
+            icon={({size, color}) => (
+              <MaterialCommunityIcons name="check" size={24} style={{color}} />
+            )}
+            labelStyle={{
+              fontFamily: Fonts.primaryBold,
+              fontSize: 14,
+            }}
+            color={Color.primary}
+            dark
+            style={{
+              borderWidth: 1,
+              borderColor: Color.primary,
+              marginTop: 15,
+              borderRadius: 8,
+              flex: 1,
+            }}>
+            Confirmed
+          </Button>
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   listItem: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     padding: 15,
     marginVertical: 10,
@@ -87,6 +210,7 @@ const styles = StyleSheet.create({
   },
   listItemSubTitle: {
     fontSize: 14,
+    lineHeight: 14 * 1.4,
     fontFamily: Fonts.primaryRegular,
     color: '#999',
   },

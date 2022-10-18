@@ -9,13 +9,15 @@ import React, {useEffect} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
 import DoctorCard from '../components/DoctorCard';
 
-export default function DoctorList({navigation, route}) {
-  const [doctorData, setDoctorData] = React.useState(route.params?.doctors);
+export default function AppointmentList({navigation, route}) {
+  const [appointmentData, setAppointmentData] = React.useState(
+    route.params?.appointments,
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>
-        {route.params?.type ? 'Approved' : 'Pending'} Doctors. 👨‍⚕️
+        {route.params?.type ? 'Future' : 'Past'} Appointments. 🩺
       </Text>
       {/* {loading ? (
         <View
@@ -35,16 +37,16 @@ export default function DoctorList({navigation, route}) {
         style={{
           width: '100%',
         }}>
-        {doctorData.map((item, index) => {
+        {appointmentData.map((item, index) => {
           return (
             <DoctorCard
               key={index}
               item={item}
-              onPress={() => navigation.navigate('Doctor', {id: item.id})}
+              onPress={() => navigation.navigate('Appointment', {item})}
             />
           );
         })}
-        {doctorData.length === 0 && (
+        {appointmentData.length === 0 && (
           <View
             style={{
               flex: 1,
