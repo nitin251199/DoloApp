@@ -1,17 +1,19 @@
 import React, {useEffect} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import {Button, Checkbox} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {getData} from '../API';
+import ImagePicker from 'react-native-image-crop-picker';
 import DocProfilePlaceholder from '../placeholders/DocProfilePlaceholder';
 import {Color, Dimension, Fonts} from '../theme';
 
@@ -20,6 +22,8 @@ export default function DoctorScreen({navigation, route}) {
 
   const [appointmentData, setAppointmentData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  const [feedBack, setFeedBack] = React.useState('');
+  const [prescriptions, setPrescriptions] = React.useState([]);
 
   const fetchDocProfile = async () => {
     // let res = await getData(`doctor/profile/${docId}`);
@@ -33,6 +37,56 @@ export default function DoctorScreen({navigation, route}) {
     }, 100);
   };
 
+  const takePhotoFromCamera = () => {
+    ImagePicker.openCamera({
+      compressImageMaxWidth: 300,
+      compressImageMaxHeight: 300,
+      cropping: true,
+      compressImageQuality: 0.7,
+      includeBase64: true,
+      multiple: true,
+    }).then(image => {
+      setPrescriptions(prev => [...prev, image?.path]);
+    });
+  };
+
+  const choosePhotoFromLibrary = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 300,
+      cropping: true,
+      compressImageQuality: 0.7,
+      includeBase64: true,
+      multiple: true,
+    }).then(image => {
+      let images = image.map(item => item?.path);
+      setPrescriptions(prev => [...prev, images].flat());
+    });
+  };
+
+  const addPrescription = () => {
+    Alert.alert(
+      'Add Prescription',
+      'Upload prescription from',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel'),
+          style: 'cancel',
+        },
+        {
+          text: 'Camera',
+          onPress: () => takePhotoFromCamera(),
+        },
+        {
+          text: 'Gallery',
+          onPress: () => choosePhotoFromLibrary(),
+        },
+      ],
+      {cancelable: true},
+    );
+  };
+
   useEffect(() => {
     fetchDocProfile();
   }, []);
@@ -40,15 +94,6 @@ export default function DoctorScreen({navigation, route}) {
   return (
     <View style={styles.container}>
       <View style={styles.doctorContainer}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.icon}>
-          <MaterialCommunityIcons
-            name="arrow-left"
-            size={32}
-            color={Color.black}
-          />
-        </TouchableOpacity>
         {loading ? (
           <View>
             <DocProfilePlaceholder />
@@ -114,7 +159,7 @@ export default function DoctorScreen({navigation, route}) {
       ) : (
         <ScrollView
           contentContainerStyle={{
-            paddingBottom: 80,
+            paddingBottom: 30,
             padding: 10,
           }}>
           {/* <View style={{...styles.card, backgroundColor: Color.white}}>
@@ -196,10 +241,118 @@ export default function DoctorScreen({navigation, route}) {
               </View>
             </View>
           </View>
+          <View style={{...styles.card, backgroundColor: Color.white}}>
+            <Text style={{...styles.cardTitle}}>Send Feedback</Text>
+            <View>
+              <TextInput
+                placeholder="Enter your feedback"
+                placeholderTextColor={Color.grey}
+                color={'#000'}
+                style={{
+                  textAlignVertical: 'top',
+                  borderBottomWidth: 1,
+                  borderBottomColor: '#ccc',
+                }}
+                value={feedBack}
+                onChangeText={setFeedBack}
+                multiline={true}
+                numberOfLines={3}
+              />
+            </View>
+          </View>
+          <View style={{flexDirection: 'row', paddingHorizontal: 5}}>
+            <Button
+              mode="contained"
+              onPress={addPrescription}
+              icon="plus"
+              uppercase={false}
+              color={Color.white}
+              labelStyle={{
+                color: Color.black,
+                fontFamily: Fonts.primaryRegular,
+                lineHeight: 14 * 1.4,
+                letterSpacing: 0,
+              }}
+              contentStyle={{
+                paddingVertical: 5,
+              }}
+              style={{
+                marginTop: 10,
+                flex: 1,
+                borderRadius: 10,
+              }}>
+              Add prescription
+            </Button>
+            <Button
+              mode="contained"
+              icon="send"
+              uppercase={false}
+              color={Color.white}
+              labelStyle={{
+                color: Color.black,
+                fontFamily: Fonts.primaryRegular,
+                lineHeight: 14 * 1.4,
+                letterSpacing: 0,
+              }}
+              contentStyle={{
+                paddingVertical: 5,
+              }}
+              style={{
+                marginTop: 10,
+                marginLeft: 10,
+                flex: 1,
+                borderRadius: 10,
+              }}>
+              Send
+            </Button>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: 10,
+              flexWrap: 'wrap',
+            }}>
+            {prescriptions.map((prescription, index) => {
+              return (
+                <>
+                  <Image
+                    source={{uri: prescription}}
+                    style={{
+                      width: '38%',
+                      height: 150,
+                      margin: 5,
+                      borderRadius: 5,
+                    }}
+                  />
+                  <TouchableOpacity
+                    onPress={() => {
+                      setPrescriptions(
+                        prescriptions.filter((item, i) => i !== index),
+                      );
+                    }}
+                    style={{
+                      // position: 'absolute',
+                      margin: 5,
+                      // top: index % 3 == 0 ? index * 130 : (index - 1) * 130,
+                      // right: Dimension.window.width * 0.3 * index,
+                      zIndex: 999,
+                    }}>
+                    <MaterialCommunityIcons
+                      name="close"
+                      size={24}
+                      color={Color.white}
+                      style={styles.closeIcon}
+                    />
+                  </TouchableOpacity>
+                </>
+              );
+            })}
+          </View>
         </ScrollView>
       )}
-      <View style={styles.bottom}>
-        {!appointmentData?.status ? (
+      {/* <View style={styles.bottom}>
+        {new Date(appointmentData.date) >= new Date().setHours(0, 0, 0, 0) &&
+        !appointmentData?.status ? (
           <>
             <Button
               mode="contained"
@@ -263,7 +416,7 @@ export default function DoctorScreen({navigation, route}) {
             Confirmed
           </Button>
         )}
-      </View>
+      </View> */}
     </View>
   );
 }
@@ -276,7 +429,7 @@ const styles = StyleSheet.create({
   doctorContainer: {
     // height: '40%',
     width: '100%',
-    paddingBottom: 20,
+    paddingVertical: 20,
     borderBottomLeftRadius: 25,
     alignItems: 'center',
     // justifyContent: 'center',

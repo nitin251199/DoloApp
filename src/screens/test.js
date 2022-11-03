@@ -101,7 +101,7 @@ export const dummyAppointments = [
   {
     id: 1,
     name: 'Kuldeep Singh',
-    date: '2022-10-18',
+    date: '2022-11-02',
     time: '9:00 AM',
     status: 0,
     profileimage: 'https://www.w3schools.com/howto/img_avatar.png',
@@ -110,8 +110,8 @@ export const dummyAppointments = [
   {
     id: 2,
     name: 'Kuldeep Singh',
-    date: '2022-10-18',
-    time: '10:00 AM',
+    date: '2022-11-02',
+    time: '11:00 AM',
     status: 0,
     profileimage: 'https://www.w3schools.com/howto/img_avatar.png',
     location: 'Gwalior',
@@ -119,8 +119,8 @@ export const dummyAppointments = [
   {
     id: 3,
     name: 'Kuldeep Singh',
-    date: '2022-10-24',
-    time: '08:00 AM',
+    date: '2022-11-02',
+    time: '8:00 AM',
     status: 1,
     profileimage: 'https://www.w3schools.com/howto/img_avatar.png',
     location: 'Gwalior',
@@ -128,8 +128,8 @@ export const dummyAppointments = [
   {
     id: 4,
     name: 'Kuldeep Singh',
-    date: '2022-10-12',
-    time: '10:00 AM',
+    date: '2022-11-02',
+    time: '11:00 AM',
     status: -1,
     profileimage: 'https://www.w3schools.com/howto/img_avatar.png',
     location: 'Gwalior',
@@ -139,43 +139,43 @@ export const dummyAppointments = [
 let defaultSchedule = [
   {
     day: 'Sunday',
-    start_time: new Date(new Date().setHours(10, 0, 0)),
+    start_time: new Date(new Date().setHours(11, 0, 0)),
     end_time: new Date(new Date().setHours(19, 0, 0)),
     checked: false,
   },
   {
     day: 'Monday',
-    start_time: new Date(new Date().setHours(10, 0, 0)),
+    start_time: new Date(new Date().setHours(11, 0, 0)),
     end_time: new Date(new Date().setHours(19, 0, 0)),
     checked: true,
   },
   {
     day: 'Tuesday',
-    start_time: new Date(new Date().setHours(10, 0, 0)),
+    start_time: new Date(new Date().setHours(11, 0, 0)),
     end_time: new Date(new Date().setHours(19, 0, 0)),
     checked: true,
   },
   {
     day: 'Wednesday',
-    start_time: new Date(new Date().setHours(10, 0, 0)),
+    start_time: new Date(new Date().setHours(11, 0, 0)),
     end_time: new Date(new Date().setHours(19, 0, 0)),
     checked: true,
   },
   {
     day: 'Thursday',
-    start_time: new Date(new Date().setHours(10, 0, 0)),
+    start_time: new Date(new Date().setHours(11, 0, 0)),
     end_time: new Date(new Date().setHours(19, 0, 0)),
     checked: true,
   },
   {
     day: 'Friday',
-    start_time: new Date(new Date().setHours(10, 0, 0)),
+    start_time: new Date(new Date().setHours(11, 0, 0)),
     end_time: new Date(new Date().setHours(19, 0, 0)),
     checked: true,
   },
   {
     day: 'Saturday',
-    start_time: new Date(new Date().setHours(10, 0, 0)),
+    start_time: new Date(new Date().setHours(11, 0, 0)),
     end_time: new Date(new Date().setHours(19, 0, 0)),
     checked: true,
   },
@@ -188,9 +188,9 @@ export const dummyProfile = {
   profileimage: 'https://www.w3schools.com/howto/img_avatar.png',
   registrationNo: '123456',
   gender: 'Male',
-  approve_date: '2022-10-18',
+  approve_date: '2022-11-18',
   email: 'dummy@gmail.com',
-  date_of_birth: '1990-10-18',
+  date_of_birth: '1990-11-18',
   marital_status: 'Married',
   feeConsultation: true,
   adhar: '123456789012',
@@ -221,7 +221,77 @@ export const dummyProfile = {
   achievementList: [
     {
       achievement_specialization: 'Cardiologist',
-      achievement_year: '2010',
+      achievement_year: '2011',
     },
   ],
 };
+
+export const dummyAssistants = [
+  {
+    id: 1,
+    name: 'Kuldeep Singh',
+    profileimage: null,
+    age: 30,
+    gender: 'Male',
+    joined: '2022-11-18',
+  },
+  {
+    id: 2,
+    name: 'Priyanka Singh',
+    profileimage: null,
+    age: 30,
+    gender: 'Female',
+    joined: '2022-11-18',
+  },
+  {
+    id: 3,
+    name: 'Priyanka Singh',
+    profileimage: null,
+    age: 30,
+    gender: 'Female',
+    joined: '2022-11-18',
+  },
+];
+
+export const dummyRating = [
+  {
+    id: 1,
+    name: 'Kuldeep Singh',
+    profileimage: 'https://www.w3schools.com/howto/img_avatar.png',
+    rating: 4,
+    feedback: 'Good Doctor',
+    date: '2022-11-18',
+  },
+  {
+    id: 2,
+    name: 'Kuldeep Singh',
+    profileimage: 'https://www.w3schools.com/howto/img_avatar.png',
+    rating: 5,
+    feedback: 'Nice Doctor',
+    date: '2022-11-18',
+  },
+  {
+    id: 3,
+    name: 'Kuldeep Singh',
+    profileimage: 'https://www.w3schools.com/howto/img_avatar.png',
+    rating: 1,
+    feedback: 'Bad Doctor',
+    date: '2022-11-18',
+  },
+  {
+    id: 4,
+    name: 'Kuldeep Singh',
+    profileimage: 'https://www.w3schools.com/howto/img_avatar.png',
+    rating: 3,
+    feedback: 'OK Doctor',
+    date: '2022-11-18',
+  },
+  {
+    id: 5,
+    name: 'Kuldeep Singh',
+    profileimage: 'https://www.w3schools.com/howto/img_avatar.png',
+    rating: 4,
+    feedback: 'Good Doctor',
+    date: '2022-11-18',
+  },
+];

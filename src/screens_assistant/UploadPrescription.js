@@ -1,29 +1,31 @@
 import {
-  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect} from 'react';
-import {Color, Dimension, Fonts} from '../theme';
+import React from 'react';
+import {Color, Fonts} from '../theme';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DoctorCard from '../components/DoctorCard';
+import {dummyAppointments} from '../screens/test';
 
-export default function AppointmentList({navigation, route}) {
-  const [appointmentData, setAppointmentData] = React.useState(
-    route.params?.appointments,
-  );
-
+export default function UploadPrescription({navigation}) {
+  const [appointmentData, setAppointmentData] =
+    React.useState(dummyAppointments);
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>
-        {route.params?.type == 2
-          ? 'Future'
-          : route.params?.type == 1
-          ? 'Today'
-          : 'Past'}{' '}
-        Appointments. 🩺
-      </Text>
+      <View style={{flexDirection: 'row', padding: 20}}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <MaterialCommunityIcons
+            name="arrow-left"
+            size={32}
+            color={Color.black}
+          />
+        </TouchableOpacity>
+        <Text style={styles.title}>Upload Prescription</Text>
+      </View>
       {/* {loading ? (
         <View
           style={{
@@ -41,13 +43,14 @@ export default function AppointmentList({navigation, route}) {
         showsVerticalScrollIndicator={false}
         style={{
           width: '100%',
-        }}>
+        }}
+        contentContainerStyle={{paddingHorizontal: 20}}>
         {appointmentData.map((item, index) => {
           return (
             <DoctorCard
               key={index}
               item={item}
-              onPress={() => navigation.navigate('Appointment', {item})}
+              onPress={() => navigation.navigate('Upload', {item})}
             />
           );
         })}
@@ -77,13 +80,12 @@ export default function AppointmentList({navigation, route}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    padding: 20,
+    backgroundColor: Color.white,
   },
-  heading: {
-    fontSize: 22,
-    color: '#000',
-    fontFamily: Fonts.primaryBold,
-    width: '100%',
+  title: {
+    fontSize: 20,
+    fontFamily: 'Poppins-Bold',
+    color: Color.black,
+    paddingHorizontal: 20,
   },
 });

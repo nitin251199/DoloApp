@@ -2,8 +2,8 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {Color, Dimension, Fonts} from '../../theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Button, HelperText, TextInput} from 'react-native-paper';
 import OTPTextView from 'react-native-otp-textinput';
+import {Button, TextInput, HelperText} from 'react-native-paper';
 
 export default function SetPassword(props) {
   const [show, setShow] = React.useState(true);

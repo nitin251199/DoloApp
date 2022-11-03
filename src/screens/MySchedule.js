@@ -1,21 +1,24 @@
 import {
   ActivityIndicator,
+  FlatList,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
 import {getData} from '../API';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useSelector} from 'react-redux';
+import {dummyAppointments} from './test';
 
 export default function MySchedule({navigation}) {
   const [doctorData, setDoctorData] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-
-  const user = useSelector(state => state.user);
+  const [appointments, setAppointments] = React.useState(dummyAppointments);
+  const [time, setTime] = React.useState('Morning');
 
   const months = [
     'January',
@@ -32,6 +35,76 @@ export default function MySchedule({navigation}) {
     'December',
   ];
 
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  const user = useSelector(state => state.user);
+  const [dates, setDates] = React.useState([]);
+  const _datesRef = React.useRef(null);
+  const [selectedDate, setSelectedDate] = React.useState({
+    date: new Date().getDate(),
+    month: months[new Date().getMonth()],
+    day: days[new Date().getDay()],
+  });
+
+  const getDates = () => {
+    let dates = [];
+    for (let i = -30; i < 30; i++) {
+      let d = new Date();
+      d.setDate(d.getDate() + i);
+      dates.push({
+        date: d.getDate(),
+        month: months[d.getMonth()],
+        day: days[d.getDay()],
+      });
+    }
+    setDates(dates);
+  };
+
+  useEffect(() => {
+    getDates();
+  }, []);
+
+  const slots = [
+    '06:00',
+    '07:00',
+    '08:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '13:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
+    '19:00',
+    '20:00',
+    '21:00',
+    '22:00',
+    '23:00',
+  ];
+
+  const convert24to12 = time => {
+    let hours = time.split(':')[0];
+    let minutes = time.split(':')[1];
+    let newFormat = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return hours + ':' + minutes + ' ' + newFormat;
+  };
+
+  const getSlotName = time => {
+    if (time === undefined) return null;
+    let slotName = '';
+    let hours = parseInt(time.split(':')[0]);
+    if (hours === 6) {
+      slotName = 'Morning';
+    } else if (hours === 16) {
+      slotName = 'Evening';
+    } else slotName = null;
+    return slotName;
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>My Schedule 📆</Text>
@@ -43,7 +116,7 @@ export default function MySchedule({navigation}) {
           borderBottomColor: '#ddd',
         }}>
         <Text style={styles.subHeading}>
-          {months[new Date().getMonth()]}, {new Date().getFullYear()}
+          {selectedDate.month}, {new Date().getFullYear()}
         </Text>
         <View style={styles.row}>
           <MaterialCommunityIcons
@@ -51,56 +124,50 @@ export default function MySchedule({navigation}) {
             size={30}
             color={'#000'}
           />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={styles.dayContainer}>
-              <Text style={styles.day}>Sat</Text>
-              <Text style={styles.date}>15</Text>
-            </View>
-            <View style={styles.dayContainer}>
-              <Text style={styles.day}>Sun</Text>
-              <Text style={styles.date}>16</Text>
-            </View>
-            <View style={styles.dayContainer}>
-              <Text style={styles.day}>Mon</Text>
-              <Text style={styles.date}>17</Text>
-            </View>
-            <View
-              style={{
-                ...styles.dayContainer,
-                backgroundColor: `${Color.primary}50`,
-              }}>
-              <Text style={styles.day}>Tue</Text>
-              <Text style={styles.date}>18</Text>
-            </View>
-            <View style={styles.dayContainer}>
-              <Text style={styles.day}>Wed</Text>
-              <Text style={styles.date}>19</Text>
-            </View>
-            <View style={styles.dayContainer}>
-              <Text style={styles.day}>Thu</Text>
-              <Text style={styles.date}>20</Text>
-            </View>
-            <View style={styles.dayContainer}>
-              <Text style={styles.day}>Fri</Text>
-              <Text style={styles.date}>21</Text>
-            </View>
-            <View style={styles.dayContainer}>
-              <Text style={styles.day}>Sat</Text>
-              <Text style={styles.date}>22</Text>
-            </View>
-            <View style={styles.dayContainer}>
-              <Text style={styles.day}>Sun</Text>
-              <Text style={styles.date}>23</Text>
-            </View>
-            <View style={styles.dayContainer}>
-              <Text style={styles.day}>Mon</Text>
-              <Text style={styles.date}>24</Text>
-            </View>
-            <View style={styles.dayContainer}>
-              <Text style={styles.day}>Tue</Text>
-              <Text style={styles.date}>25</Text>
-            </View>
-          </ScrollView>
+          <FlatList
+            ref={_datesRef}
+            data={dates}
+            horizontal
+            onLayout={e => {
+              _datesRef &&
+                _datesRef.current.scrollToIndex({
+                  index: dates.length / 2 - 5,
+                  animated: true,
+                });
+            }}
+            // initialScrollIndex={dates.length / 2 - 2}
+            getItemLayout={(data, index) => ({
+              length: 60,
+              offset: 60 * index,
+              index,
+            })}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => index}
+            renderItem={({item, index}) => {
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => setSelectedDate(item)}
+                  style={{
+                    ...styles.dayContainer,
+                    backgroundColor:
+                      item.date === selectedDate.date &&
+                      item.day === selectedDate.day
+                        ? `${Color.primary}80`
+                        : null,
+                    borderWidth:
+                      item.date == new Date().getDate() &&
+                      item.day == days[new Date().getDay()]
+                        ? 0.5
+                        : 0,
+                    borderColor: '#999',
+                  }}>
+                  <Text style={styles.day}>{item.day}</Text>
+                  <Text style={styles.date}>{item.date}</Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
           <MaterialCommunityIcons
             name="chevron-right"
             size={30}
@@ -109,79 +176,84 @@ export default function MySchedule({navigation}) {
         </View>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.scheduleContainer}>
-          <Text style={styles.dayTime}>Morning</Text>
-          <View style={styles.batchContainer}>
-            <View style={[styles.batch, styles.booked]}>
-              <Text style={[styles.time, styles.bookedTime]}>6:00 AM</Text>
-            </View>
-            <View style={styles.batch}>
-              <Text style={styles.time}>7:00 AM</Text>
-            </View>
-            <View style={styles.batch}>
-              <Text style={styles.time}>8:00 AM</Text>
-            </View>
-            <View style={[styles.batch, styles.booked]}>
-              <Text style={[styles.time, styles.bookedTime]}>9:00 AM</Text>
-            </View>
-            <View style={[styles.batch, styles.booked]}>
-              <Text style={[styles.time, styles.bookedTime]}>10:00 AM</Text>
-            </View>
-            <View style={[styles.batch, styles.booked]}>
-              <Text style={[styles.time, styles.bookedTime]}>11:00 AM</Text>
-            </View>
+        {/* <View style={styles.legendContainer}>
+          <View style={{...styles.row, marginHorizontal: 10}}>
+            <View style={styles.legend}></View>
+            <Text style={styles.legendText}>Booked</Text>
           </View>
-        </View>
-        <View style={styles.scheduleContainer}>
-          <Text style={styles.dayTime}>Afternoon</Text>
-          <View style={styles.batchContainer}>
-            <View style={styles.batch}>
-              <Text style={styles.time}>12:00 AM</Text>
-            </View>
-            <View style={[styles.batch, styles.booked]}>
-              <Text style={[styles.time, styles.bookedTime]}>1:00 PM</Text>
-            </View>
-            <View style={[styles.batch, styles.booked]}>
-              <Text style={[styles.time, styles.bookedTime]}>2:00 PM</Text>
-            </View>
-            <View style={styles.batch}>
-              <Text style={styles.time}>3:00 PM</Text>
-            </View>
+          <View style={{...styles.row, marginHorizontal: 10}}>
+            <View
+              style={{...styles.legend, backgroundColor: Color.white}}></View>
+            <Text style={styles.legendText}>Empty</Text>
           </View>
-        </View>
-        <View style={styles.scheduleContainer}>
-          <Text style={styles.dayTime}>Evening</Text>
-          <View style={styles.batchContainer}>
-            <View style={[styles.batch, styles.booked]}>
-              <Text style={[styles.time, styles.bookedTime]}>4:00 PM</Text>
-            </View>
-            <View style={styles.batch}>
-              <Text style={styles.time}>5:00 PM</Text>
-            </View>
-            <View style={styles.batch}>
-              <Text style={styles.time}>6:00 PM</Text>
-            </View>
-            <View style={[styles.batch, styles.booked]}>
-              <Text style={[styles.time, styles.bookedTime]}>7:00 PM</Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.scheduleContainer}>
-          <Text style={styles.dayTime}>Night</Text>
-          <View style={styles.batchContainer}>
-            <View style={styles.batch}>
-              <Text style={styles.time}>8:00 PM</Text>
-            </View>
-            <View style={[styles.batch, styles.booked]}>
-              <Text style={[styles.time, styles.bookedTime]}>9:00 PM</Text>
-            </View>
-            <View style={[styles.batch, styles.booked]}>
-              <Text style={[styles.time, styles.bookedTime]}>10:00 PM</Text>
-            </View>
-            <View style={styles.batch}>
-              <Text style={styles.time}>11:00 PM</Text>
-            </View>
-          </View>
+        </View> */}
+        {/* <View style={{...styles.scheduleContainer, ...styles.batchContainer}}>
+          {slots.map((slot, index) => {
+            let currentSlotName = getSlotName(slot);
+
+            let status =
+              currentSlotName == 'Morning' ||
+              currentSlotName == 'Afternoon' ||
+              currentSlotName == 'Evening' ||
+              currentSlotName == 'Night'
+                ? true
+                : false;
+
+            let isBooked =
+              appointments.filter(item => {
+                return item.time === convert24to12(slot);
+              }).length > 0;
+
+            let batchClassName = isBooked
+              ? [styles.batch, styles.booked]
+              : styles.batch;
+            let batchTextClassName = isBooked
+              ? [styles.time, styles.bookedTime]
+              : styles.time;
+
+            return (
+              <>
+                {status && (
+                  <Text style={styles.dayTime}>{getSlotName(slot)}</Text>
+                )}
+                <View style={batchClassName}>
+                  <Text style={batchTextClassName}>{convert24to12(slot)}</Text>
+                </View>
+              </>
+            );
+          })}
+        </View> */}
+        <View style={styles.btnContainer}>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setTime('Morning')}
+            style={{
+              ...styles.btn,
+              backgroundColor: time === 'Morning' ? Color.primary : Color.white,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+                color: time === 'Morning' ? '#fff' : '#000',
+              }}>
+              Morning
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setTime('Evening')}
+            style={{
+              ...styles.btn,
+              backgroundColor: time === 'Evening' ? Color.primary : Color.white,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+                color: time === 'Evening' ? '#fff' : '#000',
+              }}>
+              Evening
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
@@ -213,8 +285,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   dayContainer: {
-    paddingHorizontal: 10,
+    width: 50,
     paddingVertical: 10,
+    marginHorizontal: 2,
     alignItems: 'center',
     borderRadius: 7,
   },
@@ -227,7 +300,6 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   scheduleContainer: {
-    marginTop: 26,
     alignItems: 'flex-start',
     paddingHorizontal: 20,
   },
@@ -238,7 +310,8 @@ const styles = StyleSheet.create({
   },
   dayTime: {
     fontSize: 16,
-    textAlign: 'center',
+    width: '100%',
+    marginTop: 26,
     marginBottom: 10,
     fontFamily: Fonts.primarySemiBold,
     color: '#000',
@@ -266,5 +339,40 @@ const styles = StyleSheet.create({
   },
   bookedTime: {
     color: '#fff',
+  },
+  legendContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  legend: {
+    width: 20,
+    height: 20,
+    backgroundColor: Color.primary,
+    borderRadius: 3,
+    elevation: 2,
+  },
+  legendText: {
+    color: '#000',
+    fontFamily: Fonts.primarySemiBold,
+    marginHorizontal: 10,
+    lineHeight: 14 * 1.4,
+  },
+  btnContainer: {
+    flexDirection: 'row',
+    marginBottom: 30,
+    elevation: 10,
+  },
+  btn: {
+    flex: 1,
+    paddingVertical: 15,
+  },
+  btnText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#000',
+    fontFamily: Fonts.primarySemiBold,
+    lineHeight: 16 * 1.4,
   },
 });

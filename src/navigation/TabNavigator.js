@@ -4,6 +4,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {Color} from '../theme';
 import {HomeStack} from './HomeStack';
 import {ScheduleStack} from './ScheduleStack';
+import TodayAppointments from '../screens/TodayAppointments';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -29,10 +30,10 @@ function TabNavigator() {
       />
 
       <Tab.Screen
-        name="MySchedule"
-        component={ScheduleStack}
+        name="Today"
+        component={TodayAppointments}
         options={{
-          tabBarLabel: 'Schedule',
+          tabBarLabel: 'Today',
           tabBarIcon: ({color}) => (
             <MaterialCommunityIcons
               name="stethoscope"

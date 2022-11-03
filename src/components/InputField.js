@@ -15,6 +15,7 @@ export default function InputField({
   editable,
   secure,
   setSecure,
+  color,
 }) {
   return (
     <View
@@ -42,7 +43,7 @@ export default function InputField({
             onChangeText={onChangeText}
             value={value}
             style={{
-              color: '#fff',
+              color: color || '#fff',
               paddingVertical: 0,
               flex: 1,
               fontFamily: Fonts.primaryRegular,
@@ -71,7 +72,7 @@ export default function InputField({
           style={{
             flex: 1,
             paddingVertical: 0,
-            color: '#fff',
+            color: color || '#fff',
             fontFamily: Fonts.primaryRegular,
           }}
         />

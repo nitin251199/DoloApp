@@ -3,35 +3,25 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
 import React, {useEffect} from 'react';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Color, Dimension, Fonts} from '../theme';
-import {Avatar} from 'react-native-paper';
-import DoctorCard from '../components/DoctorCard';
-import {getData} from '../API';
-import {useSelector} from 'react-redux';
-import DoctorPlaceholder from '../placeholders/DoctorPlaceholder';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {dummyAppointments} from './test';
+import {successToast} from '../components/toasts';
 
 export default function HomeScreen({navigation}) {
-  const user = useSelector(state => state.user);
-
   const [appointments, setAppointments] = React.useState([]);
-  const [profileData, setProfileData] = React.useState();
   const [past, setPast] = React.useState([]);
+  const [today, setToday] = React.useState([]);
+  const [available, setAvailable] = React.useState(false);
   const [future, setFuture] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-
-  const fetchProfileInfo = async () => {
-    let res = await getData(`agent/${user?.userid}`);
-    console.log('agent', res);
-    if (res.status) {
-      setProfileData(res.agent);
-    }
-  };
+  const [flashMsg, setFlashMsg] = React.useState('No\nAnouncement');
 
   const fetchDoctorInfo = async () => {
     setLoading(true);
@@ -52,6 +42,13 @@ export default function HomeScreen({navigation}) {
           item => new Date(item.date) < new Date().setHours(0, 0, 0, 0),
         ),
       );
+      setToday(
+        dummyAppointments.filter(
+          item =>
+            new Date(item.date).setHours(0, 0, 0, 0) ==
+            new Date().setHours(0, 0, 0, 0),
+        ),
+      );
       setFuture(
         dummyAppointments.filter(item => new Date(item.date) > new Date()),
       );
@@ -61,36 +58,16 @@ export default function HomeScreen({navigation}) {
 
   useEffect(() => {
     fetchDoctorInfo();
-    fetchProfileInfo();
   }, []);
 
   return (
     <View style={styles.container}>
-      <View style={styles.topContainer}>
-        <Text style={styles.topText}>
-          Hi,{' '}
-          {user?.username &&
-            user?.username.charAt(0).toUpperCase() +
-              user?.username.slice(1)}{' '}
-          👋
-        </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Avatar.Image
-            size={45}
-            source={{
-              uri: profileData?.profileimage
-                ? profileData?.profileimage
-                : 'https://www.w3schools.com/w3images/avatar6.png',
-            }}
-          />
-        </TouchableOpacity>
-      </View>
-      <ScrollView
+      <View
         style={{
           elevation: 10,
           borderTopLeftRadius: 25,
           borderTopRightRadius: 25,
-          marginTop: 15,
+          // marginTop: 15,
           paddingTop: 15,
           flex: 1,
           backgroundColor: '#fff',
@@ -99,100 +76,151 @@ export default function HomeScreen({navigation}) {
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('AppointmentList', {
-                appointments: past,
-                type: 0,
+                appointments: today,
+                type: 1,
               })
             }
             style={{
               ...styles.card,
+              height: 130,
               backgroundColor: '#25CCF7',
               shadowColor: Color.black,
               justifyContent: 'center',
             }}>
-            <Text
-              style={{
-                ...styles.icon,
-                color: '#fff',
-                fontSize: 46,
-                textShadowColor: '#FFF',
-                fontFamily: Fonts.primaryBold,
-                lineHeight: 46 * 1.2,
-              }}>
-              {past?.length}
-            </Text>
-            <Text style={styles.subText}>Past Appointments</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() =>
-              navigation.navigate('AppointmentList', {
-                appointments: future,
-                type: 1,
-              })
-            }>
-            <Text
-              style={{
-                ...styles.icon,
-                color: '#25CCF7',
-                fontSize: 46,
-                fontFamily: Fonts.primaryBold,
-                lineHeight: 46 * 1.2,
-              }}>
-              {future?.length}
-            </Text>
-            <Text
-              style={{
-                ...styles.subText,
-                fontSize: 14,
-                textAlign: 'center',
-                color: '#25CCF7',
-              }}>
-              Future Appointments
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.list}>
-          <Text style={styles.title}>Appointments Today</Text>
-          {loading ? (
             <View
               style={{
-                margin: 10,
-              }}>
-              <DoctorPlaceholder />
-              <DoctorPlaceholder />
-              <DoctorPlaceholder />
-              <DoctorPlaceholder />
-            </View>
-          ) : (
-            appointments.map((item, index) => {
-              return (
-                <DoctorCard
-                  item={item}
-                  key={index}
-                  onPress={() => navigation.navigate('Appointment', {item})}
-                />
-              );
-            })
-          )}
-          {!loading && appointments.length === 0 && (
-            <View
-              style={{
+                flexDirection: 'row',
                 flex: 1,
+                justifyContent: 'center',
                 alignItems: 'center',
-                marginTop: 60,
               }}>
+              <MaterialCommunityIcons
+                name="human-queue"
+                size={42}
+                color={Color.white}
+              />
               <Text
                 style={{
-                  color: Color.grey,
-                  fontSize: 16,
-                  fontFamily: Fonts.primarySemiBold,
+                  ...styles.icon,
+                  color: '#fff',
+                  fontSize: 50,
+                  textShadowColor: '#FFF',
+                  fontFamily: Fonts.primaryBold,
+                  lineHeight: 50 * 1.4,
+                  textShadowOffset: {width: 1, height: 1},
+                  marginHorizontal: 30,
                 }}>
-                No appointments today
+                {today?.length}
               </Text>
+              <MaterialCommunityIcons
+                name="human-queue"
+                size={42}
+                color={Color.white}
+                style={{
+                  transform: [{rotateY: '180deg'}],
+                }}
+              />
             </View>
-          )}
+            <Text style={styles.subText}>Walking Patient Today</Text>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
+        <View style={styles.cardContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              setAvailable(prev => !prev);
+              // ToastAndroid.show(
+              //   'Status updated successfully',
+              //   ToastAndroid.SHORT,
+              // );
+              successToast('Status updated successfully');
+            }}
+            style={{
+              ...styles.card,
+              backgroundColor: available ? 'green' : 'red',
+            }}>
+            <MaterialCommunityIcons
+              name={available ? 'check-circle' : 'close-circle'}
+              size={42}
+              color="#fff"
+              style={styles.mainIcon}
+            />
+            <Text style={styles.mainText}>Available Now</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Schedule');
+            }}
+            style={styles.card}>
+            <MaterialCommunityIcons
+              name="calendar-clock"
+              size={42}
+              color="#fff"
+              style={styles.mainIcon}
+            />
+            <Text style={styles.mainText}>My Schedule</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.cardContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Flash', {
+                setFlashMsg,
+              });
+            }}
+            style={styles.card}>
+            <MaterialCommunityIcons
+              name="volume-source"
+              size={42}
+              color="#fff"
+              style={styles.mainIcon}
+            />
+            <Text adjustsFontSizeToFit style={styles.mainText}>
+              {flashMsg}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('AssistantDashboard');
+            }}
+            style={styles.card}>
+            <MaterialCommunityIcons
+              name="hand-coin"
+              size={42}
+              color="#fff"
+              style={styles.mainIcon}
+            />
+            <Text style={styles.mainText}>Manage Assistant</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.cardContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Feedback');
+            }}
+            style={styles.card}>
+            <MaterialIcons
+              name="feedback"
+              size={42}
+              color="#fff"
+              style={styles.mainIcon}
+            />
+            <Text style={styles.mainText}>Patient Feedback</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('PaymentHistory');
+            }}
+            style={styles.card}>
+            <MaterialCommunityIcons
+              name="currency-inr"
+              size={42}
+              color="#fff"
+              style={styles.mainIcon}
+            />
+            <Text style={styles.mainText}>Payment Recieved</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 }
@@ -209,21 +237,22 @@ const styles = StyleSheet.create({
     // justifyContent: 'space-between',
   },
   card: {
-    backgroundColor: '#fff',
-    height: 110,
+    height: 130,
     flex: 1,
     margin: 10,
     borderRadius: 10,
     elevation: 10,
     padding: 10,
-    shadowColor: Color.primary,
-    justifyContent: 'space-evenly',
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+    backgroundColor: '#25CCF7',
+    shadowColor: Color.black,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   bigText: {
     fontSize: 30,
@@ -233,13 +262,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   subText: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: Fonts.primaryRegular,
     color: Color.white,
     textAlign: 'center',
     textShadowColor: Color.grey,
     textShadowOffset: {width: 0.5, height: 0.5},
     textShadowRadius: 1,
+  },
+  mainText: {
+    fontSize: 16,
+    textTransform: 'uppercase',
+    // lineHeight: 18 * 1.4,
+    fontFamily: Fonts.primaryBold,
+    color: Color.white,
+    textAlign: 'center',
+    textShadowColor: Color.grey,
+    textShadowOffset: {width: 0.5, height: 0.5},
+    textShadowRadius: 1,
+  },
+  mainIcon: {
+    marginVertical: 10,
   },
   icon: {
     alignSelf: 'center',

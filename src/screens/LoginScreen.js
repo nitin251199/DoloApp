@@ -10,24 +10,26 @@ import {
   Easing,
   ToastAndroid,
   BackHandler,
+  StyleSheet,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
 import CustomButton from '../components/CustomButton';
 import InputField from '../components/InputField';
 import {Color, Dimension, Fonts} from '../theme';
-// import {errorToast, successToast} from '../components/Toasts';
+import {errorToast, successToast} from '../components/toasts';
 import BannerSlider from '../components/BannerSlider';
 import {useDispatch} from 'react-redux';
 import {CommonActions, useFocusEffect} from '@react-navigation/native';
 import {postData} from '../API';
-// import RBSheet from 'react-native-raw-bottom-sheet';
+import RBSheet from 'react-native-raw-bottom-sheet';
 import ForgetPass from '../components/bottomsheets/ForgetPass';
+import {getSyncData} from '../storage/AsyncStorage';
 
 export default function LoginScreen({navigation, route}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [type, setType] = React.useState('doctor');
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [contentPadding, setContentPadding] = useState(50);
@@ -49,14 +51,26 @@ export default function LoginScreen({navigation, route}) {
 
   const signIn = async () => {
     setLoading(true);
+
+    let fcmToken = await getSyncData('fcmToken');
+
     let body = {
       email,
       password,
+      token: fcmToken,
     };
-    const response = await postData('agent/login', body);
+
+    let apiUrl = type === 'doctor' ? 'doctor/login' : 'doctorassistantlogin';
+
+    const response = await postData(apiUrl, body);
+    console.log('response', response);
     if (response.success) {
-      ToastAndroid.show('Login Successful !', ToastAndroid.SHORT);
+      successToast('Login Successfull');
       setLoading(false);
+      dispatch({
+        type: 'SET_TYPE',
+        payload: type,
+      });
       dispatch({
         type: 'SET_USER',
         payload: response.data,
@@ -68,7 +82,7 @@ export default function LoginScreen({navigation, route}) {
         }),
       );
     } else {
-      // errorToast('Invalid Credentials', 'or User not found!');
+      errorToast('Invalid Credentials', 'or User not found!');
       setLoading(false);
       ToastAndroid.show('Invalid Credentials', ToastAndroid.SHORT);
     }
@@ -118,9 +132,9 @@ export default function LoginScreen({navigation, route}) {
         closeOnPressMask
         height={Dimension.window.height * 0.7}
         customStyles={{
-          draggableIcon: {backgroundColor: Color.secondary},
+          draggableIcon: {backgroundColor: Color.white},
           container: {
-            backgroundColor: Color.primaryDark,
+            backgroundColor: Color.primary,
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             shadowColor: '#000000',
@@ -164,11 +178,40 @@ export default function LoginScreen({navigation, route}) {
             fontWeight: '900',
             fontFamily: Fonts.primaryBold,
             color: Color.secondary,
-            marginBottom: 30,
+            marginBottom: 10,
           }}>
           Welcome !
         </Text>
-
+        <View style={styles.btnContainer}>
+          <TouchableOpacity
+            onPress={() => setType('doctor')}
+            style={{
+              ...styles.btn,
+              backgroundColor: type === 'doctor' ? '#fff' : null,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+                color: type === 'doctor' ? Color.primary : '#fff',
+              }}>
+              Doctor
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setType('assistant')}
+            style={{
+              ...styles.btn,
+              backgroundColor: type === 'assistant' ? '#fff' : null,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+                color: type === 'assistant' ? Color.primary : '#fff',
+              }}>
+              Assistant
+            </Text>
+          </TouchableOpacity>
+        </View>
         <InputField
           label={'Email ID'}
           value={email}
@@ -229,7 +272,29 @@ export default function LoginScreen({navigation, route}) {
           </View>
         </TouchableOpacity>
       </Animated.View>
-      {/* {forgetPasswordSheet()} */}
+      {forgetPasswordSheet()}
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  btnContainer: {
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderRadius: 10,
+    marginBottom: 30,
+  },
+  btn: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  btnText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#fff',
+    fontFamily: Fonts.primarySemiBold,
+    lineHeight: 16 * 1.4,
+  },
+});

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "564562917618",
+    "project_id": "rapidhealth-5a21e",
+    "storage_bucket": "rapidhealth-5a21e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:564562917618:android:7218cd1a41b6246a73f86b",
+        "android_client_info": {
+          "package_name": "com.doctorapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "564562917618-1khr784d5fesjqt868272d2ls31raias.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyqZj579wbGC7K7N2xmyqQaMbz5CtP4ww"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "564562917618-1khr784d5fesjqt868272d2ls31raias.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

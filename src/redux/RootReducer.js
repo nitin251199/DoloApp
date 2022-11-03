@@ -1,11 +1,15 @@
 const initialState = {
   user: {},
   isLoggedIn: false,
+  type: 'doctor',
   isDarkTheme: false,
 };
 
 export const RootReducer = (state = initialState, action) => {
   switch (action.type) {
+    case 'SET_TYPE':
+      state.type = action.payload;
+      return {...state, type: state.type};
     case 'SET_DARK_THEME':
       state.isDarkTheme = action.payload;
       return {

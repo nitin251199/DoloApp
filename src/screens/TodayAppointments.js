@@ -8,22 +8,20 @@ import {
 import React, {useEffect} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
 import DoctorCard from '../components/DoctorCard';
+import {dummyAppointments} from './test';
 
-export default function AppointmentList({navigation, route}) {
+export default function TodayAppointments({navigation}) {
   const [appointmentData, setAppointmentData] = React.useState(
-    route.params?.appointments,
+    dummyAppointments.filter(
+      item =>
+        new Date(item.date).setHours(0, 0, 0, 0) ==
+        new Date().setHours(0, 0, 0, 0),
+    ),
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>
-        {route.params?.type == 2
-          ? 'Future'
-          : route.params?.type == 1
-          ? 'Today'
-          : 'Past'}{' '}
-        Appointments. 🩺
-      </Text>
+      <Text style={styles.heading}>Today Appointments. 🩺</Text>
       {/* {loading ? (
         <View
           style={{

@@ -3,7 +3,12 @@ import AppointmentList from '../screens/AppointmentList';
 import AddDoctor from '../screens/AddDoctor';
 import AppointmentScreen from '../screens/AppointmentScreen';
 import HomeScreen from '../screens/HomeScreen';
-import MapScreen from '../screens/MapScreen';
+import FlashMessage from '../screens/FlashMessage';
+import AssistantDashboard from '../screens/AssistantDashboard';
+import FeedbackScreen from '../screens/FeedbackScreen';
+import AddAssistant from '../screens/AddAssistant';
+import PaymentHistory from '../screens/PaymentHistory';
+import MySchedule from '../screens/MySchedule';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,8 +21,13 @@ export const HomeStack = () => {
       }}>
       <Stack.Screen name="Home1" component={HomeScreen} />
       <Stack.Screen name="Appointment" component={AppointmentScreen} />
-      <Stack.Screen name="AddDoctor" component={AddDoctor} />
+      <Stack.Screen name="Schedule" component={MySchedule} />
       <Stack.Screen name="AppointmentList" component={AppointmentList} />
+      <Stack.Screen name="Flash" component={FlashMessage} />
+      <Stack.Screen name="AssistantDashboard" component={AssistantDashboard} />
+      <Stack.Screen name="AddAssistant" component={AddAssistant} />
+      <Stack.Screen name="Feedback" component={FeedbackScreen} />
+      <Stack.Screen name="PaymentHistory" component={PaymentHistory} />
     </Stack.Navigator>
   );
 };

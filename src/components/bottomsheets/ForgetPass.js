@@ -45,8 +45,8 @@ export default function ForgetPass(props) {
       };
       // let result = await postData('api/getForget', body);
       // if (result.success) {
-        setCheckLoading(false);
-        setView('otp');
+      setCheckLoading(false);
+      setView('otp');
       // } else {
       //   setCheckLoading(false);
       //   ToastAndroid.show(
@@ -119,7 +119,8 @@ export default function ForgetPass(props) {
             {isEmailShow ? (
               <TextInput
                 mode="outlined"
-                label="Email ID"
+                // label="Email ID"
+                placeholder="Enter your email id"
                 value={email}
                 autoFocus
                 outlineColor={'#ccc'}
@@ -127,15 +128,16 @@ export default function ForgetPass(props) {
                 onChangeText={text => {
                   setEmail(text);
                 }}
-                activeOutlineColor={Color.secondary}
+                activeOutlineColor={Color.white}
                 style={styles.input}
                 left={<TextInput.Icon icon="email" />}
               />
             ) : (
               <TextInput
                 mode="outlined"
-                label="Mobile Number"
+                // label="Mobile Number"
                 value={mobileNo}
+                placeholder="Enter your mobile number"
                 autoFocus
                 outlineColor={'#ccc'}
                 error={mobileNo.length > 10}
@@ -143,7 +145,7 @@ export default function ForgetPass(props) {
                   setMobileNo(text);
                 }}
                 keyboardType="number-pad"
-                activeOutlineColor={Color.secondary}
+                activeOutlineColor={Color.white}
                 style={styles.input}
                 left={<TextInput.Icon icon="phone" />}
               />
@@ -152,7 +154,10 @@ export default function ForgetPass(props) {
               padding="none"
               type="error"
               visible={errorTextStatus()}
-              style={{display: errorTextStatus() ? 'flex' : 'none'}}>
+              style={{
+                display: errorTextStatus() ? 'flex' : 'none',
+                fontFamily: Fonts.primaryRegular,
+              }}>
               {isEmailShow
                 ? 'Invalid Email Id'
                 : 'Mobile Number should not be more than 10 digits !'}
@@ -163,6 +168,7 @@ export default function ForgetPass(props) {
                   marginVertical: 15,
                   marginHorizontal: 5,
                   textAlign: 'right',
+                  fontFamily: Fonts.primaryRegular,
                 }}>
                 {isEmailShow
                   ? 'Use Mobile Number instead ?'
@@ -174,7 +180,8 @@ export default function ForgetPass(props) {
               onPress={() => checkUser()}
               loading={checkLoading}
               disabled={checkBtnStatus()}
-              color={Color.secondary}
+              color={Color.white}
+              labelStyle={{color: Color.primary}}
               style={{color: Color.primary, marginTop: 10}}
               contentStyle={{
                 height: 55,
@@ -205,9 +212,9 @@ export default function ForgetPass(props) {
                 <Text
                   style={{
                     ...styles.label,
-                    color: Color.secondary,
+                    color: Color.white,
                     fontSize: 14,
-                    fontFamily: Fonts.secondaryBold,
+                    fontFamily: Fonts.primaryBold,
                   }}>
                   Change ?
                 </Text>
@@ -227,8 +234,8 @@ export default function ForgetPass(props) {
                 color: Color.white,
               }}
               inputCount={4}
-              offTintColor={otpError ? Color.error : Color.graylight}
-              tintColor={otpError ? Color.error : Color.secondary}
+              offTintColor={otpError ? Color.error : Color.white}
+              tintColor={otpError ? Color.error : Color.white}
             />
             <HelperText
               padding="none"
@@ -239,7 +246,13 @@ export default function ForgetPass(props) {
             </HelperText>
             <Button
               onPress={() => checkOTP()}
-              style={{backgroundColor: Color.secondary, marginTop: 20}}
+              dark
+              color={Color.white}
+              labelStyle={{color: Color.primary}}
+              style={{
+                marginTop: 20,
+                color: '#000',
+              }}
               contentStyle={{
                 height: 55,
                 alignItems: 'center',
@@ -270,15 +283,19 @@ export default function ForgetPass(props) {
               onChangeText={text => {
                 setNewPassword(text);
               }}
-              activeOutlineColor={Color.secondary}
+              placeholder="Enter your new password"
+              activeOutlineColor={Color.white}
               style={styles.input}
-              label="New Password"
+              // label="New Password"
             />
             <HelperText
               padding="none"
               type="error"
               visible={isValidPassword()}
-              style={{display: isValidPassword() ? 'flex' : 'none'}}>
+              style={{
+                display: isValidPassword() ? 'flex' : 'none',
+                fontFamily: Fonts.primaryRegular,
+              }}>
               Password must be atleast of 8 digits !
             </HelperText>
             <TextInput
@@ -295,23 +312,27 @@ export default function ForgetPass(props) {
               outlineColor={'#ccc'}
               error={checkConfirmPass()}
               onChangeText={text => setConfirmPassword(text)}
-              activeOutlineColor={Color.secondary}
+              activeOutlineColor={Color.primary}
               style={styles.input}
-              label="Confirm Password"
+              placeholder="Confirm Password"
             />
             <HelperText
               padding="none"
               type="error"
               visible={checkConfirmPass()}
-              style={{display: checkConfirmPass() ? 'flex' : 'none'}}>
+              style={{
+                display: checkConfirmPass() ? 'flex' : 'none',
+                fontFamily: Fonts.primaryRegular,
+              }}>
               Passwords don't match !
             </HelperText>
             <Button
               onPress={() => changePassword()}
               // loading={loading}
               disabled={checkSubmitStatus()}
-              color={Color.secondary}
+              color={Color.white}
               style={{marginTop: 20}}
+              labelStyle={{color: Color.primary}}
               contentStyle={{
                 height: 55,
                 alignItems: 'center',
@@ -336,13 +357,13 @@ export default function ForgetPass(props) {
 
 const styles = StyleSheet.create({
   label: {
-    fontFamily: Fonts.secondaryRegular,
+    fontFamily: Fonts.primaryRegular,
     fontSize: 14,
-    color: Color.grey,
+    color: Color.white,
     // marginVertical: 10,
   },
   input: {
-    fontFamily: Fonts.secondaryMedium,
+    fontFamily: Fonts.primaryMedium,
     fontSize: 16,
     marginTop: 10,
   },
@@ -359,8 +380,8 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
-    fontFamily: Fonts.secondaryBold,
-    color: Color.secondary,
+    fontFamily: Fonts.primaryBold,
+    color: Color.white,
     padding: 10,
   },
   searchContainer: {

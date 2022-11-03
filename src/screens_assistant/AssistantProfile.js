@@ -21,9 +21,8 @@ import {CommonActions} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {getData} from '../API';
 import ProfilePlaceholder from '../placeholders/ProfilePlaceholder';
-import {dummyProfile} from './test';
 
-export default function ProfileScreen({navigation}) {
+export default function AssistantProfile({navigation}) {
   const dispatch = useDispatch();
 
   const user = useSelector(state => state.user);
@@ -43,7 +42,7 @@ export default function ProfileScreen({navigation}) {
   };
 
   useEffect(() => {
-    fetchProfileInfo();
+    // fetchProfileInfo();
   }, []);
 
   const logOut = () => {
@@ -284,219 +283,6 @@ export default function ProfileScreen({navigation}) {
                 </Text>
               </View>
             </View>
-          </View>
-          <View style={{...styles.card, backgroundColor: Color.white}}>
-            <Text style={{...styles.cardTitle}}>Average Time per patient</Text>
-            <View style={styles.cardContent}>
-              <Text style={{...styles.cardText}}>{profileData?.avgTime}</Text>
-            </View>
-          </View>
-          <View style={{...styles.card, backgroundColor: Color.white}}>
-            <Text style={{...styles.cardTitle}}>
-              Fee Consultation through App
-            </Text>
-            <View style={styles.cardContent}>
-              <Text style={{...styles.cardText}}>
-                {profileData?.feeConsultation == 'true' ? 'Yes' : 'No'}
-              </Text>
-            </View>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-            }}>
-            <View
-              style={{
-                ...styles.card,
-                backgroundColor: Color.white,
-                width: '48.5%',
-              }}>
-              <Text style={{...styles.cardTitle}}>Location</Text>
-              <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>
-                  {profileData?.location}
-                </Text>
-              </View>
-            </View>
-            <View
-              style={{
-                ...styles.card,
-                backgroundColor: Color.white,
-                width: '48.5%',
-              }}>
-              <Text style={{...styles.cardTitle}}>Languages</Text>
-              <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>
-                  {profileData?.languages}
-                </Text>
-              </View>
-            </View>
-          </View>
-          <View style={{...styles.card, backgroundColor: Color.white}}>
-            <Text style={{...styles.cardTitle}}>Facilities</Text>
-            <View style={styles.cardContent}>
-              <Text style={{...styles.cardText}}>
-                {profileData?.facilities}
-              </Text>
-            </View>
-          </View>
-          <View style={{...styles.card, backgroundColor: Color.white}}>
-            <Text style={{...styles.cardTitle}}>Clinic Locations</Text>
-            <View style={styles.cardContent}>
-              {profileData?.clinicLocations &&
-                profileData?.clinicLocations.map((item, index) => {
-                  return (
-                    <>
-                      <Text style={{...styles.cardText}} key={index}>
-                        {item}
-                      </Text>
-                      {index != clinicLocations.length - 1 ? (
-                        <Text style={{...styles.cardText}}>,</Text>
-                      ) : null}
-                    </>
-                  );
-                })}
-            </View>
-          </View>
-          <View style={{...styles.card, backgroundColor: Color.white}}>
-            <Text style={{...styles.cardTitle}}>Clinic Schedule</Text>
-            <View>
-              {profileData?.schedule &&
-                profileData?.schedule.map(
-                  (item, index) =>
-                    item.checked && (
-                      <View
-                        key={index}
-                        style={{
-                          flexDirection: 'row',
-                          flexWrap: 'wrap',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          paddingVertical: 5,
-                        }}>
-                        <View
-                          style={{flexDirection: 'row', alignItems: 'center'}}>
-                          <Text
-                            style={{
-                              color: '#000',
-                              fontFamily: Fonts.primaryRegular,
-                              marginHorizontal: 5,
-                            }}>
-                            {item.day}
-                          </Text>
-                        </View>
-                        <View
-                          style={{flexDirection: 'row', alignItems: 'center'}}>
-                          <Text
-                            style={{
-                              color: item.checked ? Color.black : '#ccc',
-                              fontSize: 16,
-                              fontFamily: Fonts.primaryRegular,
-                            }}>
-                            {new Date(item.start_time)
-                              .toLocaleTimeString()
-                              .replace(
-                                new Date(item.start_time)
-                                  .toLocaleTimeString()
-                                  .slice(-6, -3),
-                                '',
-                              )}
-                          </Text>
-                          <Text
-                            style={{
-                              marginHorizontal: 20,
-                              fontFamily: Fonts.primaryRegular,
-                              color: item.checked ? Color.black : '#ccc',
-                            }}>
-                            -
-                          </Text>
-                          <Text
-                            style={{
-                              color: item.checked ? Color.black : '#ccc',
-                              fontSize: 16,
-                              fontFamily: Fonts.primaryRegular,
-                            }}>
-                            {new Date(item.end_time)
-                              .toLocaleTimeString()
-                              .replace(
-                                new Date(item.end_time)
-                                  .toLocaleTimeString()
-                                  .slice(-6, -3),
-                                '',
-                              )}
-                          </Text>
-                        </View>
-                      </View>
-                    ),
-                )}
-            </View>
-          </View>
-          <View style={{...styles.card, backgroundColor: Color.white}}>
-            <Text style={{...styles.cardTitle}}>Academic Information</Text>
-            <View style={styles.cardContent}>
-              {profileData?.Degree && (
-                <Text style={{...styles.cardText}}>
-                  {profileData?.Degree},{' '}
-                </Text>
-              )}
-              {profileData?.collegename && (
-                <Text style={{...styles.cardText}}>
-                  {profileData?.collegename},{' '}
-                </Text>
-              )}
-              {profileData?.year_of_passout && (
-                <Text style={{...styles.cardText}}>
-                  {profileData?.year_of_passout}
-                </Text>
-              )}
-            </View>
-          </View>
-          <View style={{...styles.card, backgroundColor: Color.white}}>
-            <Text style={{...styles.cardTitle}}>Awards</Text>
-            {profileData?.award_list.map(item => {
-              return (
-                <View style={styles.cardContent}>
-                  {item?.award_name && (
-                    <Text style={{...styles.cardText}}>
-                      {item?.award_name},{' '}
-                    </Text>
-                  )}
-                  <Text style={{...styles.cardText}}>
-                    {item?.award_giving_authority_name}
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
-          <View style={{...styles.card, backgroundColor: Color.white}}>
-            <Text style={{...styles.cardTitle}}>Certificates</Text>
-            {profileData?.certList.map(item => {
-              return (
-                <View style={styles.cardContent}>
-                  <Text style={{...styles.cardText}}>
-                    {item}
-                    {profileData?.certList?.length > 1 && ', '}
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
-          <View style={{...styles.card, backgroundColor: Color.white}}>
-            <Text style={{...styles.cardTitle}}>Achievements</Text>
-            {profileData?.achievementList.map(item => {
-              return (
-                <View style={styles.cardContent}>
-                  {item?.achievement_specialization && (
-                    <Text style={{...styles.cardText}}>
-                      {item?.achievement_specialization},{' '}
-                    </Text>
-                  )}
-                  <Text style={{...styles.cardText}}>
-                    {item?.achievement_year}
-                  </Text>
-                </View>
-              );
-            })}
           </View>
         </ScrollView>
       )}

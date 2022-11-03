@@ -19,8 +19,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import CustomButton from '../components/CustomButton';
 import InputField from '../components/InputField';
 import {Color, Fonts} from '../theme';
-// import {errorToast, successToast} from '../components/Toasts';
-import {Image} from 'react-native';
+import {errorToast, successToast} from '../components/toasts';
 import BannerSlider from '../components/BannerSlider';
 import {useEffect} from 'react';
 import {postData} from '../API';
@@ -64,12 +63,12 @@ export default function RegisterScreen({navigation, route}) {
     //   setLoading(false);
     //   navigation.goBack();
     // } else {
-      let otp = Math.floor(1000 + Math.random() * 9000);
-      setOtp(otp);
-      console.log(otp);
-      ToastAndroid.show('OTP Sent Successfully!', ToastAndroid.SHORT);
-      setLoading(false);
-      setModalVisible(true);
+    let otp = Math.floor(1000 + Math.random() * 9000);
+    setOtp(otp);
+    console.log(otp);
+    ToastAndroid.show('OTP Sent Successfully!', ToastAndroid.SHORT);
+    setLoading(false);
+    setModalVisible(true);
     // }
   };
 
@@ -83,10 +82,10 @@ export default function RegisterScreen({navigation, route}) {
     };
     const response = await postData('api/getRegistration', body);
     if (response.success) {
-      ToastAndroid.show('Register Successful !', ToastAndroid.SHORT);
+      successToast('Register Successful !');
       navigation.goBack();
     } else {
-      ToastAndroid.show('Something Went Wrong !', ToastAndroid.SHORT);
+      errorToast('Something Went Wrong !');
     }
   };
 

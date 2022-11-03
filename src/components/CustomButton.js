@@ -1,8 +1,8 @@
 import {Text, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {Color, Fonts} from '../theme';
+import { Button } from 'react-native-paper';
 // import LinearGradient from 'react-native-linear-gradient';
-import {ActivityIndicator, Button} from 'react-native-paper';
 
 export default function CustomButton({label, onPress, loading}) {
   const linearGradient = {
