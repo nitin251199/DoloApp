@@ -12,13 +12,24 @@ import {Color, Dimension, Fonts} from '../theme';
 import {getData} from '../API';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useSelector} from 'react-redux';
-import {dummyAppointments} from './test';
 
 export default function MySchedule({navigation}) {
-  const [doctorData, setDoctorData] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
-  const [appointments, setAppointments] = React.useState(dummyAppointments);
   const [time, setTime] = React.useState('Morning');
+  const [allAppointments, setAllAppointments] = React.useState([]);
+  const [appointments, setAppointments] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  const user = useSelector(state => state.user);
+
+  const fetchAppointments = async () => {
+    const list = await getData(`appointment/${user?.userid}`);
+    setAllAppointments(list?.data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
 
   const months = [
     'January',
@@ -37,7 +48,6 @@ export default function MySchedule({navigation}) {
 
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const user = useSelector(state => state.user);
   const [dates, setDates] = React.useState([]);
   const _datesRef = React.useRef(null);
   const [selectedDate, setSelectedDate] = React.useState({
@@ -45,6 +55,27 @@ export default function MySchedule({navigation}) {
     month: months[new Date().getMonth()],
     day: days[new Date().getDay()],
   });
+
+  useEffect(() => {
+    let filteredAppointments = allAppointments.filter(
+      item =>
+        new Date(item.created_at).getDate() === selectedDate.date &&
+        months[new Date(item.created_at).getMonth()] === selectedDate.month,
+    );
+    if (time === 'Morning') {
+      setAppointments(
+        filteredAppointments.filter(
+          item => new Date(item.created_at).getHours() < 12,
+        ),
+      );
+    } else {
+      setAppointments(
+        filteredAppointments.filter(
+          item => new Date(item.created_at).getHours() >= 12,
+        ),
+      );
+    }
+  }, [selectedDate.date, selectedDate.month, time, allAppointments]);
 
   const getDates = () => {
     let dates = [];
@@ -103,6 +134,79 @@ export default function MySchedule({navigation}) {
       slotName = 'Evening';
     } else slotName = null;
     return slotName;
+  };
+
+  const renderItem = ({item, index}) => {
+    return (
+      <View
+        key={index}
+        style={{
+          flexDirection: 'row',
+          marginHorizontal: 5,
+          borderBottomWidth: 1,
+          borderBottomColor: '#ccc',
+          borderTopWidth: index === 0 ? 1 : 0,
+          borderTopColor: '#ccc',
+        }}>
+        <TouchableOpacity
+          activeOpacity={1}
+          // onPress={() => setTime('Morning')}
+          style={{
+            ...styles.btn,
+            paddingVertical: 10,
+            borderRightWidth: 1,
+            borderColor: '#ccc',
+            borderLeftWidth: 1,
+            flex: 1,
+          }}>
+          <Text
+            style={{
+              ...styles.btnText,
+              fontFamily: Fonts.primaryRegular,
+            }}>
+            {item.id}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={1}
+          // onPress={() => setTime('Evening')}
+          style={{
+            ...styles.btn,
+            paddingVertical: 10,
+            borderRightWidth: 1,
+            borderColor: '#ccc',
+            flex: 2,
+          }}>
+          <Text
+            adjustsFontSizeToFit
+            style={{
+              ...styles.btnText,
+              fontFamily: Fonts.primaryRegular,
+            }}>
+            {item.patient_name}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={1}
+          // onPress={() => setTime('Evening')}
+          style={{
+            ...styles.btn,
+            paddingVertical: 10,
+            borderRightWidth: 1,
+            borderColor: '#ccc',
+            flex: 2,
+          }}>
+          <Text
+            adjustsFontSizeToFit
+            style={{
+              ...styles.btnText,
+              fontFamily: Fonts.primaryRegular,
+            }}>
+            {item.category}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   return (
@@ -255,6 +359,95 @@ export default function MySchedule({navigation}) {
             </Text>
           </TouchableOpacity>
         </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            marginVertical: 10,
+            marginHorizontal: 5,
+            // borderWidth: 1,
+            borderColor: '#999',
+            borderRadius: 10,
+          }}>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setTime('Morning')}
+            style={{
+              ...styles.btn,
+              paddingVertical: 10,
+              // borderRightWidth: 1,
+              borderRightColor: '#999',
+              flex: 1,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+              }}>
+              Token
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setTime('Evening')}
+            style={{
+              ...styles.btn,
+              paddingVertical: 10,
+              // borderRightWidth: 1,
+              borderRightColor: '#999',
+              flex: 2,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+              }}>
+              Name
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setTime('Evening')}
+            style={{
+              ...styles.btn,
+              paddingVertical: 10,
+              flex: 2,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+              }}>
+              Category
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {loading ? (
+          <ActivityIndicator
+            size={'large'}
+            color={Color.primary}
+            style={{marginTop: 40}}
+          />
+        ) : (
+          <FlatList
+            data={appointments}
+            keyExtractor={(item, index) => index}
+            renderItem={renderItem}
+            contentContainerStyle={{paddingBottom: 20}}
+            style={{
+              marginHorizontal: 5,
+            }}
+          />
+        )}
+        {appointments.length == 0 && !loading && (
+          <View>
+            <Text
+              style={{
+                textAlign: 'center',
+                marginTop: 60,
+                color: '#999',
+                fontFamily: Fonts.primarySemiBold,
+              }}>
+              No Appointments at selected time
+            </Text>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -361,8 +554,6 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     flexDirection: 'row',
-    marginBottom: 30,
-    elevation: 10,
   },
   btn: {
     flex: 1,

@@ -18,7 +18,7 @@ export default function DoctorCard({item, onPress, onDoublePress}) {
             style={styles.listImage}
             source={{
               uri: item.profileimage
-                ? item.profileimage.length < 20
+                ? item.profileimage.length > 20
                   ? `data:image/png;base64,${item.profileimage}`
                   : item.profileimage
                 : 'https://www.w3schools.com/w3images/avatar6.png',

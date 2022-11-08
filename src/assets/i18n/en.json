@@ -1,0 +1,65 @@
+{
+  "translation": {
+    "header": {
+      "your_profile": "Your Profile",
+      "settings": "Settings",
+      "logout": "Logout"
+    },
+    "assistantHome": {
+      "add_new_patient": "Add New Patient",
+      "patients_queue": "Patient's queue",
+      "upload_prescription": "Upload Prescription",
+      "engagement_status": "Engagement Status",
+      "available_now": "Available Now"
+    },
+    "settings": {
+      "screenTitle": "Settings",
+      "change_language": "Change App Language",
+      "english": "English",
+      "hindi": "Hindi"
+    },
+    "login": {
+      "screenTitle": "Welcome !",
+      "doctor": "Doctor",
+      "assistant": "Assistant",
+      "email": "Email ID",
+      "password": "Password",
+      "forgot": "Forgot ?",
+      "login": "Login",
+      "dont_have_account": "New to the app?",
+      "register": "Register"
+    },
+    "register": {
+      "screenTitle": "Join Us !",
+      "screenSubTitle": "Open a free account to get started",
+      "name": "Name",
+      "email": "Email",
+      "mobile": "Mobile No.",
+      "register": "Register",
+      "referral": "Referral Code",
+      "proceed": "Proceed"
+    },
+    "forgot": {
+      "screenTitle": "Forgot Password",
+      "screenSubTitleforEmail": "Enter your registered email address to reset your password",
+      "screenSubTitleforMob": "Enter your registered mobile number to reset your password",
+      "emailPlaceholder": "Enter your email id",
+      "mobPlaceholder": "Enter your mobile number",
+      "emailHelper": "Invalid Email Id",
+      "mobHelper": "Mobile Number should not be more than 10 digits !",
+      "askEmail": "Use Email id instead ?",
+      "askMob": "Use Mobile Number instead ?",
+      "otpEmail": "OTP sent to ",
+      "otpMob": "OTP sent to +91-",
+      "invalidOtp": "Invalid OTP !",
+      "enterPassword": "Enter your new password",
+      "passwordHelper": "Password must be atleast of 8 digits !",
+      "confirmPassword": "Confirm your new password",
+      "confirmHelper": "Password does not match !",
+      "changePassword": "Change Password",
+      "changedSuccessfully": "Password changed successfully !",
+      "change": "Change ?",
+      "verify": "Verify"
+    }
+  }
+}

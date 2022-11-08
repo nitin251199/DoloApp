@@ -23,20 +23,23 @@ export default function AddPatient({navigation, route}) {
   const itemData = route.params?.item;
 
   const [category, setCategory] = React.useState(itemData?.category || '');
-  const [name, setName] = React.useState(itemData?.name || '');
+  const [name, setName] = React.useState(itemData?.patient_name || '');
   const [age, setAge] = React.useState(itemData?.age || '');
-  const [ageType, setAgeType] = React.useState(itemData?.ageType || '');
+  const [ageType, setAgeType] = React.useState(itemData?.ageType || 'Years');
   const [weight, setWeight] = React.useState(itemData?.weight || '');
   const [weightType, setWeightType] = React.useState(
-    itemData?.weightType || '',
+    itemData?.weightType || 'Kg',
   );
-  const [gender, setGender] = React.useState(itemData?.gender || 'Male');
-  const [mobileNo, setMobileNo] = React.useState(itemData?.mobileNo || '');
+  const [gender, setGender] = React.useState(
+    itemData?.gender.toLowerCase() || 'male',
+  );
+  const [mobileNo, setMobileNo] = React.useState(itemData?.mobile || '');
 
   const [showModal, setShowModal] = React.useState(false);
 
   const [loading, setLoading] = React.useState(false);
   const _scrollRef = React.useRef(null);
+  const _inputRef = React.useRef(null);
 
   const onPrimaryPress = () => {
     setCategory('');
@@ -45,29 +48,35 @@ export default function AddPatient({navigation, route}) {
     setAgeType('');
     setWeight('');
     setWeightType('');
-    setGender('Male');
+    setGender('male');
     setMobileNo('');
     setShowModal(false);
     _scrollRef.current.scrollTo({x: 0, y: 0, animated: true});
+    _inputRef.current.blur();
   };
 
   const onSubmit = async () => {
     setLoading(true);
     var body = {
+      doctor_id: user?.doctor_id,
+      assistant_id: user?.userid,
       category,
-      name,
+      patient_name: name,
       age,
-      ageType,
+      agetype: ageType,
       weight,
-      weightType,
+      weighttype: weightType,
       gender,
-      mobileNo,
+      mobile: mobileNo,
+      status: 0,
     };
-    // const result = await postData('doctorassistant', body);
-    // console.log('result', result);
-    // if (result.success) {
-    setShowModal(true);
-    // }
+    const apiUrl =
+      route.params?.type !== 'add' ? 'editpatient' : 'createappointment';
+    const result = await postData(apiUrl, body);
+    console.log('result', result);
+    if (result.success) {
+      setShowModal(true);
+    }
     setLoading(false);
   };
 
@@ -76,7 +85,7 @@ export default function AddPatient({navigation, route}) {
       <SuccessModal
         visible={showModal}
         onRequestClose={() => setShowModal(false)}
-        title="Assistant Added Successfully"
+        title="Patient Added Successfully"
         primaryBtnText="Add More"
         onPrimaryPress={() => onPrimaryPress()}
         secondaryBtnText="Go Back"
@@ -93,7 +102,9 @@ export default function AddPatient({navigation, route}) {
             color={Color.black}
           />
         </TouchableOpacity>
-        <Text style={styles.title}>Add New Patient</Text>
+        <Text style={styles.title}>
+          {route.params?.type == 'add' ? 'Add New Patient' : 'Edit Patient'}
+        </Text>
       </View>
       <ScrollView
         ref={_scrollRef}
@@ -129,8 +140,7 @@ export default function AddPatient({navigation, route}) {
             </Picker>
           </View>
         </View>
-        <Text style={styles.sectionTitle}>Personal Details</Text>
-        <View>
+        <View style={{marginTop: 15}}>
           <Text style={styles.label}>Name*</Text>
           <TextInput
             theme={theme}
@@ -153,7 +163,8 @@ export default function AddPatient({navigation, route}) {
             <TextInput
               theme={theme}
               dense
-              style={{flex: 3}}
+              style={{flex: 3, height: 55}}
+              keyboardType="numeric"
               onChangeText={text => setAge(text)}
               value={age}
               mode="flat"
@@ -197,7 +208,8 @@ export default function AddPatient({navigation, route}) {
             <TextInput
               theme={theme}
               dense
-              style={{flex: 3}}
+              style={{flex: 3, height: 55}}
+              keyboardType="numeric"
               onChangeText={text => setWeight(text)}
               value={weight}
               mode="flat"
@@ -240,11 +252,11 @@ export default function AddPatient({navigation, route}) {
               marginTop: 5,
             }}>
             <TouchableOpacity
-              onPress={() => setGender('Male')}
+              onPress={() => setGender('male')}
               style={{
                 ...styles.radioStyle,
                 backgroundColor:
-                  gender == 'Male' ? `${Color.primary}50` : '#aaaaaa50',
+                  gender == 'male' ? `${Color.primary}50` : '#aaaaaa50',
               }}>
               <Text
                 style={{
@@ -256,11 +268,11 @@ export default function AddPatient({navigation, route}) {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => setGender('Female')}
+              onPress={() => setGender('female')}
               style={{
                 ...styles.radioStyle,
                 backgroundColor:
-                  gender == 'Female' ? `${Color.primary}50` : '#aaaaaa50',
+                  gender == 'female' ? `${Color.primary}50` : '#aaaaaa50',
                 marginLeft: 5,
               }}>
               <Text
@@ -273,11 +285,11 @@ export default function AddPatient({navigation, route}) {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => setGender('Others')}
+              onPress={() => setGender('others')}
               style={{
                 ...styles.radioStyle,
                 backgroundColor:
-                  gender == 'Others' ? `${Color.primary}50` : '#aaaaaa50',
+                  gender == 'others' ? `${Color.primary}50` : '#aaaaaa50',
                 marginLeft: 5,
               }}>
               <Text
@@ -294,7 +306,9 @@ export default function AddPatient({navigation, route}) {
         <View style={{marginTop: 15}}>
           <Text style={styles.label}>Mobile Number</Text>
           <TextInput
+            ref={_inputRef}
             theme={theme}
+            keyboardType="numeric"
             dense
             onChangeText={text => setMobileNo(text)}
             value={mobileNo}
@@ -303,10 +317,13 @@ export default function AddPatient({navigation, route}) {
             activeUnderlineColor={Color.primary}
           />
         </View>
+        {route.params?.type === 'edit' && (
+          <Text style={styles.sectionTitle}>Token No. {itemData?.id}</Text>
+        )}
         <Button
           style={{
             backgroundColor: Color.primary,
-            marginTop: 60,
+            marginTop: 25,
             marginBottom: 10,
           }}
           contentStyle={{height: 55, alignItems: 'center'}}

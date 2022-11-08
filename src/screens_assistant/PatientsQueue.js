@@ -1,4 +1,5 @@
 import {
+  FlatList,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,16 +10,36 @@ import React from 'react';
 import {Color, Fonts} from '../theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DoctorCard from '../components/DoctorCard';
-import {dummyAppointments} from '../screens/test';
+import DoctorPlaceholder from '../placeholders/DoctorPlaceholder';
+import {getData} from '../API';
+import {useSelector} from 'react-redux';
+import {useEffect} from 'react';
+import AppointmentCard from '../components/AppointmentCard';
 
 export default function PatientsQueue({navigation}) {
-  const [appointmentData, setAppointmentData] = React.useState(
-    dummyAppointments.filter(
-      item =>
-        new Date(item.date).setHours(0, 0, 0, 0) ==
-        new Date().setHours(0, 0, 0, 0),
-    ),
-  );
+  const user = useSelector(state => state.user);
+  const [appointmentData, setAppointmentData] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  const _scrollRef = React.useRef(null);
+
+  const fetchAppointments = async () => {
+    console.log('api', `appointment/${user?.doctor_id}`);
+    const list = await getData(`appointment/${user?.doctor_id}`);
+    setAppointmentData(
+      list?.data.filter(
+        item =>
+          new Date(item.created_at).setHours(0, 0, 0, 0) ==
+          new Date().setHours(0, 0, 0, 0),
+      ),
+    );
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={{flexDirection: 'row', padding: 20}}>
@@ -31,10 +52,10 @@ export default function PatientsQueue({navigation}) {
         </TouchableOpacity>
         <Text style={styles.title}>Patient Queue</Text>
       </View>
-      {/* {loading ? (
+      {loading ? (
         <View
           style={{
-            margin: 10,
+            margin: 20,
           }}>
           <DoctorPlaceholder />
           <DoctorPlaceholder />
@@ -43,42 +64,68 @@ export default function PatientsQueue({navigation}) {
           <DoctorPlaceholder />
           <DoctorPlaceholder />
         </View>
-      ) : ( */}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={{
-          width: '100%',
-        }}
-        contentContainerStyle={{paddingHorizontal: 20}}>
-        {appointmentData.map((item, index) => {
-          return (
-            <DoctorCard
-              key={index}
-              item={item}
-              //   onPress={() => navigation.navigate('Appointment', {item})}
-              onDoublePress={() => navigation.navigate('AddPatient', {item})}
-            />
-          );
-        })}
-        {appointmentData.length === 0 && (
-          <View
+      ) : (
+        <View>
+          {/* {appointmentData.map((item, index) => {
+            return (
+              <AppointmentCard
+                key={index}
+                item={item}
+                //   onPress={() => navigation.navigate('Appointment', {item})}
+                onDoublePress={() =>
+                  navigation.navigate('AddPatient', {item, type: 'edit'})
+                }
+              />
+            );
+          })} */}
+          <FlatList
+            ref={_scrollRef}
+            // onScrollToIndexFailed={() => {}}
+            // onLayout={() => {
+            //   _scrollRef.current.scrollToIndex({
+            //     animated: true,
+            //     index: appointmentData.findIndex(item => item.status === 1),
+            //     viewPosition: 0.5,
+            //   });
+            // }}
+            showsVerticalScrollIndicator={false}
             style={{
-              flex: 1,
-              alignItems: 'center',
-              marginTop: 60,
-            }}>
-            <Text
+              width: '100%',
+            }}
+            contentContainerStyle={{paddingHorizontal: 20}}
+            data={appointmentData}
+            renderItem={({item, index}) => (
+              <AppointmentCard
+                key={index}
+                item={item}
+                //   onPress={() => navigation.navigate('Appointment', {item})}
+                onDoublePress={() =>
+                  navigation.navigate('AddPatient', {item, type: 'edit'})
+                }
+              />
+            )}
+            keyExtractor={item => item.id}
+          />
+
+          {appointmentData.length === 0 && (
+            <View
               style={{
-                color: Color.grey,
-                fontSize: 16,
-                fontFamily: Fonts.primarySemiBold,
+                flex: 1,
+                alignItems: 'center',
+                marginTop: 60,
               }}>
-              No appointments here
-            </Text>
-          </View>
-        )}
-      </ScrollView>
-      {/* )} */}
+              <Text
+                style={{
+                  color: Color.grey,
+                  fontSize: 16,
+                  fontFamily: Fonts.primarySemiBold,
+                }}>
+                No appointments here
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
     </View>
   );
 }

@@ -1,19 +1,38 @@
 import {
+  FlatList,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Color, Fonts} from '../theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import DoctorCard from '../components/DoctorCard';
-import {dummyAppointments} from '../screens/test';
+import {getData} from '../API';
+import DoctorPlaceholder from '../placeholders/DoctorPlaceholder';
+import AppointmentCard from '../components/AppointmentCard';
+import {useSelector} from 'react-redux';
 
 export default function UploadPrescription({navigation}) {
-  const [appointmentData, setAppointmentData] =
-    React.useState(dummyAppointments);
+  const [appointmentData, setAppointmentData] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  const _scrollRef = React.useRef(null);
+
+  const user = useSelector(state => state.user);
+
+  const fetchAppointments = async () => {
+    console.log('api', `appointment/${user?.doctor_id}`);
+    const list = await getData(`appointment/${user?.doctor_id}`);
+    setAppointmentData(list?.data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={{flexDirection: 'row', padding: 20}}>
@@ -26,10 +45,10 @@ export default function UploadPrescription({navigation}) {
         </TouchableOpacity>
         <Text style={styles.title}>Upload Prescription</Text>
       </View>
-      {/* {loading ? (
+      {loading ? (
         <View
           style={{
-            margin: 10,
+            margin: 20,
           }}>
           <DoctorPlaceholder />
           <DoctorPlaceholder />
@@ -38,41 +57,52 @@ export default function UploadPrescription({navigation}) {
           <DoctorPlaceholder />
           <DoctorPlaceholder />
         </View>
-      ) : ( */}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={{
-          width: '100%',
-        }}
-        contentContainerStyle={{paddingHorizontal: 20}}>
-        {appointmentData.map((item, index) => {
-          return (
-            <DoctorCard
-              key={index}
-              item={item}
-              onPress={() => navigation.navigate('Upload', {item})}
-            />
-          );
-        })}
-        {appointmentData.length === 0 && (
-          <View
+      ) : (
+        <View>
+          <FlatList
+            ref={_scrollRef}
+            // onScrollToIndexFailed={() => {}}
+            // onLayout={() => {
+            //   _scrollRef.current.scrollToIndex({
+            //     animated: true,
+            //     index: appointmentData.findIndex(item => item.status === 1),
+            //     viewPosition: 0.5,
+            //   });
+            // }}
+            showsVerticalScrollIndicator={false}
             style={{
-              flex: 1,
-              alignItems: 'center',
-              marginTop: 60,
-            }}>
-            <Text
+              width: '100%',
+            }}
+            contentContainerStyle={{paddingHorizontal: 20}}
+            data={appointmentData}
+            renderItem={({item, index}) => (
+              <AppointmentCard
+                key={index}
+                item={item}
+                onPress={() => navigation.navigate('Upload', {item})}
+              />
+            )}
+            keyExtractor={item => item.id}
+          />
+          {appointmentData.length === 0 && (
+            <View
               style={{
-                color: Color.grey,
-                fontSize: 16,
-                fontFamily: Fonts.primarySemiBold,
+                flex: 1,
+                alignItems: 'center',
+                marginTop: 60,
               }}>
-              No appointments here
-            </Text>
-          </View>
-        )}
-      </ScrollView>
-      {/* )} */}
+              <Text
+                style={{
+                  color: Color.grey,
+                  fontSize: 16,
+                  fontFamily: Fonts.primarySemiBold,
+                }}>
+                No appointments here
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
     </View>
   );
 }

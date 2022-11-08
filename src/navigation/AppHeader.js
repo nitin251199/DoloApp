@@ -1,17 +1,22 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import {getData} from '../API';
 import {Color, Fonts} from '../theme';
-import { Avatar, IconButton } from 'react-native-paper';
-
+import {Avatar, IconButton} from 'react-native-paper';
 
 export default function AppHeader(props) {
   const user = useSelector(state => state.user);
 
   const {navigation} = props;
 
-//   console.log(navigation.getParent());
+  //   console.log(navigation.getParent());
 
   const [profileData, setProfileData] = React.useState();
 
@@ -28,6 +33,7 @@ export default function AppHeader(props) {
 
   return (
     <View style={styles.topContainer}>
+      <StatusBar backgroundColor={Color.white} barStyle="dark-content" />
       <IconButton
         icon="menu"
         onPress={() => navigation.openDrawer()}

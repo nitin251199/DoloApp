@@ -2,14 +2,19 @@ import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {Color, Fonts} from '../theme';
 import {Button, TextInput} from 'react-native-paper';
+import {useSelector} from 'react-redux';
+import {postData} from '../API';
 
 export default function FlashMessage({navigation, route}) {
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
 
   const [msg, setMsg] = React.useState('');
+  const user = useSelector(state => state.user);
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     route.params?.setFlashMsg(msg);
+    let body = {id: user?.userid, annoucement: msg};
+    let result = await postData('doctorannoucementupdate', body);
     navigation.goBack();
   };
 
@@ -40,8 +45,7 @@ export default function FlashMessage({navigation, route}) {
         dark
         // loading={loading}
         mode="contained"
-        onPress={onSubmit}
-      >
+        onPress={onSubmit}>
         Submit
       </Button>
     </View>

@@ -1,6 +1,8 @@
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {useEffect} from 'react';
+import {useTranslation} from 'react-i18next';
 import {Provider as PaperProvider} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import AppHeader from './AppHeader';
@@ -15,6 +17,14 @@ const Drawer = createDrawerNavigator();
 export const RootNavigator = () => {
   const isLoggedIn = useSelector(state => state.isLoggedIn);
   const type = useSelector(state => state.type);
+
+  const language = useSelector(state => state.language) || 'en';
+
+  const {t, i18n} = useTranslation();
+
+  useEffect(() => {
+    i18n.changeLanguage(language);
+  }, []);
 
   function DrawerNavigator() {
     return (

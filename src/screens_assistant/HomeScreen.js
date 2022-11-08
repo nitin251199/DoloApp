@@ -8,22 +8,28 @@ import {
 import React from 'react';
 import {Color, Fonts} from '../theme';
 import {useDispatch, useSelector} from 'react-redux';
-import {Avatar} from 'react-native-paper';
+import {ActivityIndicator, Avatar} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {successToast} from '../components/toasts';
+import {errorToast, successToast} from '../components/toasts';
 import {
   Menu,
   MenuOption,
   MenuOptions,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import { CommonActions } from '@react-navigation/native';
+import {CommonActions} from '@react-navigation/native';
+import {getData, postData} from '../API';
+import {useEffect} from 'react';
+import {useTranslation} from 'react-i18next';
 
 export default function HomeScreen({navigation}) {
   const user = useSelector(state => state.user);
 
-  const [available, setAvailable] = React.useState(false);
+  const {t, i18n} = useTranslation();
+
+  const [available, setAvailable] = React.useState(1);
+  const [loading, setLoading] = React.useState(true);
 
   const dispatch = useDispatch();
 
@@ -36,6 +42,33 @@ export default function HomeScreen({navigation}) {
         routes: [{name: 'Auth'}],
       }),
     );
+  };
+
+  const fetchProfileInfo = async () => {
+    setLoading(true);
+    let res = await getData(`dolo/profile/${user?.doctor_id}`);
+    if (res.status) {
+      setAvailable(res.data?.doctor_available);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchProfileInfo();
+  }, []);
+
+  const handleAvailable = async () => {
+    let body = {
+      id: user?.doctor_id,
+      available: available == 1 ? 0 : 1,
+    };
+    let res = await postData('doctoravilableupdate', body);
+    if (res?.success) {
+      setAvailable(prev => !prev);
+      successToast('Status updated successfully !');
+    } else {
+      errorToast('Something went wrong !');
+    }
   };
 
   return (
@@ -53,7 +86,7 @@ export default function HomeScreen({navigation}) {
               fontSize: 12,
               lineHeight: 12 * 1.4,
             }}>
-            Under:{/* {profileData?.do_lo_id} */} dolo id
+            Under: {user?.dolo_id}
           </Text>
         </View>
         <Menu>
@@ -64,7 +97,7 @@ export default function HomeScreen({navigation}) {
                 uri:
                   //  profileData?.profileimage
                   //   ? profileData?.profileimage.length > 20
-                  //     ? `data:image/png;base30,${profileData?.profileimage}`
+                  //     ? `data:image/png;base64,${profileData?.profileimage}`
                   //     : `https://rapidhealth.me/assets/doctor/${profileData?.profileimage}`
                   //   :
                   'https://www.w3schools.com/w3images/avatar6.png',
@@ -101,7 +134,22 @@ export default function HomeScreen({navigation}) {
                 },
               }}
               onSelect={() => navigation.navigate('AssistantProfile')}
-              text="Your profile"
+              text={t('header.your_profile')}
+            />
+            <MenuOption
+              customStyles={{
+                optionText: {
+                  color: '#000',
+                  fontFamily: Fonts.primaryRegular,
+                  lineHeight: 14 * 1.4,
+                },
+                optionWrapper: {
+                  padding: 15,
+                  //   backgroundColor: 'red',
+                },
+              }}
+              onSelect={() => navigation.navigate('Settings')}
+              text={t('header.settings')}
             />
             <MenuOption
               customStyles={{
@@ -116,7 +164,7 @@ export default function HomeScreen({navigation}) {
                 },
               }}
               onSelect={() => logOut()}
-              text="Logout"
+              text={t('header.logout')}
             />
           </MenuOptions>
         </Menu>
@@ -126,14 +174,16 @@ export default function HomeScreen({navigation}) {
           <TouchableOpacity
             activeOpacity={0.5}
             style={styles.addContainer}
-            onPress={() => navigation.navigate('AddPatient')}>
+            onPress={() => navigation.navigate('AddPatient', {type: 'add'})}>
             <MaterialIcons
               name="add-box"
               size={30}
               color={Color.white}
               style={styles.addIcon}
             />
-            <Text style={styles.addText}>ADD NEW PATIENT</Text>
+            <Text style={styles.addText}>
+              {t('assistantHome.add_new_patient')}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
@@ -145,7 +195,9 @@ export default function HomeScreen({navigation}) {
               color={Color.white}
               style={styles.addIcon}
             />
-            <Text style={styles.addText}>PATIENT’S QUEUE</Text>
+            <Text style={styles.addText}>
+              {t('assistantHome.patients_queue')}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
@@ -157,37 +209,47 @@ export default function HomeScreen({navigation}) {
               color={Color.white}
               style={styles.addIcon}
             />
-            <Text style={styles.addText}>UPLOAD PRESCRIPTION</Text>
+            <Text style={styles.addText}>
+              {t('assistantHome.upload_prescription')}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
             style={styles.addContainer}
-            onPress={() => navigation.navigate('AddAssistant')}>
+            onPress={() => navigation.navigate('Engagements')}>
             <MaterialIcons
               name="person-pin"
               size={30}
               color={Color.white}
               style={styles.addIcon}
             />
-            <Text style={styles.addText}>ENGAGEMENT STATUS</Text>
+            <Text style={styles.addText}>
+              {t('assistantHome.engagement_status')}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
             style={{
               ...styles.addContainer,
-              backgroundColor: available ? 'green' : 'red',
+              backgroundColor: loading
+                ? Color.primary
+                : available
+                ? 'green'
+                : 'red',
             }}
-            onPress={() => {
-              setAvailable(prev => !prev);
-              successToast('Status updated successfully !');
-            }}>
-            <MaterialCommunityIcons
-              name={available ? 'check-circle' : 'close-circle'}
-              size={30}
-              color={Color.white}
-              style={styles.addIcon}
-            />
-            <Text style={styles.addText}>AVAILABLE NOW</Text>
+            onPress={() => handleAvailable()}>
+            {loading ? (
+              <ActivityIndicator size={31} color="#fff" />
+            ) : (
+              <MaterialCommunityIcons
+                name={available ? 'check-circle' : 'close-circle'}
+                size={30}
+                color={Color.white}
+              />
+            )}
+            <Text style={styles.addText}>
+              {t('assistantHome.available_now')}
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -249,13 +311,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  addIcon: {
-    fontWeight: '800',
-  },
   addText: {
     fontSize: 18,
     fontFamily: Fonts.primarySemiBold,
     color: Color.white,
     marginTop: 10,
+    textTransform: 'uppercase',
   },
 });

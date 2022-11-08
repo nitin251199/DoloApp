@@ -7,7 +7,7 @@ import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import configureStore from './src/redux/store';
 import {MenuProvider} from 'react-native-popup-menu';
-import { notificationListener, requestUserPermission } from './src/notification';
+import {notificationListener, requestUserPermission} from './src/notification';
 import FlashMessage from 'react-native-flash-message';
 
 let {store, persistor} = configureStore();

@@ -24,6 +24,7 @@ import BannerSlider from '../components/BannerSlider';
 import {useEffect} from 'react';
 import {postData} from '../API';
 import OtpModal from '../components/modals/OtpModal';
+import {useTranslation} from 'react-i18next';
 
 export default function RegisterScreen({navigation, route}) {
   const [name, setName] = useState('');
@@ -111,6 +112,8 @@ export default function RegisterScreen({navigation, route}) {
     };
   }, []);
 
+  const {t} = useTranslation();
+
   return (
     <View
       style={{
@@ -151,11 +154,10 @@ export default function RegisterScreen({navigation, route}) {
         <Text
           style={{
             fontSize: 28,
-            fontWeight: '900',
-            fontFamily: Fonts.primaryRegular,
+            fontFamily: Fonts.primaryBold,
             color: Color.secondary,
           }}>
-          Join Us !
+          {t('register.screenTitle')}
         </Text>
         <Text
           style={{
@@ -165,11 +167,11 @@ export default function RegisterScreen({navigation, route}) {
             color: Color.secondary,
             marginBottom: 30,
           }}>
-          Open a free account now
+          {t('register.screenSubTitle')}
         </Text>
 
         <InputField
-          label={'Name'}
+          label={t('register.name')}
           value={name}
           onChangeText={setName}
           icon={
@@ -182,7 +184,7 @@ export default function RegisterScreen({navigation, route}) {
           }
         />
         <InputField
-          label={'Email'}
+          label={t('register.email')}
           value={email}
           onChangeText={setEmail}
           icon={
@@ -195,7 +197,7 @@ export default function RegisterScreen({navigation, route}) {
           }
         />
         <InputField
-          label={'Mobile No.'}
+          label={t('register.mobile')}
           value={phone}
           onChangeText={setPhone}
           icon={
@@ -209,7 +211,7 @@ export default function RegisterScreen({navigation, route}) {
         />
 
         <InputField
-          label={'Referral Code'}
+          label={t('register.referral')}
           value={referCode}
           onChangeText={setReferCode}
           icon={
@@ -224,7 +226,7 @@ export default function RegisterScreen({navigation, route}) {
 
         <CustomButton
           loading={loading}
-          label={'Proceed'}
+          label={t('register.proceed')}
           onPress={() => handleOTP()}
         />
       </Animated.View>

@@ -4,7 +4,7 @@ import {Color, Fonts} from '../theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Button} from 'react-native-paper';
 
-export default function AssistantCard({item, onPress}) {
+export default function AssistantCard({item, onPress, onEdit, onDelete}) {
   return (
     <TouchableOpacity
       activeOpacity={1}
@@ -13,12 +13,13 @@ export default function AssistantCard({item, onPress}) {
       <View
         style={{
           flexDirection: 'row',
+          flex: 1,
         }}>
         <Image
           style={styles.listImage}
           source={{
             uri: item.profileimage
-              ? item.profileimage.length < 20
+              ? item.profileimage.length > 20
                 ? `data:image/png;base64,${item.profileimage}`
                 : item.profileimage
               : 'https://www.w3schools.com/w3images/avatar6.png',
@@ -30,27 +31,31 @@ export default function AssistantCard({item, onPress}) {
             style={{
               flexDirection: 'row',
               alignItems: 'center',
+              justifyContent: 'space-between',
               marginVertical: 3,
             }}>
-            <MaterialCommunityIcons
-              name="cake-variant"
-              size={17}
-              color={Color.primary}
-              style={{
-                marginRight: 10,
-              }}
-            />
-            <Text style={styles.listItemSubTitle}>{item.age} years</Text>
-            <MaterialCommunityIcons
-              name="gender-male-female"
-              size={17}
-              color={Color.primary}
-              style={{
-                marginRight: 10,
-                marginLeft: 30,
-              }}
-            />
-            <Text style={styles.listItemSubTitle}>{item.gender}</Text>
+            <View style={{flexDirection: 'row', width: '65%'}}>
+              <MaterialCommunityIcons
+                name="map-marker"
+                size={17}
+                color={Color.primary}
+                style={{
+                  marginRight: 10,
+                }}
+              />
+              <Text style={styles.listItemSubTitle}>{item.address}</Text>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <MaterialCommunityIcons
+                name="gender-male-female"
+                size={17}
+                color={Color.primary}
+                style={{
+                  marginRight: 10,
+                }}
+              />
+              <Text style={styles.listItemSubTitle}>{item.gender}</Text>
+            </View>
           </View>
           <View
             style={{
@@ -71,7 +76,7 @@ export default function AssistantCard({item, onPress}) {
                 color: '#000',
                 lineHeight: 14 * 1.4,
               }}>
-             Joined {item.joined}
+              Joined {new Date(item.created_at).toDateString().slice(3)}
             </Text>
           </View>
         </View>
@@ -82,7 +87,7 @@ export default function AssistantCard({item, onPress}) {
         }}>
         <Button
           mode="contained"
-          onPress={() => {}}
+          onPress={onEdit}
           icon={({size, color}) => (
             <MaterialCommunityIcons
               name="account-edit"
@@ -106,7 +111,7 @@ export default function AssistantCard({item, onPress}) {
         </Button>
         <Button
           mode="contained"
-          onPress={() => {}}
+          onPress={() => onDelete(item)}
           icon={({size, color}) => (
             <MaterialCommunityIcons
               name="delete-empty"
@@ -158,6 +163,7 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     justifyContent: 'space-evenly',
+    flex: 1,
   },
   listItemTitle: {
     fontSize: 16,

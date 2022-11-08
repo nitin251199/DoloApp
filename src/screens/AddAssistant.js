@@ -13,6 +13,7 @@ import {Avatar, Button, TextInput} from 'react-native-paper';
 import {postData} from '../API';
 import ImagePicker from 'react-native-image-crop-picker';
 import {useSelector} from 'react-redux';
+import {errorToast} from '../components/toasts';
 
 export default function AddAssistant({navigation}) {
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
@@ -22,6 +23,7 @@ export default function AddAssistant({navigation}) {
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [gender, setGender] = React.useState('Male');
+  const [mobile, setMobile] = React.useState('');
   const [address, setAddress] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [profilePic, setProfilePic] = React.useState('');
@@ -35,6 +37,7 @@ export default function AddAssistant({navigation}) {
     setName('');
     setEmail('');
     setGender('Male');
+    setMobile('');
     setAddress('');
     setPassword('');
     setProfilePic('');
@@ -97,6 +100,7 @@ export default function AddAssistant({navigation}) {
       email,
       doctor_id: user.userid,
       gender,
+      mobile,
       address,
       password,
       assistantimage: profilePic?.data,
@@ -105,6 +109,8 @@ export default function AddAssistant({navigation}) {
     console.log('result', result);
     if (result.success) {
       setShowModal(true);
+    } else {
+      errorToast(result.data?.email[0]);
     }
     setLoading(false);
   };
@@ -248,6 +254,18 @@ export default function AddAssistant({navigation}) {
           />
         </View>
         <View style={{marginTop: 15}}>
+          <Text style={styles.label}>Mobile number</Text>
+          <TextInput
+            theme={theme}
+            dense
+            onChangeText={text => setMobile(text)}
+            value={mobile}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          />
+        </View>
+        <View style={{marginTop: 15}}>
           <Text style={styles.label}>Address</Text>
           <TextInput
             theme={theme}
@@ -305,7 +323,7 @@ export default function AddAssistant({navigation}) {
         <Button
           style={{
             backgroundColor: Color.primary,
-            marginTop: 60,
+            marginTop: 15,
             marginBottom: 10,
           }}
           contentStyle={{height: 55, alignItems: 'center'}}

@@ -101,7 +101,7 @@ export const dummyAppointments = [
   {
     id: 1,
     name: 'Kuldeep Singh',
-    date: '2022-11-02',
+    date: '2022-11-03',
     time: '9:00 AM',
     status: 0,
     profileimage: 'https://www.w3schools.com/howto/img_avatar.png',
@@ -110,7 +110,7 @@ export const dummyAppointments = [
   {
     id: 2,
     name: 'Kuldeep Singh',
-    date: '2022-11-02',
+    date: '2022-11-03',
     time: '11:00 AM',
     status: 0,
     profileimage: 'https://www.w3schools.com/howto/img_avatar.png',

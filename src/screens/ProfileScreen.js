@@ -126,7 +126,7 @@ export default function ProfileScreen({navigation}) {
                 elevation: 10,
               }}
             /> */}
-            <Text style={{...styles.imageText, color: '#fff'}}>
+            <Text style={{...styles.imageText, color: Color.primary}}>
               {profileData?.name}
             </Text>
             <Text style={{color: '#000', fontFamily: Fonts.primaryRegular}}>
@@ -156,7 +156,7 @@ export default function ProfileScreen({navigation}) {
         <ScrollView
           style={styles.profileContainer}
           contentContainerStyle={{
-            paddingBottom: 20,
+            padding: 20,
           }}>
           <Text style={styles.imageText}>Your Profile</Text>
           <View
@@ -512,29 +512,32 @@ const styles = StyleSheet.create({
   imageView: {
     // height: '35%',
     width: '100%',
-    paddingVertical: 20,
-    borderBottomLeftRadius: 25,
+    paddingVertical: 10,
+    // borderBottomLeftRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    borderBottomRightRadius: 25,
-    backgroundColor: Color.primary,
-    elevation: 10,
+    // borderBottomRightRadius: 25,
+    // backgroundColor: Color.white,
+    // elevation: 10,
   },
   image: {
     elevation: 8,
   },
   imageText: {
-    marginTop: 25,
+    marginTop: 10,
     fontSize: 20,
-    color: '#000',
+    color: '#fff',
     fontFamily: Fonts.primaryBold,
     textShadowColor: Color.gray,
-    textShadowOffset: {width: 0.5, height: 0.5},
+    textShadowOffset: {width: 1, height: 1},
     textShadowRadius: 1,
   },
   profileContainer: {
     width: '100%',
-    paddingHorizontal: 20,
+    backgroundColor: Color.primary,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    elevation: 10,
   },
   card: {
     flexDirection: 'column',
@@ -566,7 +569,7 @@ const styles = StyleSheet.create({
   dots: {
     position: 'absolute',
     right: 12,
-    top: 20,
+    top: 10,
     zIndex: 10,
     color: Color.white,
   },

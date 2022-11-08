@@ -3,10 +3,14 @@ const initialState = {
   isLoggedIn: false,
   type: 'doctor',
   isDarkTheme: false,
+  language: 'en',
 };
 
 export const RootReducer = (state = initialState, action) => {
   switch (action.type) {
+    case 'SET_LANGUAGE':
+      state.language = action.payload;
+      return {...state, language: state.language};
     case 'SET_TYPE':
       state.type = action.payload;
       return {...state, type: state.type};

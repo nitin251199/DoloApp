@@ -25,6 +25,7 @@ import {postData} from '../API';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import ForgetPass from '../components/bottomsheets/ForgetPass';
 import {getSyncData} from '../storage/AsyncStorage';
+import {useTranslation} from 'react-i18next';
 
 export default function LoginScreen({navigation, route}) {
   const [email, setEmail] = useState('');
@@ -61,9 +62,7 @@ export default function LoginScreen({navigation, route}) {
     };
 
     let apiUrl = type === 'doctor' ? 'doctor/login' : 'doctorassistantlogin';
-
     const response = await postData(apiUrl, body);
-    console.log('response', response);
     if (response.success) {
       successToast('Login Successfull');
       setLoading(false);
@@ -124,6 +123,8 @@ export default function LoginScreen({navigation, route}) {
     };
   }, []);
 
+  const {t} = useTranslation();
+
   const forgetPasswordSheet = () => {
     return (
       <RBSheet
@@ -146,7 +147,7 @@ export default function LoginScreen({navigation, route}) {
             },
           },
         }}>
-        <ForgetPass onClose={() => _sheetRef.current.close()} />
+        <ForgetPass t={t} onClose={() => _sheetRef.current.close()} />
       </RBSheet>
     );
   };
@@ -180,7 +181,7 @@ export default function LoginScreen({navigation, route}) {
             color: Color.secondary,
             marginBottom: 10,
           }}>
-          Welcome !
+          {t('login.screenTitle')}
         </Text>
         <View style={styles.btnContainer}>
           <TouchableOpacity
@@ -194,7 +195,7 @@ export default function LoginScreen({navigation, route}) {
                 ...styles.btnText,
                 color: type === 'doctor' ? Color.primary : '#fff',
               }}>
-              Doctor
+              {t('login.doctor')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -208,12 +209,12 @@ export default function LoginScreen({navigation, route}) {
                 ...styles.btnText,
                 color: type === 'assistant' ? Color.primary : '#fff',
               }}>
-              Assistant
+              {t('login.assistant')}
             </Text>
           </TouchableOpacity>
         </View>
         <InputField
-          label={'Email ID'}
+          label={t('login.email')}
           value={email}
           onChangeText={setEmail}
           icon={
@@ -228,7 +229,7 @@ export default function LoginScreen({navigation, route}) {
         />
 
         <InputField
-          label={'Password'}
+          label={t('login.password')}
           value={password}
           onChangeText={setPassword}
           icon={
@@ -242,13 +243,13 @@ export default function LoginScreen({navigation, route}) {
           secure={!showPass}
           setSecure={setShowPass}
           inputType="password"
-          fieldButtonLabel={'Forgot?'}
+          fieldButtonLabel={t('login.forgot')}
           fieldButtonFunction={() => _sheetRef.current.open()}
         />
 
         <CustomButton
           loading={loading}
-          label={'Login'}
+          label={t('login.login')}
           onPress={() => signIn()}
         />
 
@@ -263,11 +264,22 @@ export default function LoginScreen({navigation, route}) {
               borderRadius: 10,
               borderColor: Color.secondary,
             }}>
-            <Text style={{color: '#fff'}}>New to the app?</Text>
             <Text
-              style={{color: Color.secondary, fontFamily: Fonts.primaryBold}}>
+              style={{
+                color: '#fff',
+                fontFamily: Fonts.primaryRegular,
+                lineHeight: 14 * 1.4,
+              }}>
+              {t('login.dont_have_account')}
+            </Text>
+            <Text
+              style={{
+                color: Color.secondary,
+                fontFamily: Fonts.primaryBold,
+                lineHeight: 14 * 1.4,
+              }}>
               {' '}
-              Register
+              {t('login.register')}
             </Text>
           </View>
         </TouchableOpacity>

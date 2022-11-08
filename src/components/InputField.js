@@ -3,20 +3,22 @@ import {View, Text, TouchableOpacity, TextInput} from 'react-native';
 import {Color, Fonts} from '../theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default function InputField({
-  label,
-  icon,
-  inputType,
-  keyboardType,
-  fieldButtonLabel,
-  fieldButtonFunction,
-  onChangeText,
-  value,
-  editable,
-  secure,
-  setSecure,
-  color,
-}) {
+export default InputField = React.forwardRef((props, ref) => {
+  const {
+    label,
+    icon,
+    inputType,
+    keyboardType,
+    fieldButtonLabel,
+    fieldButtonFunction,
+    onChangeText,
+    value,
+    editable,
+    secure,
+    setSecure,
+    color,
+  } = props;
+
   return (
     <View
       style={{
@@ -38,6 +40,7 @@ export default function InputField({
           }}>
           <TextInput
             placeholder={label}
+            ref={ref}
             placeholderTextColor="#e0e0e0"
             keyboardType={keyboardType}
             onChangeText={onChangeText}
@@ -63,6 +66,7 @@ export default function InputField({
         </View>
       ) : (
         <TextInput
+          ref={ref}
           placeholder={label}
           editable={editable}
           placeholderTextColor="#e0e0e0"
@@ -89,4 +93,4 @@ export default function InputField({
       </TouchableOpacity>
     </View>
   );
-}
+});

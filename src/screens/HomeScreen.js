@@ -1,5 +1,4 @@
 import {
-  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,54 +10,68 @@ import React, {useEffect} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {dummyAppointments} from './test';
-import {successToast} from '../components/toasts';
+import {errorToast, successToast} from '../components/toasts';
+import {getData, postData} from '../API';
+import {useSelector} from 'react-redux';
+import {ActivityIndicator} from 'react-native-paper';
 
 export default function HomeScreen({navigation}) {
   const [appointments, setAppointments] = React.useState([]);
-  const [past, setPast] = React.useState([]);
-  const [today, setToday] = React.useState([]);
-  const [available, setAvailable] = React.useState(false);
-  const [future, setFuture] = React.useState([]);
+  const [available, setAvailable] = React.useState(1);
   const [loading, setLoading] = React.useState(false);
+  const [availabilityLoading, setAvailabilityLoading] = React.useState(false);
   const [flashMsg, setFlashMsg] = React.useState('No\nAnouncement');
 
-  const fetchDoctorInfo = async () => {
+  const user = useSelector(state => state.user);
+
+  const fetchAppointments = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setAppointments(
-        dummyAppointments
-          .filter(
-            item =>
-              `${new Date(item.date).getDate()}/${new Date(
-                item.date,
-              ).getMonth()}/${new Date(item.date).getFullYear()}` ==
-              `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
-          )
-          .sort((a, b) => new Date(a.date) - new Date(b.date)),
-      );
-      setPast(
-        dummyAppointments.filter(
-          item => new Date(item.date) < new Date().setHours(0, 0, 0, 0),
-        ),
-      );
-      setToday(
-        dummyAppointments.filter(
+    const list = await getData(`appointment/${user?.userid}`);
+    setAppointments(
+      list?.data
+        .filter(
           item =>
-            new Date(item.date).setHours(0, 0, 0, 0) ==
-            new Date().setHours(0, 0, 0, 0),
-        ),
-      );
-      setFuture(
-        dummyAppointments.filter(item => new Date(item.date) > new Date()),
-      );
-      setLoading(false);
-    }, 1000);
+            `${new Date(item.created_at).getDate()}/${new Date(
+              item.created_at,
+            ).getMonth()}/${new Date(item.created_at).getFullYear()}` ==
+            `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
+        )
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)),
+    );
+    setLoading(false);
+  };
+
+  const fetchProfileInfo = async () => {
+    setAvailabilityLoading(true);
+    let res = await getData(`dolo/profile/${user?.userid}`);
+    if (res.status) {
+      setAvailable(res.data?.doctor_available);
+      setFlashMsg(res.data?.annoucement);
+    }
+    setAvailabilityLoading(false);
   };
 
   useEffect(() => {
-    fetchDoctorInfo();
+    fetchAppointments();
   }, []);
+
+  useEffect(() => {
+    fetchProfileInfo();
+  }, [flashMsg]);
+
+  const handleAvailable = async () => {
+    let body = {
+      id: user?.userid,
+      available: available == 1 ? 0 : 1,
+    };
+    let res = await postData('doctoravilableupdate', body);
+    if (res?.success) {
+      setAvailable(prev => !prev);
+      successToast('Status updated successfully !');
+    } else {
+      errorToast('Something went wrong !');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -76,7 +89,7 @@ export default function HomeScreen({navigation}) {
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('AppointmentList', {
-                appointments: today,
+                appointments: appointments,
                 type: 1,
               })
             }
@@ -99,19 +112,29 @@ export default function HomeScreen({navigation}) {
                 size={42}
                 color={Color.white}
               />
-              <Text
-                style={{
-                  ...styles.icon,
-                  color: '#fff',
-                  fontSize: 50,
-                  textShadowColor: '#FFF',
-                  fontFamily: Fonts.primaryBold,
-                  lineHeight: 50 * 1.4,
-                  textShadowOffset: {width: 1, height: 1},
-                  marginHorizontal: 30,
-                }}>
-                {today?.length}
-              </Text>
+              {loading ? (
+                <ActivityIndicator
+                  size={30}
+                  color={Color.white}
+                  style={{
+                    marginHorizontal: 30,
+                  }}
+                />
+              ) : (
+                <Text
+                  style={{
+                    ...styles.icon,
+                    color: '#fff',
+                    fontSize: 50,
+                    textShadowColor: '#FFF',
+                    fontFamily: Fonts.primaryBold,
+                    lineHeight: 50 * 1.4,
+                    textShadowOffset: {width: 1, height: 1},
+                    marginHorizontal: 30,
+                  }}>
+                  {appointments?.length}
+                </Text>
+              )}
               <MaterialCommunityIcons
                 name="human-queue"
                 size={42}
@@ -121,29 +144,34 @@ export default function HomeScreen({navigation}) {
                 }}
               />
             </View>
-            <Text style={styles.subText}>Walking Patient Today</Text>
+            <Text style={styles.subText}>Walk in Patient today</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.cardContainer}>
           <TouchableOpacity
-            onPress={() => {
-              setAvailable(prev => !prev);
-              // ToastAndroid.show(
-              //   'Status updated successfully',
-              //   ToastAndroid.SHORT,
-              // );
-              successToast('Status updated successfully');
-            }}
+            onPress={() => handleAvailable()}
             style={{
               ...styles.card,
-              backgroundColor: available ? 'green' : 'red',
+              backgroundColor: availabilityLoading
+                ? Color.primary
+                : available
+                ? 'green'
+                : 'red',
             }}>
-            <MaterialCommunityIcons
-              name={available ? 'check-circle' : 'close-circle'}
-              size={42}
-              color="#fff"
-              style={styles.mainIcon}
-            />
+            {availabilityLoading ? (
+              <ActivityIndicator
+                size={42}
+                color={Color.white}
+                style={styles.mainIcon}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name={available ? 'check-circle' : 'close-circle'}
+                size={42}
+                color="#fff"
+                style={styles.mainIcon}
+              />
+            )}
             <Text style={styles.mainText}>Available Now</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -175,7 +203,7 @@ export default function HomeScreen({navigation}) {
               style={styles.mainIcon}
             />
             <Text adjustsFontSizeToFit style={styles.mainText}>
-              {flashMsg}
+              {flashMsg ? flashMsg : 'No\nAnouncement'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -218,6 +246,16 @@ export default function HomeScreen({navigation}) {
               style={styles.mainIcon}
             />
             <Text style={styles.mainText}>Payment Recieved</Text>
+            <View
+              style={{
+                width: 15,
+                height: 15,
+                backgroundColor: 'red',
+                borderRadius: 15 / 2,
+                position: 'absolute',
+                bottom: 50,
+                right: 25,
+              }}></View>
           </TouchableOpacity>
         </View>
       </View>

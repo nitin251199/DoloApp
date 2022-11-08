@@ -44,7 +44,6 @@ export function DrawerContent(props) {
 
   const fetchProfileInfo = async () => {
     let res = await getData(`dolo/profile/${user?.userid}`);
-    console.log(`dolo/profile/${user?.userid}`, res);
     if (res.status) {
       // console.log(res);
       setProfileData(res.data);
@@ -82,7 +81,7 @@ export function DrawerContent(props) {
           </View>
 
           <Drawer.Section style={styles.drawerSection}>
-            <DrawerItem
+            {/* <DrawerItem
               labelStyle={{fontFamily: 'Poppins-Medium'}}
               icon={({color, size}) => (
                 <Icon name="home" size={size} color={color} />
@@ -91,7 +90,7 @@ export function DrawerContent(props) {
               onPress={() => {
                 props.navigation.navigate('Home1');
               }}
-            />
+            /> */}
             <DrawerItem
               labelStyle={{fontFamily: 'Poppins-Medium'}}
               icon={({color, size}) => (
@@ -99,7 +98,7 @@ export function DrawerContent(props) {
               )}
               label="My Schedule"
               onPress={() => {
-                // props.navigation.navigate('Bookings');
+                props.navigation.navigate('Schedule');
               }}
             />
             <DrawerItem
@@ -161,7 +160,7 @@ export function DrawerContent(props) {
               )}
               label="Payment Recieved"
               onPress={() => {
-                // props.navigation.navigate('Support');
+                props.navigation.navigate('PaymentHistory');
               }}
             />
           </Drawer.Section>

@@ -31,6 +31,7 @@ export default function DoctorScreen({navigation, route}) {
     // if (res.success) {
     //   setAppointmentData(res.data);
     // }
+    console.log('appointment', appointment);
     setTimeout(() => {
       setAppointmentData(appointment);
       setLoading(false);
@@ -103,7 +104,7 @@ export default function DoctorScreen({navigation, route}) {
             <Image
               source={{
                 uri: appointmentData?.profileimage
-                  ? appointmentData.profileimage.length < 20
+                  ? appointmentData.profileimage.length > 20
                     ? `data:image/png;base64,${appointmentData.profileimage}`
                     : appointmentData.profileimage
                   : 'https://www.w3schools.com/w3images/avatar6.png',
@@ -111,9 +112,11 @@ export default function DoctorScreen({navigation, route}) {
               style={styles.image}
             />
             <View style={styles.profileDetails}>
-              <Text style={styles.doctorName}>{appointmentData?.name}</Text>
+              <Text style={styles.doctorName}>
+                {appointmentData?.patient_name}
+              </Text>
               <Text style={styles.doctorSpeciality}>
-                {appointmentData?.location}
+                {appointmentData?.category}
               </Text>
               <View style={styles.ratingContainer}>
                 <View style={styles.ratingIconContainer}>
@@ -183,12 +186,12 @@ export default function DoctorScreen({navigation, route}) {
               <Text style={{...styles.cardTitle}}>Date Time</Text>
               <View style={styles.cardContent}>
                 <Text style={{...styles.cardText}}>
-                  {appointmentData?.date}
+                  {appointmentData?.created_at.toString().split('T')[0]}
                 </Text>
               </View>
               <View>
                 <Text style={{...styles.cardText}}>
-                  {appointmentData?.time}
+                  {new Date(appointmentData?.created_at).toLocaleTimeString()}
                 </Text>
               </View>
             </View>
@@ -208,9 +211,15 @@ export default function DoctorScreen({navigation, route}) {
             <Text style={{...styles.cardTitle}}>Patient Problem</Text>
             <View style={styles.cardContent}>
               <Text style={{...styles.cardText}}>
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s.
+                {appointmentData?.patient_problem_description}
+              </Text>
+            </View>
+          </View>
+          <View style={{...styles.card, backgroundColor: Color.white}}>
+            <Text style={{...styles.cardTitle}}>Patient Weight</Text>
+            <View style={styles.cardContent}>
+              <Text style={{...styles.cardText}}>
+                {appointmentData?.weight} {appointmentData?.weighttype}
               </Text>
             </View>
           </View>
@@ -226,7 +235,9 @@ export default function DoctorScreen({navigation, route}) {
               }}>
               <Text style={{...styles.cardTitle}}>Age</Text>
               <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>22 years</Text>
+                <Text style={{...styles.cardText}}>
+                  {appointmentData?.age} {appointmentData?.agetype}
+                </Text>
               </View>
             </View>
             <View
@@ -237,7 +248,10 @@ export default function DoctorScreen({navigation, route}) {
               }}>
               <Text style={{...styles.cardTitle}}>Sex</Text>
               <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>Male</Text>
+                <Text style={{...styles.cardText}}>
+                  {appointmentData?.gender.charAt(0).toUpperCase() +
+                    appointmentData?.gender.slice(1)}
+                </Text>
               </View>
             </View>
           </View>
@@ -252,6 +266,7 @@ export default function DoctorScreen({navigation, route}) {
                   textAlignVertical: 'top',
                   borderBottomWidth: 1,
                   borderBottomColor: '#ccc',
+                  fontFamily: 'Poppins-Regular',
                 }}
                 value={feedBack}
                 onChangeText={setFeedBack}
@@ -318,6 +333,7 @@ export default function DoctorScreen({navigation, route}) {
                   <Image
                     source={{uri: prescription}}
                     style={{
+                      // flex: 1,
                       width: '38%',
                       height: 150,
                       margin: 5,

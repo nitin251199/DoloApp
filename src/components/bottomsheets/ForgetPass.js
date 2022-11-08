@@ -4,9 +4,16 @@ import {TouchableOpacity} from 'react-native';
 import OTPTextView from 'react-native-otp-textinput';
 import {Color, Dimension, Fonts} from '../../theme';
 import {Button, HelperText, TextInput} from 'react-native-paper';
+import {successToast} from '../toasts';
 // import {postData} from '../../API';
 
 export default function ForgetPass(props) {
+  const theme = {
+    colors: {text: '#000', background: '#fff', placeholder: '#CCC'},
+  }; // for text input
+
+  const {t} = props;
+
   const [view, setView] = React.useState('');
   const [isEmailShow, setIsEmailShow] = React.useState(false);
 
@@ -73,7 +80,7 @@ export default function ForgetPass(props) {
   };
 
   const changePassword = () => {
-    ToastAndroid.show('Password changed successfully', ToastAndroid.SHORT);
+    successToast(t('forgot.changedSuccessfully'));
     props.onClose();
   };
 
@@ -115,12 +122,17 @@ export default function ForgetPass(props) {
       case '':
         return (
           <View style={{margin: 10}}>
-            <Text style={styles.label}>Enter your mobile number</Text>
+            <Text style={styles.label}>
+              {isEmailShow
+                ? t('forgot.screenSubTitleforEmail')
+                : t('forgot.screenSubTitleforMob')}
+            </Text>
             {isEmailShow ? (
               <TextInput
+                theme={theme}
                 mode="outlined"
                 // label="Email ID"
-                placeholder="Enter your email id"
+                placeholder={t('forgot.emailPlaceholder')}
                 value={email}
                 autoFocus
                 outlineColor={'#ccc'}
@@ -130,14 +142,15 @@ export default function ForgetPass(props) {
                 }}
                 activeOutlineColor={Color.white}
                 style={styles.input}
-                left={<TextInput.Icon icon="email" />}
+                left={<TextInput.Icon icon="email" color={Color.primary} />}
               />
             ) : (
               <TextInput
+                theme={theme}
                 mode="outlined"
                 // label="Mobile Number"
                 value={mobileNo}
-                placeholder="Enter your mobile number"
+                placeholder={t('forgot.mobPlaceholder')}
                 autoFocus
                 outlineColor={'#ccc'}
                 error={mobileNo.length > 10}
@@ -147,7 +160,7 @@ export default function ForgetPass(props) {
                 keyboardType="number-pad"
                 activeOutlineColor={Color.white}
                 style={styles.input}
-                left={<TextInput.Icon icon="phone" />}
+                left={<TextInput.Icon icon="phone" color={Color.primary} />}
               />
             )}
             <HelperText
@@ -158,9 +171,7 @@ export default function ForgetPass(props) {
                 display: errorTextStatus() ? 'flex' : 'none',
                 fontFamily: Fonts.primaryRegular,
               }}>
-              {isEmailShow
-                ? 'Invalid Email Id'
-                : 'Mobile Number should not be more than 10 digits !'}
+              {isEmailShow ? t('forgot.emailHelper') : t('forgot.mobHelper')}
             </HelperText>
             <TouchableOpacity onPress={() => setIsEmailShow(prev => !prev)}>
               <Text
@@ -168,11 +179,10 @@ export default function ForgetPass(props) {
                   marginVertical: 15,
                   marginHorizontal: 5,
                   textAlign: 'right',
+                  color: Color.white,
                   fontFamily: Fonts.primaryRegular,
                 }}>
-                {isEmailShow
-                  ? 'Use Mobile Number instead ?'
-                  : 'Use Email id instead ?'}
+                {isEmailShow ? t('forgot.askMob') : t('forgot.askEmail')}
               </Text>
             </TouchableOpacity>
             <Button
@@ -182,13 +192,13 @@ export default function ForgetPass(props) {
               disabled={checkBtnStatus()}
               color={Color.white}
               labelStyle={{color: Color.primary}}
-              style={{color: Color.primary, marginTop: 10}}
+              style={{marginTop: 10}}
               contentStyle={{
                 height: 55,
                 alignItems: 'center',
               }}
               mode="contained">
-              Verify
+              {t('forgot.verify')}
             </Button>
           </View>
         );
@@ -202,8 +212,8 @@ export default function ForgetPass(props) {
               }}>
               <Text style={styles.label}>
                 {isEmailShow
-                  ? `OTP sent to ${email}`
-                  : `OTP sent to +91-${mobileNo}`}
+                  ? `${t('forgot.otpEmail')} ${email}`
+                  : `+91-${mobileNo} ${t('forgot.otpMob')}`}
               </Text>
               <TouchableOpacity
                 onPress={() => {
@@ -216,7 +226,7 @@ export default function ForgetPass(props) {
                     fontSize: 14,
                     fontFamily: Fonts.primaryBold,
                   }}>
-                  Change ?
+                  {t('forgot.change')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -242,7 +252,7 @@ export default function ForgetPass(props) {
               type="error"
               visible={otpError}
               style={{display: otpError ? 'flex' : 'none'}}>
-              Invalid OTP !
+              {t('forgot.otpHelper')}
             </HelperText>
             <Button
               onPress={() => checkOTP()}
@@ -258,24 +268,26 @@ export default function ForgetPass(props) {
                 alignItems: 'center',
               }}
               mode="contained">
-              Verify
+              {t('forgot.verify')}
             </Button>
           </View>
         );
       case 'password':
         return (
           <View style={{margin: 10}}>
-            <Text style={styles.label}>Enter New Password</Text>
+            <Text style={styles.label}>{t('forgot.enterPassword')}</Text>
             <TextInput
+              theme={theme}
               mode="outlined"
               secureTextEntry={showNewPass}
               right={
                 <TextInput.Icon
                   icon={showNewPass ? 'eye-off' : 'eye'}
                   onPress={() => setShowNewPass(prev => !prev)}
+                  color={Color.primary}
                 />
               }
-              left={<TextInput.Icon icon="key" />}
+              left={<TextInput.Icon icon="key" color={Color.primary} />}
               value={newPassword}
               autoFocus
               outlineColor={'#ccc'}
@@ -283,7 +295,7 @@ export default function ForgetPass(props) {
               onChangeText={text => {
                 setNewPassword(text);
               }}
-              placeholder="Enter your new password"
+              placeholder={t('forgot.enterPassword')}
               activeOutlineColor={Color.white}
               style={styles.input}
               // label="New Password"
@@ -296,9 +308,10 @@ export default function ForgetPass(props) {
                 display: isValidPassword() ? 'flex' : 'none',
                 fontFamily: Fonts.primaryRegular,
               }}>
-              Password must be atleast of 8 digits !
+              {t('forgot.passwordHelper')}
             </HelperText>
             <TextInput
+              theme={theme}
               mode="outlined"
               value={confirmPassword}
               secureTextEntry={showConfirmPass}
@@ -306,15 +319,16 @@ export default function ForgetPass(props) {
                 <TextInput.Icon
                   icon={showConfirmPass ? 'eye-off' : 'eye'}
                   onPress={() => setShowConfirmPass(prev => !prev)}
+                  color={Color.primary}
                 />
               }
-              left={<TextInput.Icon icon="key" />}
+              left={<TextInput.Icon icon="key" color={Color.primary} />}
               outlineColor={'#ccc'}
               error={checkConfirmPass()}
               onChangeText={text => setConfirmPassword(text)}
               activeOutlineColor={Color.primary}
               style={styles.input}
-              placeholder="Confirm Password"
+              placeholder={t('forgot.confirmPassword')}
             />
             <HelperText
               padding="none"
@@ -324,7 +338,7 @@ export default function ForgetPass(props) {
                 display: checkConfirmPass() ? 'flex' : 'none',
                 fontFamily: Fonts.primaryRegular,
               }}>
-              Passwords don't match !
+              {t('forgot.confirmHelper')}
             </HelperText>
             <Button
               onPress={() => changePassword()}
@@ -338,7 +352,7 @@ export default function ForgetPass(props) {
                 alignItems: 'center',
               }}
               mode="contained">
-              Change Password
+              {t('forgot.changePassword')}
             </Button>
           </View>
         );
@@ -348,7 +362,7 @@ export default function ForgetPass(props) {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <Text style={styles.text}>Forget Password</Text>
+        <Text style={styles.text}>{t('forgot.screenTitle')}</Text>
       </View>
       {sheetView()}
     </View>

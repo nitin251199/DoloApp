@@ -1,0 +1,65 @@
+{
+  "translation": {
+    "header": {
+      "your_profile": "आपकी प्रोफ़ाइल",
+      "settings": "सेटिंग्स",
+      "logout": "लॉग आउट"
+    },
+    "assistantHome": {
+      "add_new_patient": "नया मरीज जोड़ें",
+      "patients_queue": "मरीजों की कतार",
+      "upload_prescription": "नुस्खा अपलोड करें",
+      "engagement_status": "संलग्न स्थिति",
+      "available_now": "उपलब्ध ?"
+    },
+    "settings": {
+      "screenTitle": "सेटिंग्स",
+      "change_language": "ऐप की भाषा बदलें",
+      "english": "अंग्रेज़ी",
+      "hindi": "हिंदी"
+    },
+    "login": {
+      "screenTitle": "स्वागत !",
+      "doctor": "चिकित्सक",
+      "assistant": "सहायक",
+      "email": "ईमेल आईडी",
+      "password": "पासवर्ड",
+      "forgot": "याद नहीं ?",
+      "login": "लॉग इन करें",
+      "dont_have_account": "क्या आप ऐप में नए हैं ?",
+      "register": "पंजीकरण करे"
+    },
+    "register": {
+      "screenTitle": "हमसे जुड़ें !",
+      "screenSubTitle": "आरंभ करने के लिए एक निःशुल्क खाता खोलें",
+      "name": "नाम",
+      "email": "ईमेल आईडी",
+      "mobile": "मोबाइल न.",
+      "referral": "रेफरल कोड",
+      "register": "पंजीकरण करे",
+      "proceed": "आगे बढे"
+    },
+    "forgot": {
+      "screenTitle": "पासवर्ड भूल गए",
+      "screenSubTitleforEmail": "अपना पासवर्ड रीसेट करने के लिए अपना पंजीकृत ईमेल पता दर्ज करें",
+      "screenSubTitleforMob": "अपना पासवर्ड रीसेट करने के लिए अपना पंजीकृत मोबाइल नंबर दर्ज करें",
+      "emailPlaceholder": "अपनी ईमेल आईडी दर्ज करें",
+      "mobPlaceholder": "अपना मोबाइल नंबर दर्ज करें",
+      "emailHelper": "अमान्य ईमेल आईडी",
+      "mobHelper": "मोबाइल नंबर 10 अंकों से अधिक नहीं होना चाहिए!",
+      "askEmail": "इसके बजाय ईमेल आईडी का प्रयोग करें?",
+      "askMob": "इसके बजाय मोबाइल नंबर का प्रयोग करें?",
+      "otpEmail": "ओटीपी भेजा गया",
+      "otpMob": "पर ओटीपी भेजा गया !",
+      "otpHelper": "अमान्य ओटीपी",
+      "enterPassword": "अपना नया पासवर्ड दर्ज करें",
+      "passwordHelper": "पासवर्ड कम से कम 8 अंकों का होना चाहिए!",
+      "confirmPassword": "अपने नए पासवर्ड की पुष्टि करें",
+      "confirmHelper": "पासवर्ड मैच नहीं कर रहा है !",
+      "changePassword": "पासवर्ड बदलें",
+      "changedSuccessfully": "पासवर्ड सफलतापूर्वक बदला गया",
+      "change": "बदले ?",
+      "verify": "सत्यापित करे"
+    }
+  }
+}

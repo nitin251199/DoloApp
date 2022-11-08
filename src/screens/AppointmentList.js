@@ -8,6 +8,7 @@ import {
 import React, {useEffect} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
 import DoctorCard from '../components/DoctorCard';
+import AppointmentCard from '../components/AppointmentCard';
 
 export default function AppointmentList({navigation, route}) {
   const [appointmentData, setAppointmentData] = React.useState(
@@ -44,7 +45,7 @@ export default function AppointmentList({navigation, route}) {
         }}>
         {appointmentData.map((item, index) => {
           return (
-            <DoctorCard
+            <AppointmentCard
               key={index}
               item={item}
               onPress={() => navigation.navigate('Appointment', {item})}
