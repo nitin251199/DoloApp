@@ -123,7 +123,8 @@
       "screenTitle": "Enter your announcement",
       "enterMsg": "Enter your message",
       "submit": "Submit",
-      "updatedSuccess": "Announcement updated successfully"
+      "updatedSuccess": "Announcement updated successfully",
+      "List":"Announcements List"
     },
     "assistantDashboard": {
       "addNew": "Add New Assistant",

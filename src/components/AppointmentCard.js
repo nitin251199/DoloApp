@@ -26,7 +26,8 @@ export default function AppointmentCard({item, onPress, onDoublePress}) {
 
   return (
     <View style={{...styles.listItem, ...conditionalStyles(status)}}>
-      <DoubleClick singleTap={onPress} doubleTap={onDoublePress} delay={300}>
+      {/* <DoubleClick singleTap={onPress} doubleTap={onDoublePress} delay={300}> */}
+      <TouchableOpacity onPress={onPress}>
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
@@ -40,12 +41,13 @@ export default function AppointmentCard({item, onPress, onDoublePress}) {
             flexDirection: 'row',
             padding: 15,
             alignItems: 'center',
-            justifyContent: 'center',
+            //justifyContent: 'center',
           }}>
           <Text style={styles.listItemTitle}>{item.id}.</Text>
           <Text style={styles.listItemTitle}>{item.patient_name}</Text>
         </LinearGradient>
-      </DoubleClick>
+        </TouchableOpacity>
+      {/* </DoubleClick> */}
     </View>
   );
 }
@@ -76,12 +78,14 @@ const styles = StyleSheet.create({
     color: Color.black,
     marginHorizontal: 5,
     fontFamily: Fonts.primarySemiBold,
+   
   },
   listItemSubTitle: {
     fontSize: 16,
     lineHeight: 16 * 1.4,
     fontFamily: Fonts.primaryRegular,
     color: '#999',
+    
   },
   resolved: {
     // backgroundColor: Color.primary,

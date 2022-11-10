@@ -24,6 +24,7 @@ export default function HomeScreen({navigation}) {
   const [loading, setLoading] = React.useState(false);
   const [availabilityLoading, setAvailabilityLoading] = React.useState(false);
   const [flashMsg, setFlashMsg] = React.useState('No\nAnouncement');
+  const [firstAnnoucement,setFirstAnnoucement] = React.useState('');
 
   const user = useSelector(state => state.user);
 
@@ -48,11 +49,30 @@ export default function HomeScreen({navigation}) {
     setAvailabilityLoading(true);
     let res = await getData(`dolo/profile/${user?.userid}`);
     if (res.status) {
+      console.log('Annn--',res.data)
       setAvailable(res.data?.doctor_available);
-      setFlashMsg(res.data?.annoucement);
+      
     }
     setAvailabilityLoading(false);
   };
+
+  const getFirstAnnouncement = async () => {
+
+    setLoading(true);
+    let body = {
+      id:user?.userid,
+     
+    };
+
+    let res = await postData(`doctorannoucementfirst`,body);
+    
+    if (res.success) {
+       console.log(res.data);
+     //  setFlashMsg(res.data?.annoucement_message);
+    }
+    setLoading(false);
+
+  }
 
   useEffect(() => {
     fetchAppointments();
@@ -60,6 +80,7 @@ export default function HomeScreen({navigation}) {
 
   useEffect(() => {
     fetchProfileInfo();
+    getFirstAnnouncement();
   }, [flashMsg]);
 
   const handleAvailable = async () => {
@@ -206,8 +227,9 @@ export default function HomeScreen({navigation}) {
               color="#fff"
               style={styles.mainIcon}
             />
-            <Text adjustsFontSizeToFit style={styles.mainText}>
-              {flashMsg ? flashMsg : t('doctorHome.noAnnouncement')}
+            <Text adjustsFontSizeToFit style={styles.mainText} numberOfLines={2}>
+              {/* {flashMsg ? flashMsg : t('doctorHome.noAnnouncement')} */}
+              {t('doctorHome.noAnnouncement')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity

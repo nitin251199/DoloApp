@@ -110,9 +110,12 @@ export default function PatientsQueue({navigation}) {
                 key={index}
                 item={item}
                 //   onPress={() => navigation.navigate('Appointment', {item})}
-                onDoublePress={() =>
+                // onDoublePress={() =>
+                //   navigation.navigate('AddPatient', {item, type: 'edit'})
+                // }
+                onPress={() =>
                   navigation.navigate('AddPatient', {item, type: 'edit'})
-                }
+                   }
               />
             )}
             keyExtractor={item => item.id}

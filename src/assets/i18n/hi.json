@@ -123,7 +123,8 @@
       "screenTitle": "अपनी घोषणा दर्ज करें",
       "enterMsg": "अपना संदेश दर्ज करें",
       "submit": "जमा करें",
-      "updatedSuccess": "घोषणा सफलतापूर्वक अपडेट की गई"
+      "updatedSuccess": "घोषणा सफलतापूर्वक अपडेट की गई",
+      "List":"घोषणाओं की सूची"
     },
     "assistantDashboard": {
       "addNew": "नया सहायक जोड़ें",

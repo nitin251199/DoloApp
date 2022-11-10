@@ -11,6 +11,7 @@ import React, {useEffect, useMemo} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
 import {getData} from '../API';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
 
 export default function MySchedule({navigation, route}) {
@@ -27,8 +28,10 @@ export default function MySchedule({navigation, route}) {
     setAllAppointments(list?.data);
     setLoading(false);
   };
+console.log('parrraaamm---',route?.params)
+  // const {t} = route?.params;
 
-  const {t} = route.params;
+  const {t} = useTranslation();
 
   useEffect(() => {
     fetchAppointments();

@@ -23,6 +23,8 @@ export function DrawerContent(props) {
 
   const {t} = useTranslation();
 
+  console.log('td--->',t)
+
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
   const [profileData, setProfileData] = React.useState();
