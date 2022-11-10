@@ -1,5 +1,6 @@
 import {
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -65,14 +66,15 @@ export default function HomeScreen({navigation}) {
     let res = await postData('doctoravilableupdate', body);
     if (res?.success) {
       setAvailable(prev => !prev);
-      successToast('Status updated successfully !');
+      successToast(t('assistantHome.statusUpdated'));
     } else {
-      errorToast('Something went wrong !');
+      errorToast(t('assistantHome.somethingWentWrong'));
     }
   };
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor={Color.white} barStyle="dark-content" />
       <View style={styles.topContainer}>
         <View style={{flex: 1}}>
           <Text style={styles.topText}>

@@ -3,16 +3,30 @@ import React, {useEffect} from 'react';
 import {Color, Fonts} from '../theme';
 import {dummyRating} from './test';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {ProgressBar} from 'react-native-paper';
+import {ActivityIndicator, ProgressBar} from 'react-native-paper';
+import {useSelector} from 'react-redux';
+import {getData} from '../API';
 
 export default function FeedbackScreen() {
-  const finalRating = () => {
-    return dummyRating.reduce((a, b) => a + b.rating, 0) / dummyRating.length;
+  const finalRating = feedbacks => {
+    return feedbacks.reduce((a, b) => a + b.rating, 0) / feedbacks.length || 0;
   };
 
-  const [feedbacks, setFeedbacks] = React.useState(dummyRating);
-  const [overAllRating, setOverAllRating] = React.useState(finalRating());
+  const user = useSelector(state => state.user);
+
+  const [feedbacks, setFeedbacks] = React.useState([]);
+  const [overAllRating, setOverAllRating] = React.useState(finalRating([]));
   const [color, setColor] = React.useState('green');
+  const [loading, setLoading] = React.useState(true);
+
+  const fetchAllFeedbacks = async () => {
+    const res = await getData(`doctorfeedback/${user?.userid}`);
+    if (res.success) {
+      setFeedbacks(res?.data);
+      setOverAllRating(finalRating(res?.data));
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (overAllRating <= 3) {
@@ -23,6 +37,10 @@ export default function FeedbackScreen() {
       setColor('green');
     }
   }, [overAllRating]);
+
+  useEffect(() => {
+    fetchAllFeedbacks();
+  }, []);
 
   const getProgress = rating => {
     return feedbacks.length
@@ -48,7 +66,17 @@ export default function FeedbackScreen() {
         paddingBottom: 30,
       }}>
       <Text style={styles.title}>Your Overall Rating</Text>
-      <Text style={{...styles.rating, color: color}}>{overAllRating}</Text>
+      <Text style={{...styles.rating, color: color}}>
+        {loading ? (
+          <ActivityIndicator
+            animating={loading}
+            size="large"
+            color={Color.primary}
+          />
+        ) : (
+          overAllRating
+        )}
+      </Text>
       <View>
         {[5, 4, 3, 2, 1].map(count => {
           return (
@@ -101,12 +129,12 @@ export default function FeedbackScreen() {
                       );
                     })}
                   </View>
-                  <Text style={styles.feedbackRating}>{item.date}</Text>
+                  <Text style={styles.feedbackRating}>
+                    {item.date.split(' ')[0]}
+                  </Text>
                 </View>
-                <Text style={styles.feedbackText}>
-                  {item.feedback}
-                </Text>
-                <Text style={styles.feedbackName}>{item.name}</Text>
+                <Text style={styles.feedbackText}>{item.description}</Text>
+                <Text style={styles.feedbackName}>{item.patient_name}</Text>
               </View>
             </View>
           );

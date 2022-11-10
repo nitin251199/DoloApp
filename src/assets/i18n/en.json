@@ -5,12 +5,25 @@
       "settings": "Settings",
       "logout": "Logout"
     },
+    "doctorHome": {
+      "walkIn": "Walk In patients today",
+      "available_now": "Available Now",
+      "schedule": "My Schedule",
+      "announcements": "Announcements",
+      "noAnnouncement": "No\nAnnouncement",
+      "manageAssistant": "Manage Assistant",
+      "feedback": "Patient feedback",
+      "payment": "Payment received",
+      "signOut": "Log Out"
+    },
     "assistantHome": {
       "add_new_patient": "Add New Patient",
       "patients_queue": "Patient's queue",
       "upload_prescription": "Upload Prescription",
       "engagement_status": "Engagement Status",
-      "available_now": "Available Now"
+      "available_now": "Available Now",
+      "statusUpdated": "Status Updated Successfully",
+      "somethingWentWrong": "Something went wrong"
     },
     "settings": {
       "screenTitle": "Settings",
@@ -27,7 +40,10 @@
       "forgot": "Forgot ?",
       "login": "Login",
       "dont_have_account": "New to the app?",
-      "register": "Register"
+      "register": "Register",
+      "loginSuccess": "Login successful",
+      "loginFailed1": "Invalid credentials",
+      "loginFailed2": "User not found"
     },
     "register": {
       "screenTitle": "Join Us !",
@@ -37,7 +53,12 @@
       "mobile": "Mobile No.",
       "register": "Register",
       "referral": "Referral Code",
-      "proceed": "Proceed"
+      "proceed": "Proceed",
+      "enterValidNo": "Please enter a valid phone number",
+      "otpSent": "OTP sent successfully",
+      "registerSuccess": "Registration successful",
+      "somethingWentWrong": "Something went wrong",
+      "verifyMob": "Verify Mobile Number"
     },
     "forgot": {
       "screenTitle": "Forgot Password",
@@ -50,7 +71,7 @@
       "askEmail": "Use Email id instead ?",
       "askMob": "Use Mobile Number instead ?",
       "otpEmail": "OTP sent to ",
-      "otpMob": "OTP sent to +91-",
+      "otpMob": "OTP sent successfully",
       "invalidOtp": "Invalid OTP !",
       "enterPassword": "Enter your new password",
       "passwordHelper": "Password must be atleast of 8 digits !",
@@ -59,7 +80,60 @@
       "changePassword": "Change Password",
       "changedSuccessfully": "Password changed successfully !",
       "change": "Change ?",
-      "verify": "Verify"
+      "verify": "Verify",
+      "newPass": "New Password",
+      "confirmPass": "Confirm Password"
+    },
+    "appointmentList": {
+      "past": "Past",
+      "today": "Today",
+      "upcoming": "Upcoming",
+      "appointments": "Appointments",
+      "noAppointments": "No Appointments here"
+    },
+    "scheduleScreen": {
+      "screenTitle": "My Schedule",
+      "jan": "January",
+      "feb": "February",
+      "mar": "March",
+      "apr": "April",
+      "may": "May",
+      "jun": "June",
+      "jul": "July",
+      "aug": "August",
+      "sep": "September",
+      "oct": "October",
+      "nov": "November",
+      "dec": "December",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun",
+      "morning": "Morning",
+      "evening": "Evening",
+      "token": "Token",
+      "name": "Name",
+      "category": "Category",
+      "noSchedule": "No appointments at selected time"
+    },
+    "flashScreen": {
+      "screenTitle": "Enter your announcement",
+      "enterMsg": "Enter your message",
+      "submit": "Submit",
+      "updatedSuccess": "Announcement updated successfully"
+    },
+    "assistantDashboard": {
+      "addNew": "Add New Assistant",
+      "yourAssistants": "Your Assistants",
+      "assistantUpdated": "Assistant updated successfully",
+      "assistantDeleted": "Assistant deleted successfully",
+      "somethingWentWrong": "Something went wrong",
+      "areYouSure": "Are you sure ?",
+      "deleteAssistant": "Yes, delete it",
+      "cancel": "No, go back"
     }
   }
 }

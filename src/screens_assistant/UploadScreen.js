@@ -14,10 +14,13 @@ import {Color, Fonts} from '../theme';
 import ImagePicker from 'react-native-image-crop-picker';
 import {Button} from 'react-native-paper';
 import SuccessModal from '../components/modals/SuccessModal';
-import {warnToast} from '../components/toasts';
+import {errorToast, warnToast} from '../components/toasts';
+import {postData} from '../API';
 
 export default function UploadScreen({navigation, route}) {
   const [prescriptions, setPrescriptions] = React.useState([]);
+
+  const itemData = route.params?.item;
 
   const [showModal, setShowModal] = React.useState(false);
 
@@ -30,7 +33,7 @@ export default function UploadScreen({navigation, route}) {
       includeBase64: true,
       multiple: true,
     }).then(image => {
-      setPrescriptions(prev => [...prev, image?.path]);
+      setPrescriptions(prev => [...prev, image]);
     });
   };
 
@@ -43,8 +46,8 @@ export default function UploadScreen({navigation, route}) {
       includeBase64: true,
       multiple: true,
     }).then(image => {
-      let images = image.map(item => item?.path);
-      setPrescriptions(prev => [...prev, images].flat());
+      // let images = image.map(item => item?.path);
+      setPrescriptions(prev => [...prev, image].flat());
     });
   };
 
@@ -75,9 +78,18 @@ export default function UploadScreen({navigation, route}) {
     setPrescriptions([]);
     setShowModal(false);
   };
-  const sendPrescriptions = () => {
+  const sendPrescriptions = async () => {
     if (prescriptions.length) {
-      setShowModal(true);
+      var body = {
+        id: itemData?.id,
+        prescription: prescriptions.map(item => item?.data),
+      };
+      const result = await postData('appointmentprescrition', body);
+      if (result.data) {
+        setShowModal(true);
+      } else {
+        errorToast('Something went wrong');
+      }
     } else {
       warnToast('Please add at least one prescription');
     }
@@ -174,7 +186,7 @@ export default function UploadScreen({navigation, route}) {
           return (
             <>
               <Image
-                source={{uri: item}}
+                source={{uri: item?.path}}
                 style={{
                   flex: 1,
                   height: 150,

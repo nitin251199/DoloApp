@@ -59,7 +59,7 @@ export default function ProfileScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Menu renderer={renderers.SlideInMenu} style={styles.dots}>
+      {/* <Menu renderer={renderers.SlideInMenu} style={styles.dots}>
         <MenuTrigger>
           <MaterialCommunityIcons
             name="dots-vertical"
@@ -98,7 +98,7 @@ export default function ProfileScreen({navigation}) {
             text="Logout"
           />
         </MenuOptions>
-      </Menu>
+      </Menu> */}
       <View style={styles.imageView}>
         {loading ? (
           <ProfilePlaceholder />

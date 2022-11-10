@@ -6,15 +6,27 @@ import {
   View,
 } from 'react-native';
 import React, {useEffect} from 'react';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {getData} from '../API';
 import {Color, Fonts} from '../theme';
 import {Avatar, IconButton} from 'react-native-paper';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+import {useTranslation} from 'react-i18next';
+import { CommonActions } from '@react-navigation/native';
 
 export default function AppHeader(props) {
   const user = useSelector(state => state.user);
 
   const {navigation} = props;
+
+  const {t} = useTranslation();
+
+  const dispatch = useDispatch();
 
   //   console.log(navigation.getParent());
 
@@ -30,6 +42,17 @@ export default function AppHeader(props) {
   useEffect(() => {
     fetchProfileInfo();
   }, []);
+
+  const logOut = () => {
+    dispatch({type: 'LOGOUT'});
+
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'Auth'}],
+      }),
+    );
+  };
 
   return (
     <View style={styles.topContainer}>
@@ -57,18 +80,83 @@ export default function AppHeader(props) {
           {profileData?.do_lo_id}
         </Text>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-        <Avatar.Image
-          size={45}
-          source={{
-            uri: profileData?.profileimage
-              ? profileData?.profileimage.length > 20
-                ? `data:image/png;base64,${profileData?.profileimage}`
-                : `https://rapidhealth.me/assets/doctor/${profileData?.profileimage}`
-              : 'https://www.w3schools.com/w3images/avatar6.png',
-          }}
-        />
-      </TouchableOpacity>
+      <Menu>
+        <MenuTrigger>
+          <Avatar.Image
+            size={45}
+            source={{
+              uri: profileData?.profileimage
+                ? profileData?.profileimage.length > 20
+                  ? `data:image/png;base64,${profileData?.profileimage}`
+                  : `https://rapidhealth.me/assets/doctor/${profileData?.profileimage}`
+                : 'https://www.w3schools.com/w3images/avatar6.png',
+            }}
+          />
+        </MenuTrigger>
+        <MenuOptions
+          optionsContainerStyle={
+            {
+              // height: Dimension.window.height * 0.5,
+              //   justifyContent: 'flex-end',
+            }
+          }
+          customStyles={{
+            optionText: {
+              color: Color.black,
+              fontSize: 15,
+              fontFamily: Fonts.primaryBold,
+            },
+            optionWrapper: {
+              // padding: 20,
+            },
+          }}>
+          <MenuOption
+            customStyles={{
+              optionText: {
+                color: '#000',
+                fontFamily: Fonts.primaryRegular,
+                lineHeight: 14 * 1.4,
+              },
+              optionWrapper: {
+                padding: 15,
+                //   backgroundColor: 'red',
+              },
+            }}
+            onSelect={() => navigation.navigate('Profile')}
+            text={t('header.your_profile')}
+          />
+          <MenuOption
+            customStyles={{
+              optionText: {
+                color: '#000',
+                fontFamily: Fonts.primaryRegular,
+                lineHeight: 14 * 1.4,
+              },
+              optionWrapper: {
+                padding: 15,
+                //   backgroundColor: 'red',
+              },
+            }}
+            onSelect={() => navigation.navigate('Settings')}
+            text={t('header.settings')}
+          />
+          <MenuOption
+            customStyles={{
+              optionText: {
+                color: 'red',
+                fontFamily: Fonts.primaryRegular,
+                lineHeight: 14 * 1.4,
+              },
+              optionWrapper: {
+                padding: 15,
+                //   backgroundColor: 'red',
+              },
+            }}
+            onSelect={() => logOut()}
+            text={t('header.logout')}
+          />
+        </MenuOptions>
+      </Menu>
     </View>
   );
 }

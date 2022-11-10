@@ -6,6 +6,8 @@ import OTPTextView from 'react-native-otp-textinput';
 import {Button, TextInput, HelperText} from 'react-native-paper';
 
 export default function SetPassword(props) {
+  const {t} = props;
+
   const [show, setShow] = React.useState(true);
   const [password, setPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
@@ -52,7 +54,7 @@ export default function SetPassword(props) {
   return (
     <>
       <View style={styles.titleContainer}>
-        <Text style={styles.text}>Verify Mobile Number</Text>
+        <Text style={styles.text}>{t('register.verifyMob')}</Text>
         <TouchableOpacity onPress={props.onRequestClose}>
           <MaterialCommunityIcons
             name="close"
@@ -68,7 +70,9 @@ export default function SetPassword(props) {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={styles.label}>OTP sent to +91-{props.phone}</Text>
+            <Text style={styles.label}>
+              +91-{props.phone} {t('forgot.otpMob')}
+            </Text>
             <TouchableOpacity
               onPress={() => {
                 props.onRequestClose();
@@ -79,7 +83,7 @@ export default function SetPassword(props) {
                   fontSize: 14,
                   fontFamily: Fonts.primaryRegular,
                 }}>
-                Change ?
+                {t('forgot.change')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -104,7 +108,7 @@ export default function SetPassword(props) {
             type="error"
             visible={otpError}
             style={{display: otpError ? 'flex' : 'none'}}>
-            Invalid OTP !
+            {t('forgot.invalidOtp')}
           </HelperText>
           <Button
             onPress={() => checkOTP()}
@@ -115,12 +119,12 @@ export default function SetPassword(props) {
               alignItems: 'center',
             }}
             mode="contained">
-            Verify
+            {t('forgot.verify')}
           </Button>
         </View>
       ) : (
         <View style={{margin: 10}}>
-          <Text style={styles.label}>Enter New Password</Text>
+          <Text style={styles.label}>{t('forgot.enterPassword')}</Text>
           <TextInput
             mode="outlined"
             theme={theme}
@@ -142,20 +146,20 @@ export default function SetPassword(props) {
             }}
             activeOutlineColor={Color.primary}
             style={styles.input}
-            label="New Password"
+            label={t('forgot.newPass')}
           />
           <HelperText
             padding="none"
             type="error"
             visible={isValidPassword()}
             style={{display: isValidPassword() ? 'flex' : 'none'}}>
-            Password must be atleast of 8 digits !
+            {t('forgot.passwordHelper')}
           </HelperText>
           <TextInput
             mode="outlined"
             theme={theme}
             value={confirmPassword}
-            placeholder="Confirm Password"
+            placeholder={t('forgot.confirmPass')}
             placeholderTextColor={Color.graylight}
             secureTextEntry={showConfirmPass}
             right={
@@ -171,14 +175,14 @@ export default function SetPassword(props) {
             onChangeText={text => setConfirmPassword(text)}
             activeOutlineColor={Color.primary}
             style={styles.input}
-            label="Confirm Password"
+            label={t('forgot.confirmPass')}
           />
           <HelperText
             padding="none"
             type="error"
             visible={checkConfirmPass()}
             style={{display: checkConfirmPass() ? 'flex' : 'none'}}>
-            Passwords don't match !
+            {t('forgot.confirmHelper')}
           </HelperText>
           <Button
             onPress={() => submitMobile()}
@@ -197,7 +201,7 @@ export default function SetPassword(props) {
               alignItems: 'center',
             }}
             mode="contained">
-            Register
+            {t('register.register')}
           </Button>
         </View>
       )}

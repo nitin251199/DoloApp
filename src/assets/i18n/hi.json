@@ -5,12 +5,25 @@
       "settings": "सेटिंग्स",
       "logout": "लॉग आउट"
     },
+    "doctorHome": {
+      "walkIn": "मरीजों की सूची आज",
+      "available_now": "उपलब्ध ?",
+      "schedule": "मेरी अनुसूची",
+      "announcements": "घोषणाएं",
+      "noAnnouncement": "कोई घोषणा नहीं",
+      "manageAssistant": "सहायकों का प्रबंधन करें",
+      "feedback": "रोगियों की प्रतिक्रिया",
+      "payment": "भुगतान प्राप्त सूची",
+      "signOut": "लॉग आउट"
+    },
     "assistantHome": {
       "add_new_patient": "नया मरीज जोड़ें",
       "patients_queue": "मरीजों की कतार",
       "upload_prescription": "नुस्खा अपलोड करें",
       "engagement_status": "संलग्न स्थिति",
-      "available_now": "उपलब्ध ?"
+      "available_now": "उपलब्ध ?",
+      "statusUpdated": "स्थिति सफलतापूर्वक अपडेट की गई",
+      "somethingWentWrong": "कुछ गलत हो गया"
     },
     "settings": {
       "screenTitle": "सेटिंग्स",
@@ -27,7 +40,10 @@
       "forgot": "याद नहीं ?",
       "login": "लॉग इन करें",
       "dont_have_account": "क्या आप ऐप में नए हैं ?",
-      "register": "पंजीकरण करे"
+      "register": "पंजीकरण करे",
+      "loginSuccess": "सफलतापूर्वक लॉग इन किया गया",
+      "loginFailed1": "अमान्य ईमेल या पासवर्ड",
+      "loginFailed2": "आपका खाता अभी तक सक्रिय नहीं किया गया है"
     },
     "register": {
       "screenTitle": "हमसे जुड़ें !",
@@ -37,7 +53,12 @@
       "mobile": "मोबाइल न.",
       "referral": "रेफरल कोड",
       "register": "पंजीकरण करे",
-      "proceed": "आगे बढे"
+      "proceed": "आगे बढे",
+      "enterValidNo": "कृपया एक मान्य फोन नंबर दर्ज करें",
+      "otpSent": "ओटीपी सफलतापूर्वक भेजा गया",
+      "registerSuccess": "पंजीकरण सफल",
+      "somethingWentWrong": "कुछ गलत हो गया",
+      "verifyMob": "मोबाइल नंबर सत्यापित करें"
     },
     "forgot": {
       "screenTitle": "पासवर्ड भूल गए",
@@ -59,7 +80,60 @@
       "changePassword": "पासवर्ड बदलें",
       "changedSuccessfully": "पासवर्ड सफलतापूर्वक बदला गया",
       "change": "बदले ?",
-      "verify": "सत्यापित करे"
+      "verify": "सत्यापित करे",
+      "newPass": "नया पासवर्ड",
+      "confirmPass": "पासवर्ड की पुष्टि कीजिये"
+    },
+    "appointmentList": {
+      "past": "पिछले",
+      "today": "आज के",
+      "upcoming": "आगामी",
+      "appointments": "अपॉइंटमेंट",
+      "noAppointments": "आज कोई अपॉइंटमेंट नहीं"
+    },
+    "scheduleScreen": {
+      "screenTitle": "मेरे अनुसूची",
+      "jan": "जनवरी",
+      "feb": "फरवरी",
+      "mar": "मार्च",
+      "apr": "अप्रैल",
+      "may": "मई",
+      "jun": "जून",
+      "jul": "जुलाई",
+      "aug": "अगस्त",
+      "sep": "सितंबर",
+      "oct": "अक्टूबर",
+      "nov": "नवंबर",
+      "dec": "दिसंबर",
+      "mon": "सोम",
+      "tue": "मंगल",
+      "wed": "बुध",
+      "thu": "गुरु",
+      "fri": "शुक्र",
+      "sat": "शनि",
+      "sun": "रवि",
+      "morning": "सुबह",
+      "evening": "शाम",
+      "token": "टोकन",
+      "name": "नाम",
+      "category": "श्रेणी",
+      "noSchedule": "चयनित समय पर कोई अपॉइंटमेंट नहीं"
+    },
+    "flashScreen": {
+      "screenTitle": "अपनी घोषणा दर्ज करें",
+      "enterMsg": "अपना संदेश दर्ज करें",
+      "submit": "जमा करें",
+      "updatedSuccess": "घोषणा सफलतापूर्वक अपडेट की गई"
+    },
+    "assistantDashboard": {
+      "addNew": "नया सहायक जोड़ें",
+      "yourAssistants": "आपके सहायक",
+      "assistantUpdated": "सफलतापूर्वक अपडेट किया गया",
+      "assistantDeleted": "सहायक को सफलतापूर्वक हटाया गया",
+      "somethingWentWrong": "कुछ गलत हो गया",
+      "areYouSure": "क्या आप निश्चित हैं ?",
+      "deleteAssistant": "सहायक हटाएं",
+      "cancel": "रद्द करें"
     }
   }
 }

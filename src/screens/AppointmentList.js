@@ -15,15 +15,17 @@ export default function AppointmentList({navigation, route}) {
     route.params?.appointments,
   );
 
+  const {t} = route.params;
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>
         {route.params?.type == 2
-          ? 'Future'
+          ? t('appointmentList.upcoming')
           : route.params?.type == 1
-          ? 'Today'
-          : 'Past'}{' '}
-        Appointments. 🩺
+          ? t('appointmentList.today')
+          : t('appointmentList.past')}{' '}
+        {t('appointmentList.appointments')}. 🩺
       </Text>
       {/* {loading ? (
         <View
@@ -65,7 +67,7 @@ export default function AppointmentList({navigation, route}) {
                 fontSize: 16,
                 fontFamily: Fonts.primarySemiBold,
               }}>
-              No appointments here
+              {t('appointmentList.noAppointments')}
             </Text>
           </View>
         )}

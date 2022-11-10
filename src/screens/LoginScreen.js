@@ -11,6 +11,7 @@ import {
   ToastAndroid,
   BackHandler,
   StyleSheet,
+  StatusBar,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -28,6 +29,8 @@ import {getSyncData} from '../storage/AsyncStorage';
 import {useTranslation} from 'react-i18next';
 
 export default function LoginScreen({navigation, route}) {
+  const {t} = useTranslation();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [type, setType] = React.useState('doctor');
@@ -64,7 +67,7 @@ export default function LoginScreen({navigation, route}) {
     let apiUrl = type === 'doctor' ? 'doctor/login' : 'doctorassistantlogin';
     const response = await postData(apiUrl, body);
     if (response.success) {
-      successToast('Login Successfull');
+      successToast(t('login.loginSuccess'));
       setLoading(false);
       dispatch({
         type: 'SET_TYPE',
@@ -81,9 +84,8 @@ export default function LoginScreen({navigation, route}) {
         }),
       );
     } else {
-      errorToast('Invalid Credentials', 'or User not found!');
+      errorToast(t('login.loginFailed1'), t('login.loginFailed2'));
       setLoading(false);
-      ToastAndroid.show('Invalid Credentials', ToastAndroid.SHORT);
     }
   };
 
@@ -123,8 +125,6 @@ export default function LoginScreen({navigation, route}) {
     };
   }, []);
 
-  const {t} = useTranslation();
-
   const forgetPasswordSheet = () => {
     return (
       <RBSheet
@@ -157,6 +157,7 @@ export default function LoginScreen({navigation, route}) {
       style={{
         flex: 1,
       }}>
+      <StatusBar backgroundColor={Color.white} barStyle="dark-content" />
       <BannerSlider />
       <Animated.View
         style={{

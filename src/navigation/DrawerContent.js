@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Text, Switch} from 'react-native';
 import {
   useTheme,
   Title,
@@ -15,10 +15,13 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {getData, ServerURL} from '../API';
 import {Color} from '../theme';
-import { CommonActions } from '@react-navigation/native';
+import {CommonActions} from '@react-navigation/native';
+import {useTranslation} from 'react-i18next';
 
 export function DrawerContent(props) {
   //   const paperTheme = useTheme();
+
+  const {t} = useTranslation();
 
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
@@ -96,7 +99,7 @@ export function DrawerContent(props) {
               icon={({color, size}) => (
                 <Icon name="book-open" size={size} color={color} />
               )}
-              label="My Schedule"
+              label={t('doctorHome.schedule')}
               onPress={() => {
                 props.navigation.navigate('Schedule');
               }}
@@ -110,7 +113,7 @@ export function DrawerContent(props) {
                   color={color}
                 />
               )}
-              label="Announcements"
+              label={t('doctorHome.announcements')}
               onPress={() => {
                 props.navigation.navigate('Flash');
               }}
@@ -120,7 +123,7 @@ export function DrawerContent(props) {
               icon={({color, size}) => (
                 <Ionicons name="receipt" color={color} size={size} />
               )}
-              label="Manage Assistant"
+              label={t('doctorHome.manageAssistant')}
               onPress={() => {
                 props.navigation.navigate('AssistantDashboard');
               }}
@@ -148,7 +151,7 @@ export function DrawerContent(props) {
               icon={({color, size}) => (
                 <Icon name="account" color={color} size={size} />
               )}
-              label="Patient Feedback"
+              label={t('doctorHome.feedback')}
               onPress={() => {
                 props.navigation.navigate('Feedback');
               }}
@@ -158,7 +161,7 @@ export function DrawerContent(props) {
               icon={({color, size}) => (
                 <Ionicons name="notifications" color={color} size={size} />
               )}
-              label="Payment Recieved"
+              label={t('doctorHome.payment')}
               onPress={() => {
                 props.navigation.navigate('PaymentHistory');
               }}
@@ -172,13 +175,13 @@ export function DrawerContent(props) {
               <View style={styles.preference}>
                 <Text
                   style={{
-                    color: paperTheme.colors.text,
+                    color: Color.black,
                     fontFamily: 'Poppins-Medium',
                   }}>
                   Dark Theme
                 </Text>
                 <View pointerEvents="none">
-                  <Switch value={paperTheme.dark} />
+                  <Switch value={'s'} />
                 </View>
               </View>
             </TouchableRipple>
@@ -191,7 +194,7 @@ export function DrawerContent(props) {
           icon={({color, size}) => (
             <Icon name="exit-to-app" color={color} size={size} />
           )}
-          label="Sign Out"
+          label={t('doctorHome.signOut')}
           onPress={() => {
             signOut();
           }}

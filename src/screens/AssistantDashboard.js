@@ -9,9 +9,12 @@ import DoctorPlaceholder from '../placeholders/DoctorPlaceholder';
 import EditAssistant from '../components/bottomsheets/EditAssistant';
 import {errorToast, successToast} from '../components/toasts';
 import AlertModal from '../components/modals/AlertModal';
+import {useTranslation} from 'react-i18next';
 
 export default function AssistantDashboard({navigation}) {
   const user = useSelector(state => state.user);
+
+  const {t} = useTranslation();
 
   const [assistantData, setAssistantData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
@@ -46,7 +49,7 @@ export default function AssistantDashboard({navigation}) {
     if (result.success) {
       fetchAssistants();
       _sheetRef.current.close();
-      successToast('Assistant updated successfully');
+      successToast(t('assistantDashboard.assistantUpdated'));
     }
     setEditLoading(false);
   };
@@ -58,9 +61,9 @@ export default function AssistantDashboard({navigation}) {
     if (result.success) {
       fetchAssistants();
       setShowModal(false);
-      successToast('Assistant deleted successfully');
+      successToast(t('assistantDashboard.assistantDeleted'));
     } else {
-      errorToast('Something went wrong');
+      errorToast(t('assistantDashboard.somethingWentWrong'));
     }
   };
 
@@ -74,10 +77,10 @@ export default function AssistantDashboard({navigation}) {
       <AlertModal
         visible={showModal}
         onRequestClose={() => setShowModal(false)}
-        title="Are you sure ?"
-        primaryBtnText="Yes, delete it."
+        title={t('assistantDashboard.areYouSure')}
+        primaryBtnText={t('assistantDashboard.deleteAssistant')}
         onPrimaryPress={() => onPrimaryPress()}
-        secondaryBtnText="No, go back"
+        secondaryBtnText={t('assistantDashboard.cancel')}
         onSecondaryPress={() => {
           setShowModal(false);
         }}
@@ -91,9 +94,9 @@ export default function AssistantDashboard({navigation}) {
           color={Color.white}
           style={styles.addIcon}
         />
-        <Text style={styles.addText}>Add new assistant</Text>
+        <Text style={styles.addText}>{t('assistantDashboard.addNew')}</Text>
       </TouchableOpacity>
-      <Text style={styles.title}>Your Assistants</Text>
+      <Text style={styles.title}>{t('assistantDashboard.yourAssistants')}</Text>
       {loading ? (
         <View
           style={{

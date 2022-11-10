@@ -15,6 +15,7 @@ import {getData} from '../API';
 import {useSelector} from 'react-redux';
 import {useEffect} from 'react';
 import AppointmentCard from '../components/AppointmentCard';
+import {useFocusEffect} from '@react-navigation/native';
 
 export default function PatientsQueue({navigation}) {
   const user = useSelector(state => state.user);
@@ -24,7 +25,6 @@ export default function PatientsQueue({navigation}) {
   const _scrollRef = React.useRef(null);
 
   const fetchAppointments = async () => {
-    console.log('api', `appointment/${user?.doctor_id}`);
     const list = await getData(`appointment/${user?.doctor_id}`);
     setAppointmentData(
       list?.data.filter(
@@ -36,9 +36,20 @@ export default function PatientsQueue({navigation}) {
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
+  // useEffect(() => {
+  //   navigation.addListener('focus', () => {
+  //     fetchAppointments();
+  //   });
+  // }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('focus');
+      // alert('Screen was focused');
+      // Do something when the screen is focused
+      fetchAppointments();
+    }, []),
+  );
 
   return (
     <View style={styles.container}>

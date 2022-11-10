@@ -51,6 +51,10 @@ export default function RegisterScreen({navigation, route}) {
   }, []);
 
   const handleOTP = async () => {
+    if (phone.length < 10) {
+      errorToast(t('register.enterValidNo'));
+      return;
+    }
     setLoading(true);
     // const response = await postData('api/getCheckemail', {
     //   email,
@@ -67,7 +71,7 @@ export default function RegisterScreen({navigation, route}) {
     let otp = Math.floor(1000 + Math.random() * 9000);
     setOtp(otp);
     console.log(otp);
-    ToastAndroid.show('OTP Sent Successfully!', ToastAndroid.SHORT);
+    successToast(t('register.otpSent'));
     setLoading(false);
     setModalVisible(true);
     // }
@@ -83,10 +87,10 @@ export default function RegisterScreen({navigation, route}) {
     };
     const response = await postData('api/getRegistration', body);
     if (response.success) {
-      successToast('Register Successful !');
+      successToast(t('register.registerSuccess'));
       navigation.goBack();
     } else {
-      errorToast('Something Went Wrong !');
+      errorToast(t('register.somethingWentWrong'));
     }
   };
 
@@ -120,6 +124,7 @@ export default function RegisterScreen({navigation, route}) {
         flex: 1,
       }}>
       <OtpModal
+        t={t}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
         phone={phone}
@@ -197,6 +202,7 @@ export default function RegisterScreen({navigation, route}) {
           }
         />
         <InputField
+          keyboardType="numeric"
           label={t('register.mobile')}
           value={phone}
           onChangeText={setPhone}

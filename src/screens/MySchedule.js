@@ -13,7 +13,7 @@ import {getData} from '../API';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useSelector} from 'react-redux';
 
-export default function MySchedule({navigation}) {
+export default function MySchedule({navigation, route}) {
   const [time, setTime] = React.useState('Morning');
   const [allAppointments, setAllAppointments] = React.useState([]);
   const [appointments, setAppointments] = React.useState([]);
@@ -23,30 +23,41 @@ export default function MySchedule({navigation}) {
 
   const fetchAppointments = async () => {
     const list = await getData(`appointment/${user?.userid}`);
+    // console.log(list, user?.userid);
     setAllAppointments(list?.data);
     setLoading(false);
   };
+
+  const {t} = route.params;
 
   useEffect(() => {
     fetchAppointments();
   }, []);
 
   const months = [
-    'January',
-    'Februauy',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
+    t('scheduleScreen.jan'),
+    t('scheduleScreen.feb'),
+    t('scheduleScreen.mar'),
+    t('scheduleScreen.apr'),
+    t('scheduleScreen.may'),
+    t('scheduleScreen.jun'),
+    t('scheduleScreen.jul'),
+    t('scheduleScreen.aug'),
+    t('scheduleScreen.sep'),
+    t('scheduleScreen.oct'),
+    t('scheduleScreen.nov'),
+    t('scheduleScreen.dec'),
   ];
 
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const days = [
+    t('scheduleScreen.sun'),
+    t('scheduleScreen.mon'),
+    t('scheduleScreen.tue'),
+    t('scheduleScreen.wed'),
+    t('scheduleScreen.thu'),
+    t('scheduleScreen.fri'),
+    t('scheduleScreen.sat'),
+  ];
 
   const [dates, setDates] = React.useState([]);
   const _datesRef = React.useRef(null);
@@ -211,7 +222,7 @@ export default function MySchedule({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>My Schedule 📆</Text>
+      <Text style={styles.heading}>{t('scheduleScreen.screenTitle')} 📆</Text>
       <View
         style={{
           width: '100%',
@@ -340,7 +351,7 @@ export default function MySchedule({navigation}) {
                 ...styles.btnText,
                 color: time === 'Morning' ? '#fff' : '#000',
               }}>
-              Morning
+              {t('scheduleScreen.morning')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -355,7 +366,7 @@ export default function MySchedule({navigation}) {
                 ...styles.btnText,
                 color: time === 'Evening' ? '#fff' : '#000',
               }}>
-              Evening
+              {t('scheduleScreen.evening')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -382,7 +393,7 @@ export default function MySchedule({navigation}) {
               style={{
                 ...styles.btnText,
               }}>
-              Token
+              {t('scheduleScreen.token')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -399,7 +410,7 @@ export default function MySchedule({navigation}) {
               style={{
                 ...styles.btnText,
               }}>
-              Name
+              {t('scheduleScreen.name')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -414,7 +425,7 @@ export default function MySchedule({navigation}) {
               style={{
                 ...styles.btnText,
               }}>
-              Category
+              {t('scheduleScreen.category')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -444,7 +455,7 @@ export default function MySchedule({navigation}) {
                 color: '#999',
                 fontFamily: Fonts.primarySemiBold,
               }}>
-              No Appointments at selected time
+              {t('scheduleScreen.noSchedule')}
             </Text>
           </View>
         )}

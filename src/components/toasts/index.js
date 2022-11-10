@@ -9,6 +9,7 @@ export const successToast = (title, subTitle) => {
     type: 'success',
     titleStyle: {
       fontFamily: Fonts.primarySemiBold,
+      lineHeight: 14 * 1.4,
     },
     textStyle: {
       fontFamily: Fonts.primaryRegular,
@@ -24,6 +25,7 @@ export const errorToast = (title, subTitle) => {
     icon: 'auto',
     titleStyle: {
       fontFamily: Fonts.primarySemiBold,
+      lineHeight: 14 * 1.4,
     },
     textStyle: {
       fontFamily: Fonts.primaryRegular,
@@ -39,6 +41,7 @@ export const infoToast = (title, subTitle) => {
     icon: 'auto',
     titleStyle: {
       fontFamily: Fonts.primarySemiBold,
+      lineHeight: 14 * 1.4,
     },
     textStyle: {
       fontFamily: Fonts.primaryRegular,
@@ -54,6 +57,7 @@ export const warnToast = (title, subTitle) => {
     icon: 'auto',
     titleStyle: {
       fontFamily: Fonts.primarySemiBold,
+      lineHeight: 14 * 1.4,
     },
     textStyle: {
       fontFamily: Fonts.primaryRegular,

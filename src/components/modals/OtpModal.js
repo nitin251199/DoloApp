@@ -4,6 +4,7 @@ import {Color, Dimension} from '../../theme';
 import SetPassword from '../bottomsheets/SetPassword';
 
 export default function OtpModal(props) {
+  const {t} = props;
   return (
     <Modal
       animationType="slide"
@@ -19,6 +20,7 @@ export default function OtpModal(props) {
           onPress={() => {}}
           style={styles.modalView}>
           <SetPassword
+            t={t}
             onRequestClose={props.onRequestClose}
             phone={props.phone}
             realOtp={props.otp}

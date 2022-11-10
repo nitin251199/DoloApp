@@ -4,25 +4,37 @@ import {Color, Fonts} from '../theme';
 import {Button, TextInput} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import {postData} from '../API';
+import {useTranslation} from 'react-i18next';
+import {successToast, errorToast} from '../components/toasts';
 
 export default function FlashMessage({navigation, route}) {
-  const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
+  const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input\
+
+  const {t} = useTranslation();
 
   const [msg, setMsg] = React.useState('');
   const user = useSelector(state => state.user);
+  const [loading, setLoading] = React.useState(false);
 
   const onSubmit = async () => {
+    setLoading(true);
     route.params?.setFlashMsg(msg);
     let body = {id: user?.userid, annoucement: msg};
     let result = await postData('doctorannoucementupdate', body);
+    if (result?.success) {
+      successToast(t('flashScreen.updatedSuccess'));
+    } else {
+      errorToast(t('register.somethingWentWrong'));
+    }
+    setLoading(false);
     navigation.goBack();
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Enter your announcement. 🔊</Text>
+      <Text style={styles.heading}>{t('flashScreen.screenTitle')}. 🔊</Text>
       <View style={{marginTop: 15}}>
-        <Text style={styles.label}>Enter message</Text>
+        <Text style={styles.label}>{t('flashScreen.enterMsg')}</Text>
         <TextInput
           theme={theme}
           autoFocus
@@ -43,10 +55,10 @@ export default function FlashMessage({navigation, route}) {
         }}
         contentStyle={{height: 55, alignItems: 'center'}}
         dark
-        // loading={loading}
+        loading={loading}
         mode="contained"
         onPress={onSubmit}>
-        Submit
+        {t('flashScreen.submit')}
       </Button>
     </View>
   );

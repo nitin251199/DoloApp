@@ -14,8 +14,11 @@ import {errorToast, successToast} from '../components/toasts';
 import {getData, postData} from '../API';
 import {useSelector} from 'react-redux';
 import {ActivityIndicator} from 'react-native-paper';
+import {useTranslation} from 'react-i18next';
 
 export default function HomeScreen({navigation}) {
+  const {t} = useTranslation();
+
   const [appointments, setAppointments] = React.useState([]);
   const [available, setAvailable] = React.useState(1);
   const [loading, setLoading] = React.useState(false);
@@ -67,9 +70,9 @@ export default function HomeScreen({navigation}) {
     let res = await postData('doctoravilableupdate', body);
     if (res?.success) {
       setAvailable(prev => !prev);
-      successToast('Status updated successfully !');
+      successToast(t('assistantHome.statusUpdated'));
     } else {
-      errorToast('Something went wrong !');
+      errorToast(t('assistantHome.somethingWentWrong'));
     }
   };
 
@@ -91,6 +94,7 @@ export default function HomeScreen({navigation}) {
               navigation.navigate('AppointmentList', {
                 appointments: appointments,
                 type: 1,
+                t: t,
               })
             }
             style={{
@@ -144,7 +148,7 @@ export default function HomeScreen({navigation}) {
                 }}
               />
             </View>
-            <Text style={styles.subText}>Walk in Patient today</Text>
+            <Text style={styles.subText}>{t('doctorHome.walkIn')}</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.cardContainer}>
@@ -172,11 +176,11 @@ export default function HomeScreen({navigation}) {
                 style={styles.mainIcon}
               />
             )}
-            <Text style={styles.mainText}>Available Now</Text>
+            <Text style={styles.mainText}>{t('doctorHome.available_now')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Schedule');
+              navigation.navigate('Schedule', {t});
             }}
             style={styles.card}>
             <MaterialCommunityIcons
@@ -185,7 +189,7 @@ export default function HomeScreen({navigation}) {
               color="#fff"
               style={styles.mainIcon}
             />
-            <Text style={styles.mainText}>My Schedule</Text>
+            <Text style={styles.mainText}>{t('doctorHome.schedule')}</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.cardContainer}>
@@ -203,7 +207,7 @@ export default function HomeScreen({navigation}) {
               style={styles.mainIcon}
             />
             <Text adjustsFontSizeToFit style={styles.mainText}>
-              {flashMsg ? flashMsg : 'No\nAnouncement'}
+              {flashMsg ? flashMsg : t('doctorHome.noAnnouncement')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -217,7 +221,9 @@ export default function HomeScreen({navigation}) {
               color="#fff"
               style={styles.mainIcon}
             />
-            <Text style={styles.mainText}>Manage Assistant</Text>
+            <Text style={styles.mainText}>
+              {t('doctorHome.manageAssistant')}
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.cardContainer}>
@@ -232,7 +238,7 @@ export default function HomeScreen({navigation}) {
               color="#fff"
               style={styles.mainIcon}
             />
-            <Text style={styles.mainText}>Patient Feedback</Text>
+            <Text style={styles.mainText}>{t('doctorHome.feedback')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -245,7 +251,7 @@ export default function HomeScreen({navigation}) {
               color="#fff"
               style={styles.mainIcon}
             />
-            <Text style={styles.mainText}>Payment Recieved</Text>
+            <Text style={styles.mainText}>{t('doctorHome.payment')}</Text>
             <View
               style={{
                 width: 15,

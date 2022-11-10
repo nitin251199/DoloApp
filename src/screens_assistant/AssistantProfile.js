@@ -32,17 +32,17 @@ export default function AssistantProfile({navigation}) {
 
   const fetchProfileInfo = async () => {
     setLoading(true);
-    let res = await getData(`dolo/profile/${user?.userid}`);
-    // console.log(`dolo/profile/${user?.userid}`, res);
-    if (res.status) {
+    let res = await getData(`doctorassitantprofile/${user?.userid}`);
+    console.log(`dolo/profile/${user?.userid}`, res);
+    if (res.success) {
       // console.log(res);
-      setProfileData(res.data);
+      setProfileData(res.data[0]);
     }
     setLoading(false);
   };
 
   useEffect(() => {
-    // fetchProfileInfo();
+    fetchProfileInfo();
   }, []);
 
   const logOut = () => {
@@ -129,7 +129,7 @@ export default function AssistantProfile({navigation}) {
               {profileData?.name}
             </Text>
             <Text style={{color: '#000', fontFamily: Fonts.primaryRegular}}>
-              {profileData?.specialization}
+              Added {profileData?.created_at.split('T')[0]}
             </Text>
             <Text
               style={{
@@ -137,7 +137,7 @@ export default function AssistantProfile({navigation}) {
                 fontSize: 15,
                 color: '#000',
               }}>
-              Joined {profileData?.approve_date}
+              Under {user?.dolo_id}
             </Text>
           </>
         )}
@@ -168,37 +168,6 @@ export default function AssistantProfile({navigation}) {
                 backgroundColor: Color.white,
                 width: '48.5%',
               }}>
-              <Text style={{...styles.cardTitle}}>DOLO Id</Text>
-              <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>
-                  {profileData?.do_lo_id}
-                </Text>
-              </View>
-            </View>
-            <View
-              style={{
-                ...styles.card,
-                backgroundColor: Color.white,
-                width: '48.5%',
-              }}>
-              <Text style={{...styles.cardTitle}}>Registration No.</Text>
-              <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>
-                  {profileData?.registration_number}
-                </Text>
-              </View>
-            </View>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-            }}>
-            <View
-              style={{
-                ...styles.card,
-                backgroundColor: Color.white,
-                width: '48.5%',
-              }}>
               <Text style={{...styles.cardTitle}}>Gender</Text>
               <View style={styles.cardContent}>
                 <Text style={{...styles.cardText}}>{profileData?.gender}</Text>
@@ -210,9 +179,9 @@ export default function AssistantProfile({navigation}) {
                 backgroundColor: Color.white,
                 width: '48.5%',
               }}>
-              <Text style={{...styles.cardTitle}}>Aadhar</Text>
+              <Text style={{...styles.cardTitle}}>Address</Text>
               <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>{profileData?.adhar}</Text>
+                <Text style={{...styles.cardText}}>{profileData?.address}</Text>
               </View>
             </View>
           </View>
@@ -222,66 +191,10 @@ export default function AssistantProfile({navigation}) {
               <Text style={{...styles.cardText}}>{profileData?.email}</Text>
             </View>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-            }}>
-            <View
-              style={{
-                ...styles.card,
-                backgroundColor: Color.white,
-                width: '48.5%',
-              }}>
-              <Text style={{...styles.cardTitle}}>Marital Status</Text>
-              <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>
-                  {profileData?.marital_status}
-                </Text>
-              </View>
-            </View>
-            <View
-              style={{
-                ...styles.card,
-                backgroundColor: Color.white,
-                width: '48.5%',
-              }}>
-              <Text style={{...styles.cardTitle}}>DOB</Text>
-              <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>
-                  {profileData?.date_of_birth}
-                </Text>
-              </View>
-            </View>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-            }}>
-            <View
-              style={{
-                ...styles.card,
-                backgroundColor: Color.white,
-                width: '48.5%',
-              }}>
-              <Text style={{...styles.cardTitle}}>Doctor Contact</Text>
-              <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>
-                  {profileData?.doctorContact}
-                </Text>
-              </View>
-            </View>
-            <View
-              style={{
-                ...styles.card,
-                backgroundColor: Color.white,
-                width: '48.5%',
-              }}>
-              <Text style={{...styles.cardTitle}}>Clinic Contact</Text>
-              <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>
-                  {profileData?.clinic_contact}
-                </Text>
-              </View>
+          <View style={{...styles.card, backgroundColor: Color.white}}>
+            <Text style={{...styles.cardTitle}}>Mobile No.</Text>
+            <View style={styles.cardContent}>
+              <Text style={{...styles.cardText}}>{profileData?.mobile}</Text>
             </View>
           </View>
         </ScrollView>

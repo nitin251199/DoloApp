@@ -57,7 +57,21 @@ export default function AddPatient({navigation, route}) {
 
   const onSubmit = async () => {
     setLoading(true);
-    var body = {
+    var addbody = {
+      doctor_id: user?.doctor_id,
+      assistant_id: user?.userid,
+      category,
+      patient_name: name,
+      age,
+      agetype: ageType,
+      weight,
+      weighttype: weightType,
+      gender,
+      mobile: mobileNo,
+      status: 0,
+    };
+    var editbody = {
+      id: itemData?.id,
       doctor_id: user?.doctor_id,
       assistant_id: user?.userid,
       category,
@@ -71,7 +85,8 @@ export default function AddPatient({navigation, route}) {
       status: 0,
     };
     const apiUrl =
-      route.params?.type !== 'add' ? 'editpatient' : 'createappointment';
+      route.params?.type !== 'add' ? 'appointmentupdate' : 'createappointment';
+    const body = route.params?.type !== 'add' ? editbody : addbody;
     const result = await postData(apiUrl, body);
     console.log('result', result);
     if (result.success) {
@@ -85,8 +100,14 @@ export default function AddPatient({navigation, route}) {
       <SuccessModal
         visible={showModal}
         onRequestClose={() => setShowModal(false)}
-        title="Patient Added Successfully"
-        primaryBtnText="Add More"
+        title={
+          route.params?.type !== 'add'
+            ? 'Patient Details Updated'
+            : 'Patient Added Successfully'
+        }
+        primaryBtnText={
+          route.params?.type !== 'add' ? 'Edit More Details' : 'Add More'
+        }
         onPrimaryPress={() => onPrimaryPress()}
         secondaryBtnText="Go Back"
         onSecondaryPress={() => {
