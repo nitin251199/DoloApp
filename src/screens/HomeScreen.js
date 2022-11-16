@@ -34,14 +34,12 @@ export default function HomeScreen({navigation}) {
     const list = await getData(`appointment/${user?.userid}`);
     setAppointments(
       list?.data
-        .filter(
-          item =>
-            `${new Date(item.created_at).getDate()}/${new Date(
-              item.created_at,
-            ).getMonth()}/${new Date(item.created_at).getFullYear()}` ==
-            `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
-        )
-        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)),
+        // .filter(
+        //   item =>
+        //     item?.create_date ==
+        //     `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
+        // )
+        // .sort((a, b) => new Date(a.create_date) - new Date(b.create_date)),
     );
     setLoading(false);
   };

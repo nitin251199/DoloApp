@@ -25,7 +25,15 @@ export default function UploadPrescription({navigation}) {
   const fetchAppointments = async () => {
     console.log('api', `appointment/${user?.doctor_id}`);
     const list = await getData(`appointment/${user?.doctor_id}`);
-    setAppointmentData(list?.data);
+    setAppointmentData(
+      list?.data
+        // .filter(
+        //   item =>
+        //   `${item?.create_date}` ===
+        //     `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
+        // )
+        // .sort((a, b) => new Date(a.create_date) - new Date(b.create_date)),
+    );
     console.log('dddtt==',list?.data);
     setLoading(false);
   };

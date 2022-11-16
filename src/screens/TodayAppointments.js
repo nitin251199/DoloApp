@@ -22,16 +22,15 @@ export default function TodayAppointments({navigation}) {
   const fetchAppointments = async () => {
     setLoading(true);
     const list = await getData(`appointment/${user?.userid}`);
+    console.log('listdata--',list)
     setAppointmentData(
       list?.data
-        .filter(
-          item =>
-            `${new Date(item.created_at).getDate()}/${new Date(
-              item.created_at,
-            ).getMonth()}/${new Date(item.created_at).getFullYear()}` ==
-            `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
-        )
-        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)),
+        // .filter(
+        //   item =>
+        //   item?.create_date ==
+        //     `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
+        // )
+       // .sort((a, b) => new Date(a.create_date) - new Date(b.create_date)),
     );
     setLoading(false);
   };
@@ -61,7 +60,7 @@ export default function TodayAppointments({navigation}) {
           style={{
             width: '100%',
           }}>
-          {appointmentData.map((item, index) => {
+          {appointmentData.length != 0 && appointmentData.map((item, index) => {
             return (
               <AppointmentCard
                 key={index}
