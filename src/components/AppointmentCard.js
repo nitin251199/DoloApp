@@ -27,8 +27,15 @@ export default function AppointmentCard({item, onPress, onDoublePress}) {
   return (
     <View style={{...styles.listItem, ...conditionalStyles(status)}}>
       {/* <DoubleClick singleTap={onPress} doubleTap={onDoublePress} delay={300}> */}
-      <TouchableOpacity onPress={onPress}>
-        <LinearGradient
+      <TouchableOpacity onPress={onPress} style={{
+            flex: 1,
+            flexDirection: 'row',
+            padding: 15,
+            alignItems: 'center',
+            //justifyContent: 'center',
+            backgroundColor:'#a9a9a9'
+          }}>
+        {/* <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
           colors={
@@ -42,10 +49,10 @@ export default function AppointmentCard({item, onPress, onDoublePress}) {
             padding: 15,
             alignItems: 'center',
             //justifyContent: 'center',
-          }}>
-          <Text style={styles.listItemTitle}>{item.id}.</Text>
+          }}> */}
+          <Text style={styles.listItemTitle}>{item.token_no}.</Text>
           <Text style={styles.listItemTitle}>{item.patient_name}</Text>
-        </LinearGradient>
+        {/* </LinearGradient> */}
         </TouchableOpacity>
       {/* </DoubleClick> */}
     </View>
@@ -75,7 +82,7 @@ const styles = StyleSheet.create({
   listItemTitle: {
     fontSize: 18,
     lineHeight: 18 * 1.4,
-    color: Color.black,
+    color: Color.white,
     marginHorizontal: 5,
     fontFamily: Fonts.primarySemiBold,
    
@@ -84,7 +91,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 16 * 1.4,
     fontFamily: Fonts.primaryRegular,
-    color: '#999',
+    color: Color.white,
     
   },
   resolved: {
@@ -96,8 +103,8 @@ const styles = StyleSheet.create({
   },
   current: {
     // backgroundColor: Color.primary,
-    borderWidth: 5,
-    borderColor: Color.blue,
+    // borderWidth: 5,
+    // borderColor: Color.blue,
   },
   pending: {
     // backgroundColor: Color.white,

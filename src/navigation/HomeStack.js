@@ -10,6 +10,7 @@ import AddAssistant from '../screens/AddAssistant';
 import PaymentHistory from '../screens/PaymentHistory';
 import MySchedule from '../screens/MySchedule';
 import SettingScreen from '../screens/SettingScreen';
+import TodayAppointments from '../screens/TodayAppointments';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,7 @@ export const HomeStack = () => {
       <Stack.Screen name="Feedback" component={FeedbackScreen} />
       <Stack.Screen name="PaymentHistory" component={PaymentHistory} />
       <Stack.Screen name="Settings" component={SettingScreen} />
+      <Stack.Screen name="Today" component={TodayAppointments} />
     </Stack.Navigator>
   );
 };

@@ -6,6 +6,7 @@ import {useSelector} from 'react-redux';
 import {postData,getData} from '../API';
 import {useTranslation} from 'react-i18next';
 import {successToast, errorToast} from '../components/toasts';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function FlashMessage({navigation, route}) {
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input\
@@ -28,8 +29,9 @@ export default function FlashMessage({navigation, route}) {
     } else {
       errorToast(t('register.somethingWentWrong'));
     }
+    getAnnouncementList();
     setLoading(false);
-    navigation.goBack();
+   //navigation.goBack();
   };
 
   const getAnnouncementList = async () => {
@@ -60,6 +62,7 @@ export default function FlashMessage({navigation, route}) {
 
   return (
     <View style={styles.container}>
+      <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
       <Text style={styles.heading}>{t('flashScreen.screenTitle')}. 🔊</Text>
       <View style={{marginTop: 15}}>
         <Text style={styles.label}>{t('flashScreen.enterMsg')}</Text>
@@ -92,12 +95,13 @@ export default function FlashMessage({navigation, route}) {
       {annoucements.map((item, index) => {
       return (
         <View style={styles.card}>
-      <Text style={{color:Color.black,fontFamily:Fonts.primaryRegular}}>{item.annoucement_message}</Text>
+      <Text style={{color:Color.white,fontFamily:Fonts.primaryRegular}}>{item.annoucement_message}</Text>
       </View>
       )
         
       }
       )}
+      </ScrollView>
     </View>
   );
 }
@@ -130,11 +134,12 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    backgroundColor: '#25CCF7',
+    backgroundColor: '#a9a9a9',
     shadowColor: Color.black,
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical:20
+  //  alignItems: 'center',
+    paddingVertical:20,
+    paddingHorizontal:10
     
   },
   annoucement_heading:{

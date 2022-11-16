@@ -6,6 +6,7 @@
       "logout": "लॉग आउट"
     },
     "doctorHome": {
+      "screenTitle": "मुख्य पृष्ठ",
       "walkIn": "मरीजों की सूची आज",
       "available_now": "उपलब्ध ?",
       "schedule": "मेरी अनुसूची",
@@ -30,6 +31,12 @@
       "change_language": "ऐप की भाषा बदलें",
       "english": "अंग्रेज़ी",
       "hindi": "हिंदी"
+    },
+    "patientQueue": {
+      "screenTitle": "मरीजों की कतार",
+    
+      "morning": "सुबह",
+      "evening": "शाम"
     },
     "login": {
       "screenTitle": "स्वागत !",

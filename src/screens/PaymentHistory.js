@@ -11,6 +11,7 @@ export default function PaymentHistory() {
   const [payments, setPayments] = React.useState([]);
 
   const user = useSelector(state => state.user);
+  console.log('userid==',user?.userid)
   const [loading, setLoading] = React.useState(true);
 
   const fetchPayments = async () => {

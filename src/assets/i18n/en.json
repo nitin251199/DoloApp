@@ -6,6 +6,7 @@
       "logout": "Logout"
     },
     "doctorHome": {
+      "screenTitle": "Home",
       "walkIn": "Walk In patients today",
       "available_now": "Available Now",
       "schedule": "My Schedule",
@@ -125,6 +126,12 @@
       "submit": "Submit",
       "updatedSuccess": "Announcement updated successfully",
       "List":"Announcements List"
+    },
+    "patientQueue": {
+      "screenTitle": "Patient Queue",
+    
+     "morning": "Morning",
+      "evening": "Evening"
     },
     "assistantDashboard": {
       "addNew": "Add New Assistant",

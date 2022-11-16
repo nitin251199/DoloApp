@@ -24,7 +24,7 @@ export default function MySchedule({navigation, route}) {
 
   const fetchAppointments = async () => {
     const list = await getData(`appointment/${user?.userid}`);
-    // console.log(list, user?.userid);
+    console.log('appointmentlistdata--',list);
     setAllAppointments(list?.data);
     setLoading(false);
   };
@@ -77,17 +77,31 @@ console.log('parrraaamm---',route?.params)
         months[new Date(item.created_at).getMonth()] === selectedDate.month,
     );
     if (time === 'Morning') {
-      setAppointments(
+      // setAppointments(
+      //   filteredAppointments.filter(
+      //     item => new Date(item.created_at).getHours() < 12,
+      //   ),
+      // );
+
+       setAppointments(
         filteredAppointments.filter(
-          item => new Date(item.created_at).getHours() < 12,
+          item => item.shift_name == 'Morning',
         ),
       );
+
     } else {
+      // setAppointments(
+      //   filteredAppointments.filter(
+      //     item => new Date(item.created_at).getHours() >= 12,
+      //   ),
+      // );
+
       setAppointments(
         filteredAppointments.filter(
-          item => new Date(item.created_at).getHours() >= 12,
+          item => item.shift_name == 'Evening',
         ),
       );
+      
     }
   }, [selectedDate.date, selectedDate.month, time, allAppointments]);
 

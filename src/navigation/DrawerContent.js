@@ -17,6 +17,7 @@ import {getData, ServerURL} from '../API';
 import {Color} from '../theme';
 import {CommonActions} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
+import TodayAppointments from '../screens/TodayAppointments';
 
 export function DrawerContent(props) {
   //   const paperTheme = useTheme();
@@ -96,6 +97,26 @@ export function DrawerContent(props) {
                 props.navigation.navigate('Home1');
               }}
             /> */}
+              <DrawerItem
+              labelStyle={{fontFamily: 'Poppins-Medium'}}
+              icon={({color, size}) => (
+                <Icon name="home" size={size} color={color} />
+              )}
+              label={t('doctorHome.screenTitle')}
+              onPress={() => {
+                props.navigation.navigate('Home1');
+              }}
+            />
+             <DrawerItem
+              labelStyle={{fontFamily: 'Poppins-Medium'}}
+              icon={({color, size}) => (
+                <Icon name="stethoscope" size={size} color={color} />
+              )}
+              label={'TodaysAppointments'}
+              onPress={() => {
+                props.navigation.navigate('Today');
+              }}
+            />
             <DrawerItem
               labelStyle={{fontFamily: 'Poppins-Medium'}}
               icon={({color, size}) => (

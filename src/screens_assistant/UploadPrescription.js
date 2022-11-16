@@ -26,6 +26,7 @@ export default function UploadPrescription({navigation}) {
     console.log('api', `appointment/${user?.doctor_id}`);
     const list = await getData(`appointment/${user?.doctor_id}`);
     setAppointmentData(list?.data);
+    console.log('dddtt==',list?.data);
     setLoading(false);
   };
 

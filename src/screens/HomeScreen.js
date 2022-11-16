@@ -25,6 +25,7 @@ export default function HomeScreen({navigation}) {
   const [availabilityLoading, setAvailabilityLoading] = React.useState(false);
   const [flashMsg, setFlashMsg] = React.useState('No\nAnouncement');
   const [firstAnnoucement,setFirstAnnoucement] = React.useState('');
+  const [annoucements,setAnnouncements] = React.useState([]);
 
   const user = useSelector(state => state.user);
 
@@ -49,7 +50,7 @@ export default function HomeScreen({navigation}) {
     setAvailabilityLoading(true);
     let res = await getData(`dolo/profile/${user?.userid}`);
     if (res.status) {
-      console.log('Annn--',res.data)
+     // console.log('Annn--',res.data)
       setAvailable(res.data?.doctor_available);
       
     }
@@ -67,20 +68,50 @@ export default function HomeScreen({navigation}) {
     let res = await postData(`doctorannoucementfirst`,body);
     
     if (res.success) {
-       console.log(res.data);
+       //console.log(res.data);
      //  setFlashMsg(res.data?.annoucement_message);
     }
     setLoading(false);
 
   }
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
+  const getAnnouncementList = async () => {
+
+    setLoading(true);
+    let body = {
+      id:user?.userid,
+     
+    };
+
+    let res = await postData(`doctorannoucementlist`,body);
+    
+    if (res.success) {
+     //  console.log(res.data);
+      setAnnouncements(res.data);
+    }
+    setLoading(false);
+
+  }
+
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', async() => {
+     
+  //    await getAnnouncementList();
+  //    await fetchAppointments();
+  //   },[]);
+
+   
+  //   return unsubscribe;
+    
+  // }, [appointments,annoucements]);
 
   useEffect(() => {
     fetchProfileInfo();
     getFirstAnnouncement();
+     getAnnouncementList();
+      fetchAppointments();
+    
+  
   }, [flashMsg]);
 
   const handleAvailable = async () => {
@@ -99,6 +130,7 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={styles.container}>
+      <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
       <View
         style={{
           elevation: 10,
@@ -221,15 +253,16 @@ export default function HomeScreen({navigation}) {
               });
             }}
             style={styles.card}>
-            <MaterialCommunityIcons
+            {/* <MaterialCommunityIcons
               name="volume-source"
               size={42}
               color="#fff"
               style={styles.mainIcon}
-            />
-            <Text adjustsFontSizeToFit style={styles.mainText} numberOfLines={2}>
+            /> */}
+            <Text adjustsFontSizeToFit style={{...styles.mainText,fontSize:40,marginTop:10}}>{annoucements.length}</Text>
+            <Text adjustsFontSizeToFit style={{...styles.mainText,marginTop:-18}}>
               {/* {flashMsg ? flashMsg : t('doctorHome.noAnnouncement')} */}
-              {t('doctorHome.noAnnouncement')}
+              {t('doctorHome.announcements')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -287,6 +320,7 @@ export default function HomeScreen({navigation}) {
           </TouchableOpacity>
         </View>
       </View>
+      </ScrollView>
     </View>
   );
 }
@@ -303,7 +337,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'space-between',
   },
   card: {
-    height: 130,
+    height: 150,
     flex: 1,
     margin: 10,
     borderRadius: 10,

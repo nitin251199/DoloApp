@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect,useRef} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -9,6 +9,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  FlatList
 } from 'react-native';
 import {Button, Checkbox} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -16,22 +17,30 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ImagePicker from 'react-native-image-crop-picker';
 import DocProfilePlaceholder from '../placeholders/DocProfilePlaceholder';
 import {Color, Dimension, Fonts} from '../theme';
+import HomeScreen from './HomeScreen';
+import { postData,getData } from '../API';
+import { successToast,errorToast } from '../components/toasts';
+
 
 export default function DoctorScreen({navigation, route}) {
   const appointment = route.params.item;
-
+//console.log('appointment',appointment);
   const [appointmentData, setAppointmentData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [feedBack, setFeedBack] = React.useState('');
-  const [prescriptions, setPrescriptions] = React.useState([]);
+  const [description, setDescription] = React.useState('');
 
+  const [prescriptions, setPrescriptions] = React.useState([]);
+  const [prescriptionList,setPrescriptionList] = React.useState([]);
+  const [imgList,setImgList] = React.useState([]); 
+  //  console.log('ids--',appointment?.doctor_id,appointment?.patient_id, )
   const fetchDocProfile = async () => {
     // let res = await getData(`doctor/profile/${docId}`);
     // console.log('doc profile', JSON.stringify(res));
     // if (res.success) {
     //   setAppointmentData(res.data);
     // }
-    console.log('appointment', appointment);
+   // console.log('appointment', appointment);
     setTimeout(() => {
       setAppointmentData(appointment);
       setLoading(false);
@@ -47,9 +56,12 @@ export default function DoctorScreen({navigation, route}) {
       includeBase64: true,
       multiple: true,
     }).then(image => {
-      setPrescriptions(prev => [...prev, image?.path]);
+      setPrescriptions(prev => [...prev, image]);
+      console.log('imggggcmr==',prescriptions)
     });
   };
+
+  
 
   const choosePhotoFromLibrary = () => {
     ImagePicker.openPicker({
@@ -60,8 +72,9 @@ export default function DoctorScreen({navigation, route}) {
       includeBase64: true,
       multiple: true,
     }).then(image => {
-      let images = image.map(item => item?.path);
-      setPrescriptions(prev => [...prev, images].flat());
+      // let images = image.map(item => item?.path);
+      setPrescriptions(prev => [...prev, image].flat());
+      console.log('imggggcmr==',prescriptions)
     });
   };
 
@@ -88,12 +101,56 @@ export default function DoctorScreen({navigation, route}) {
     );
   };
 
+  const sendPerscription = async() =>{
+   // console.log('dt',appointment?.patient_id,appointment?.doctor_id,feedBack,prescriptions)
+    setLoading(true);
+    var body = {
+      patient_id:appointment?.patient_id,      
+      doctor_id:appointment?.doctor_id,
+      description:feedBack,
+      prescription:prescriptions.map(item => item?.data),
+     
+    };
+    const result = await postData('doctor_send_prescrition_patient', body);
+   // console.log('result', result);
+    if (result.data) {
+      successToast('Feedback Send SuccessFullly');
+      navigation.navigate('HomeScreen');
+    } else {
+      errorToast('Something Went Wrong Please Check');
+    }
+    setLoading(false);
+   
+
+  }
+
+  const getFeedbackList = async () => {
+    setLoading(true);
+    let res = await getData(`doctorfeedback/${appointment?.doctor_id}/${appointment?.patient_id}`);
+  
+    if (res.success) {
+    // console.log('fl==',res?.data);
+  
+     setPrescriptionList(res.data)
+     let cb=Object.values(res.data);
+     console.log('cb--',cb)
+     setImgList(res?.data[0]?.prescription)
+     console.log('fl3==',res?.data[0]?.prescription);
+    }
+    setLoading(false);
+  };
+
+ 
+
   useEffect(() => {
     fetchDocProfile();
+    getFeedbackList();
+    navigation.navigate('HomeScreen');
   }, []);
 
   return (
     <View style={styles.container}>
+      
       <View style={styles.doctorContainer}>
         {loading ? (
           <View>
@@ -115,17 +172,18 @@ export default function DoctorScreen({navigation, route}) {
               <Text style={styles.doctorName}>
                 {appointmentData?.patient_name}
               </Text>
-              <Text style={styles.doctorSpeciality}>
+              {/* <Text style={styles.doctorSpeciality}>
                 {appointmentData?.category}
-              </Text>
+              </Text> */}
               <View style={styles.ratingContainer}>
                 <View style={styles.ratingIconContainer}>
-                  <MaterialCommunityIcons
+                  {/* <MaterialCommunityIcons
                     name="star"
                     size={20}
                     color={Color.yellow}
                     style={styles.ratingIcon}
-                  />
+                  /> */}
+                  <Text>📙</Text>
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.ratingText}>Appointment No.</Text>
@@ -301,6 +359,7 @@ export default function DoctorScreen({navigation, route}) {
             <Button
               mode="contained"
               icon="send"
+              onPress={sendPerscription}
               uppercase={false}
               color={Color.white}
               labelStyle={{
@@ -327,7 +386,7 @@ export default function DoctorScreen({navigation, route}) {
               marginTop: 10,
               flexWrap: 'wrap',
             }}>
-            {prescriptions.map((prescription, index) => {
+            {/* {prescriptions.map((prescription, index) => {
               return (
                 <>
                   <Image
@@ -362,8 +421,97 @@ export default function DoctorScreen({navigation, route}) {
                   </TouchableOpacity>
                 </>
               );
-            })}
+            })} */}
+
+<FlatList
+        data={prescriptions}
+        nestedScrollEnabled={true}
+        numColumns={2}
+        renderItem={({item, index}) => {
+          return (
+            <>
+              <Image
+                source={{uri: item?.path}}
+                style={{
+                  flex: 1,
+                  height: 150,
+                  margin: 5,
+                  marginTop: 15,
+                  borderRadius: 5,
+                  borderWidth: 1,
+                  borderColor: '#ccc',
+                }}
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  setPrescriptions(
+                    prescriptions.filter((item, i) => i !== index),
+                  );
+                }}
+                style={{
+                  // position: 'absolute',
+                  margin: 5,
+                  marginTop: 15,
+                  // top: index % 3 == 0 ? index * 130 : (index - 1) * 130,
+                  // right: Dimension.window.width * 0.3 * index,
+                  zIndex: 999,
+                }}>
+                <MaterialCommunityIcons
+                  name="close"
+                  size={24}
+                  color={Color.black}
+                  style={styles.closeIcon}
+                />
+              </TouchableOpacity>
+            </>
+          );
+        }}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+        }}
+      />
+     
+
+     
+  
+
           </View>
+
+
+
+
+
+
+
+          <Text style={{fontSize:20,fontFamily:Fonts.primaryBold,color:Color.black,marginTop:20}}>Feedback List</Text>
+  
+      {prescriptionList.map((item, index) => {
+        return (
+          <View style={{marginTop:10}}>
+          <Text style={{fontSize:16,fontFamily:Fonts.primarySemiBold,color:Color.black,}}>
+         {item.description}
+          </Text>
+          {imgList.map((item, index) => 
+          <Image
+        source={{uri: `data:image/png;base64,${item}`}}
+        style={{
+          flex: 1,
+          height: 150,
+          width:150,
+          margin: 5,
+          marginTop: 15,
+          borderRadius: 5,
+          borderWidth: 1,
+          borderColor: '#ccc',
+        }}
+      />
+          )}
+
+
+          </View>
+        );
+      })}
         </ScrollView>
       )}
       {/* <View style={styles.bottom}>

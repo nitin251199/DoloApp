@@ -16,25 +16,99 @@ import {useSelector} from 'react-redux';
 import {useEffect} from 'react';
 import AppointmentCard from '../components/AppointmentCard';
 import {useFocusEffect} from '@react-navigation/native';
+import {useTranslation} from 'react-i18next';
 
 export default function PatientsQueue({navigation}) {
   const user = useSelector(state => state.user);
   const [appointmentData, setAppointmentData] = React.useState([]);
+
+  const [appointments, setAppointments] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
-
+  const [refresh, setRefresh] = React.useState(false);
+  const [time, setTime] = React.useState('Morning');
   const _scrollRef = React.useRef(null);
-
+  const {t} = useTranslation();
   const fetchAppointments = async () => {
     const list = await getData(`appointment/${user?.doctor_id}`);
-    setAppointmentData(
-      list?.data.filter(
-        item =>
-          new Date(item.created_at).setHours(0, 0, 0, 0) ==
-          new Date().setHours(0, 0, 0, 0),
-      ),
-    );
+   
+  setAppointmentData(list?.data)
+      
     setLoading(false);
   };
+
+
+  useEffect(() => {
+    fetchAppointments();
+   // filterAppointments();
+  }, []);
+
+
+  // const filterAppointments = () => {
+  //  // let filteredAppointments = appointmentData;
+      
+  //   if (time === 'Morning') {
+  //     // setAppointments(
+  //     //   filteredAppointments.filter(
+  //     //     item => new Date(item.created_at).getHours() < 12,
+  //     //   ),
+  //     // );
+
+  //      setAppointments(
+  //       appointmentData.filter(
+  //         item => item.shift_name == 'Evening',
+  //       ),
+  //     );
+
+  //   } else {
+  //     // setAppointments(
+  //     //   filteredAppointments.filter(
+  //     //     item => new Date(item.created_at).getHours() >= 12,
+  //     //   ),
+  //     // );
+
+  //     setAppointments(
+  //       appointmentData.filter(
+  //         item => item.shift_name == 'Evening',
+  //       ),
+  //     );
+      
+  //   }
+
+  // }
+
+  useEffect(() => {
+
+   // let filteredAppointments = appointmentData;
+      
+    if (time === 'Morning') {
+      // setAppointments(
+      //   filteredAppointments.filter(
+      //     item => new Date(item.created_at).getHours() < 12,
+      //   ),
+      // );
+
+       setAppointments(
+        appointmentData.filter(
+          item => item.shift_name == 'Morning',
+        ),
+      );
+
+    } else {
+      // setAppointments(
+      //   filteredAppointments.filter(
+      //     item => new Date(item.created_at).getHours() >= 12,
+      //   ),
+      // );
+
+      setAppointments(
+        appointmentData.filter(
+          item => item.shift_name == 'Evening',
+        ),
+      );
+      
+    }
+   
+  }, [time,appointmentData]);
 
   // useEffect(() => {
   //   navigation.addListener('focus', () => {
@@ -42,14 +116,16 @@ export default function PatientsQueue({navigation}) {
   //   });
   // }, []);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      console.log('focus');
-      // alert('Screen was focused');
-      // Do something when the screen is focused
-      fetchAppointments();
-    }, []),
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     console.log('focus');
+  //     // alert('Screen was focused');
+  //     // Do something when the screen is focused
+  //     fetchAppointments();
+  //   }, []),
+  // );
+
+
 
   return (
     <View style={styles.container}>
@@ -61,8 +137,40 @@ export default function PatientsQueue({navigation}) {
             color={Color.black}
           />
         </TouchableOpacity>
-        <Text style={styles.title}>Patient Queue</Text>
+        <Text style={styles.title}> {t('patientQueue.screenTitle')}</Text>
       </View>
+      <View style={styles.btnContainer}>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setTime('Morning') }
+            style={{
+              ...styles.btn,
+              backgroundColor: time === 'Morning' ? Color.primary : Color.white,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+                color: time === 'Morning' ? '#fff' : '#000',
+              }}>
+              {t('patientQueue.morning')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setTime('Evening')}
+            style={{
+              ...styles.btn,
+              backgroundColor: time === 'Evening' ? Color.primary : Color.white,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+                color: time === 'Evening' ? '#fff' : '#000',
+              }}>
+              {t('patientQueue.evening')}
+            </Text>
+          </TouchableOpacity>
+        </View>
       {loading ? (
         <View
           style={{
@@ -104,7 +212,7 @@ export default function PatientsQueue({navigation}) {
               width: '100%',
             }}
             contentContainerStyle={{paddingHorizontal: 20}}
-            data={appointmentData}
+            data={appointments}
             renderItem={({item, index}) => (
               <AppointmentCard
                 key={index}
@@ -147,12 +255,26 @@ export default function PatientsQueue({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.white,
+    //backgroundColor: Color.white,
   },
   title: {
     fontSize: 20,
     fontFamily: 'Poppins-Bold',
     color: Color.black,
     paddingHorizontal: 20,
+  },
+  btnContainer: {
+    flexDirection: 'row',
+  },
+  btn: {
+    flex: 1,
+    paddingVertical: 15,
+  },
+  btnText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#000',
+    fontFamily: Fonts.primarySemiBold,
+    lineHeight: 16 * 1.4,
   },
 });

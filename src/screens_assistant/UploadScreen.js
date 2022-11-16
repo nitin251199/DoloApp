@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React,{useEffect} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Color, Fonts} from '../theme';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -19,8 +19,11 @@ import {postData} from '../API';
 
 export default function UploadScreen({navigation, route}) {
   const [prescriptions, setPrescriptions] = React.useState([]);
-
+  const [loading, setLoading] = React.useState(false);
+ const [uploadedPerscriptions,setUploadedPerscriptions] = React.useState([]);
   const itemData = route.params?.item;
+
+ // console.log('itemData==',itemData.patient_id);
 
   const [showModal, setShowModal] = React.useState(false);
 
@@ -48,6 +51,7 @@ export default function UploadScreen({navigation, route}) {
     }).then(image => {
       // let images = image.map(item => item?.path);
       setPrescriptions(prev => [...prev, image].flat());
+     
     });
   };
 
@@ -95,8 +99,38 @@ export default function UploadScreen({navigation, route}) {
     }
   };
 
+  const getPerscriptionList = async() =>{
+    // console.log('dt==',itemData?.patient_id)
+     setLoading(true);
+     var body = {
+       patient_id:itemData?.patient_id,      
+      // assistant_id:itemData?.assistant_id,
+   
+      
+     };
+     const result = await postData('appointmentprescritionlist', body);
+    console.log('result----', result.data);
+    setUploadedPerscriptions(result.data)
+  
+    setLoading(false);
+    }
+
+   useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async() => {
+      // The screen is focused
+      // Call any action
+     await getPerscriptionList();
+
+    },[]);
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+    
+  }, []);
+
   return (
     <View style={styles.container}>
+      
       <View style={{flexDirection: 'row', padding: 20}}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <MaterialCommunityIcons
@@ -131,54 +165,7 @@ export default function UploadScreen({navigation, route}) {
         }}>
         Your prescriptions
       </Text>
-      {/* <View
-        horizontal
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          paddingHorizontal: 20,
-          flexWrap: 'wrap',
-        }}>
-        {prescriptions.map((prescription, index) => {
-          return (
-            <>
-              <Image
-                source={{uri: prescription}}
-                style={{
-                  width: '37%',
-                  height: 150,
-                  margin: 5,
-                  marginTop: 15,
-                  borderRadius: 5,
-                  borderWidth: 1,
-                  borderColor: '#ccc',
-                }}
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  setPrescriptions(
-                    prescriptions.filter((item, i) => i !== index),
-                  );
-                }}
-                style={{
-                  // position: 'absolute',
-                  margin: 5,
-                  marginTop: 15,
-                  // top: index % 3 == 0 ? index * 130 : (index - 1) * 130,
-                  // right: Dimension.window.width * 0.3 * index,
-                  zIndex: 999,
-                }}>
-                <MaterialCommunityIcons
-                  name="close"
-                  size={24}
-                  color={Color.black}
-                  style={styles.closeIcon}
-                />
-              </TouchableOpacity>
-            </>
-          );
-        })}
-      </View> */}
+    
       <FlatList
         data={prescriptions}
         numColumns={2}
@@ -226,6 +213,50 @@ export default function UploadScreen({navigation, route}) {
           paddingHorizontal: 20,
         }}
       />
+      <Text
+        style={{
+          color: '#000',
+          fontFamily: Fonts.primarySemiBold,
+          fontSize: 18,
+          paddingHorizontal: 20,
+          marginTop: 20,
+       
+        }}>
+        Uploaded prescriptions
+      </Text>
+      {uploadedPerscriptions.length > 0 && 
+
+<FlatList
+data={uploadedPerscriptions}
+numColumns={2}
+renderItem={({item, index}) => {
+  return (
+    <>
+      <Image
+        source={{uri: `data:image/png;base64,${item}`}}
+        style={{
+          flex: 1,
+          height: 150,
+          margin: 5,
+          marginTop: 15,
+          borderRadius: 5,
+          borderWidth: 1,
+          borderColor: '#ccc',
+        }}
+      />
+     
+    </>
+  );
+}}
+keyExtractor={(item, index) => index.toString()}
+contentContainerStyle={{
+  paddingHorizontal: 20,
+}}
+/>
+      
+    
+    
+    }
       <Button
         onPress={() => sendPrescriptions()}
         mode="contained"
@@ -233,6 +264,7 @@ export default function UploadScreen({navigation, route}) {
         color={Color.primary}
         style={{
           borderRadius: 0,
+          
         }}
         labelStyle={{
           fontFamily: Fonts.primarySemiBold,
@@ -256,6 +288,7 @@ export default function UploadScreen({navigation, route}) {
           navigation.goBack();
         }}
       />
+    
     </View>
   );
 }

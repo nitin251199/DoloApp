@@ -21,6 +21,7 @@ export default function EngagementScreen({navigation}) {
 
   const fetchAppointments = async () => {
     const list = await getData(`appointment/${user?.doctor_id}`);
+    console.log('app ls--',list);
     setEngagementData(
       list?.data.filter(
         item =>
@@ -104,9 +105,14 @@ export default function EngagementScreen({navigation}) {
           borderRadius: 20,
           marginVertical: 10,
           marginHorizontal: 5,
+          height: 120,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+       
           ...conditionalStyles(item.status),
         }}>
-        <LinearGradient
+        {/* <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
           colors={
@@ -114,11 +120,11 @@ export default function EngagementScreen({navigation}) {
               ? ['#ffffff', '#ffffff']
               : ['#d4f0da', '#9ee1ae']
           }
-          style={{...styles.itemContainer}}>
+          style={{...styles.itemContainer}}> */}
           <Text style={styles.itemText}>
             {item.id <= 9 ? `0${item.id}` : item.id}
           </Text>
-        </LinearGradient>
+        {/* </LinearGradient> */}
       </TouchableOpacity>
     );
   };
@@ -194,21 +200,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   resolved: {
-    // backgroundColor: Color.primary,
+     backgroundColor: '#006400',
   },
   absent: {
-    borderWidth: 5,
-    borderColor: Color.red,
+    // borderWidth: 5,
+    // borderColor: Color.red,
+   backgroundColor:Color.red,
+ 
   },
   current: {
-    // backgroundColor: Color.primary,
-    borderWidth: 5,
-    borderColor: Color.blue,
+    backgroundColor: '#ff8c00',
+    //borderWidth: 5,
+   // borderColor: Color.blue,
   },
   pending: {
-    // backgroundColor: Color.white,
-    borderWidth: 2,
-    borderStyle: 'dashed',
+    backgroundColor: Color.graylight,
+    // borderWidth: 2,
+    // borderStyle: 'dashed',
   },
   itemText: {
     fontSize: 50,
@@ -217,5 +225,8 @@ const styles = StyleSheet.create({
     textShadowColor: Color.black,
     textShadowOffset: {width: 1, height: 2},
     textShadowRadius: 3.87,
+    //textAlign:'center',
+    
+   
   },
 });
