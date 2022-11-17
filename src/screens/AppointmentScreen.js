@@ -1,4 +1,4 @@
-import React, {useEffect,useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -9,7 +9,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  FlatList
+  FlatList,
 } from 'react-native';
 import {Button, Checkbox} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,29 +18,30 @@ import ImagePicker from 'react-native-image-crop-picker';
 import DocProfilePlaceholder from '../placeholders/DocProfilePlaceholder';
 import {Color, Dimension, Fonts} from '../theme';
 import HomeScreen from './HomeScreen';
-import { postData,getData } from '../API';
-import { successToast,errorToast } from '../components/toasts';
-
+import {postData, getData} from '../API';
+import {successToast, errorToast} from '../components/toasts';
+import FeedbackDetails from './FeedbackDetails';
 
 export default function DoctorScreen({navigation, route}) {
   const appointment = route.params.item;
-//console.log('appointment',appointment);
+  //console.log('appointment',appointment);
   const [appointmentData, setAppointmentData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [feedBack, setFeedBack] = React.useState('');
   const [description, setDescription] = React.useState('');
 
   const [prescriptions, setPrescriptions] = React.useState([]);
-  const [prescriptionList,setPrescriptionList] = React.useState([]);
-  const [imgList,setImgList] = React.useState([]); 
-  //  console.log('ids--',appointment?.doctor_id,appointment?.patient_id, )
+  const [prescriptionList, setPrescriptionList] = React.useState([]);
+  const [imgList, setImgList] = React.useState([]);
+  const [prescriptionData, setPrescriptionData] = React.useState([]);
+  
   const fetchDocProfile = async () => {
     // let res = await getData(`doctor/profile/${docId}`);
     // console.log('doc profile', JSON.stringify(res));
     // if (res.success) {
     //   setAppointmentData(res.data);
     // }
-   // console.log('appointment', appointment);
+    // console.log('appointment', appointment);
     setTimeout(() => {
       setAppointmentData(appointment);
       setLoading(false);
@@ -57,11 +58,9 @@ export default function DoctorScreen({navigation, route}) {
       multiple: true,
     }).then(image => {
       setPrescriptions(prev => [...prev, image]);
-      console.log('imggggcmr==',prescriptions)
+      console.log('imggggcmr==', prescriptions);
     });
   };
-
-  
 
   const choosePhotoFromLibrary = () => {
     ImagePicker.openPicker({
@@ -74,7 +73,7 @@ export default function DoctorScreen({navigation, route}) {
     }).then(image => {
       // let images = image.map(item => item?.path);
       setPrescriptions(prev => [...prev, image].flat());
-      console.log('imggggcmr==',prescriptions)
+      console.log('imggggcmr==', prescriptions);
     });
   };
 
@@ -101,56 +100,49 @@ export default function DoctorScreen({navigation, route}) {
     );
   };
 
-  const sendPerscription = async() =>{
-   // console.log('dt',appointment?.patient_id,appointment?.doctor_id,feedBack,prescriptions)
+  const sendPerscription = async () => {
+    // console.log('dt',appointment?.patient_id,appointment?.doctor_id,feedBack,prescriptions)
     setLoading(true);
     var body = {
-      patient_id:appointment?.patient_id,      
-      doctor_id:appointment?.doctor_id,
-      description:feedBack,
-      prescription:prescriptions.map(item => item?.data),
-     
+      patient_id: appointment?.patient_id,
+      doctor_id: appointment?.doctor_id,
+      description: feedBack,
+      prescription: prescriptions.map(item => item?.data),
     };
     const result = await postData('doctor_send_prescrition_patient', body);
-   // console.log('result', result);
+    // console.log('result', result);
     if (result.data) {
       successToast('Feedback Send SuccessFullly');
-      navigation.navigate('HomeScreen');
+      navigation.navigate('Home1');
     } else {
       errorToast('Something Went Wrong Please Check');
     }
     setLoading(false);
-   
-
-  }
+  };
 
   const getFeedbackList = async () => {
     setLoading(true);
-    let res = await getData(`doctorfeedback/${appointment?.doctor_id}/${appointment?.patient_id}`);
-  
+    let res = await getData(
+      `doctorfeedback/${appointment?.doctor_id}/${appointment?.patient_id}`,
+    );
+
     if (res.success) {
-    // console.log('fl==',res?.data);
-  
-     setPrescriptionList(res.data)
-     let cb=Object.values(res.data);
-     console.log('cb--',cb)
-     setImgList(res?.data[0]?.prescription)
-     console.log('fl3==',res?.data[0]?.prescription);
+    
+
+      setPrescriptionList(res.data);
+
     }
     setLoading(false);
   };
 
- 
-
   useEffect(() => {
     fetchDocProfile();
     getFeedbackList();
-    navigation.navigate('HomeScreen');
+   
   }, []);
 
   return (
     <View style={styles.container}>
-      
       <View style={styles.doctorContainer}>
         {loading ? (
           <View>
@@ -423,95 +415,204 @@ export default function DoctorScreen({navigation, route}) {
               );
             })} */}
 
-<FlatList
-        data={prescriptions}
-        nestedScrollEnabled={true}
-        numColumns={2}
-        renderItem={({item, index}) => {
-          return (
-            <>
-              <Image
-                source={{uri: item?.path}}
+            <FlatList
+              data={prescriptions}
+              nestedScrollEnabled={true}
+              numColumns={2}
+              renderItem={({item, index}) => {
+                return (
+                  <>
+                    <Image
+                      source={{uri: item?.path}}
+                      style={{
+                        flex: 1,
+                        height: 150,
+                        margin: 5,
+                        marginTop: 15,
+                        borderRadius: 5,
+                        borderWidth: 1,
+                        borderColor: '#ccc',
+                      }}
+                    />
+                    <TouchableOpacity
+                      onPress={() => {
+                        setPrescriptions(
+                          prescriptions.filter((item, i) => i !== index),
+                        );
+                      }}
+                      style={{
+                        // position: 'absolute',
+                        margin: 5,
+                        marginTop: 15,
+                        // top: index % 3 == 0 ? index * 130 : (index - 1) * 130,
+                        // right: Dimension.window.width * 0.3 * index,
+                        zIndex: 999,
+                      }}>
+                      <MaterialCommunityIcons
+                        name="close"
+                        size={24}
+                        color={Color.black}
+                        style={styles.closeIcon}
+                      />
+                    </TouchableOpacity>
+                  </>
+                );
+              }}
+              keyExtractor={(item, index) => index.toString()}
+              contentContainerStyle={{
+                paddingHorizontal: 20,
+              }}
+            />
+          </View>
+
+          <Text
+            style={{
+              fontSize: 20,
+              fontFamily: Fonts.primaryBold,
+              color: Color.black,
+              marginTop: 20,
+            }}>
+            Feedback List
+          </Text>
+
+          {prescriptionList.map((item, index) => {
+            return (
+              <TouchableOpacity
+      activeOpacity={1}
+      style={styles.listItem}
+      //onPress={onPress}
+      >
+      <View
+        style={{
+          flexDirection: 'row',
+          flex: 1,
+        }}>
+        <Image
+          style={styles.listImage}
+          source={{uri: `data:image/png;base64,${item?.prescription[0]}`}}
+        />
+        <View style={styles.listItemText}>
+          <Text style={styles.listItemTitle} numberOfLines={1}>{item.description}</Text>
+          {/* <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginVertical: 3,
+            }}>
+            <View style={{flexDirection: 'row', width: '65%'}}>
+              <MaterialCommunityIcons
+                name="map-marker"
+                size={17}
+                color={Color.primary}
                 style={{
-                  flex: 1,
-                  height: 150,
-                  margin: 5,
-                  marginTop: 15,
-                  borderRadius: 5,
-                  borderWidth: 1,
-                  borderColor: '#ccc',
+                  marginRight: 10,
                 }}
               />
-              <TouchableOpacity
-                onPress={() => {
-                  setPrescriptions(
-                    prescriptions.filter((item, i) => i !== index),
-                  );
-                }}
+              <Text style={styles.listItemSubTitle}>{item.address}</Text>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <MaterialCommunityIcons
+                name="gender-male-female"
+                size={17}
+                color={Color.primary}
                 style={{
-                  // position: 'absolute',
-                  margin: 5,
-                  marginTop: 15,
-                  // top: index % 3 == 0 ? index * 130 : (index - 1) * 130,
-                  // right: Dimension.window.width * 0.3 * index,
-                  zIndex: 999,
-                }}>
-                <MaterialCommunityIcons
-                  name="close"
-                  size={24}
-                  color={Color.black}
-                  style={styles.closeIcon}
-                />
-              </TouchableOpacity>
-            </>
-          );
-        }}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-        }}
-      />
-     
-
-     
-  
-
+                  marginRight: 10,
+                }}
+              />
+              <Text style={styles.listItemSubTitle}>{item.gender}</Text>
+            </View>
+          </View> */}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingTop:5
+            }}>
+            <MaterialCommunityIcons
+              name="clock"
+              size={20}
+              color={Color.primary}
+              style={{
+                marginRight: 5,
+              }}
+            />
+            <Text
+              style={{
+                fontFamily: Fonts.primaryRegular,
+                color: '#000',
+                lineHeight: 14 * 1.4,
+              }}>
+              {new Date(item.date).toDateString().slice(3)}
+            </Text>
           </View>
-
-
-
-
-
-
-
-          <Text style={{fontSize:20,fontFamily:Fonts.primaryBold,color:Color.black,marginTop:20}}>Feedback List</Text>
-  
-      {prescriptionList.map((item, index) => {
-        return (
-          <View style={{marginTop:10}}>
-          <Text style={{fontSize:16,fontFamily:Fonts.primarySemiBold,color:Color.black,}}>
-         {item.description}
-          </Text>
-          {imgList.map((item, index) => 
-          <Image
-        source={{uri: `data:image/png;base64,${item}`}}
-        style={{
-          flex: 1,
-          height: 150,
-          width:150,
-          margin: 5,
-          marginTop: 15,
-          borderRadius: 5,
-          borderWidth: 1,
-          borderColor: '#ccc',
-        }}
-      />
+          <Button
+          mode="contained"
+          onPress={ () =>navigation.navigate('FeedbackDetails',{
+            desc:item.description,
+            date: new Date(item.date).toDateString().slice(3),
+            img:item.prescription,
+          })}
+          icon={({size, color}) => (
+            <MaterialCommunityIcons
+              name="file-eye-outline"
+              size={24}
+              style={{color}}
+            />
           )}
-
-
-          </View>
-        );
-      })}
+          labelStyle={{
+            fontFamily: Fonts.primaryBold,
+            fontSize: 14,
+          }}
+          dark
+          style={{
+            backgroundColor: Color.primary,
+            marginTop: 15,
+            borderRadius: 8,
+            marginRight: 5,
+            width:'70%'
+           // flex: 1,
+          }}>
+          View
+        </Button>
+        </View>
+       
+      </View>
+      {/* <View
+        style={{
+          //flexDirection: 'row',
+          width:'40%',
+          alignSelf:'center'
+        }}>
+        <Button
+          mode="contained"
+        //  onPress={onEdit}
+          icon={({size, color}) => (
+            <MaterialCommunityIcons
+              name="file-eye-outline"
+              size={24}
+              style={{color}}
+            />
+          )}
+          labelStyle={{
+            fontFamily: Fonts.primaryBold,
+            fontSize: 14,
+          }}
+          dark
+          style={{
+            backgroundColor: Color.green,
+            marginTop: 15,
+            borderRadius: 8,
+            marginRight: 10,
+            flex: 1,
+          }}>
+          View
+        </Button>
+      
+      </View> */}
+    </TouchableOpacity>
+            );
+          })}
         </ScrollView>
       )}
       {/* <View style={styles.bottom}>
@@ -695,5 +796,63 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     flexDirection: 'row',
+  },
+  card: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    padding: 15,
+    marginVertical: 10,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    elevation: 8,
+    shadowColor: Color.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+  },
+  listItem: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+   // padding: 15,
+    marginVertical: 10,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    elevation: 8,
+    shadowColor: Color.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    width: '100%',
+  },
+  listImage: {
+    // height: 75,
+    // width: 75,
+    borderTopLeftRadius: 15,
+    borderBottomLeftRadius: 15,
+    marginRight: 15,
+    flex:1
+  },
+  listItemText: {
+    justifyContent: 'space-evenly',
+    flex: 1,
+    padding:10
+  },
+  listItemTitle: {
+    fontSize: 16,
+    color: Color.black,
+    // fontWeight: '700',
+    fontFamily: Fonts.primaryRegular,
+    width:'80%',
+    textAlign:'center'
+  },
+  listItemSubTitle: {
+    fontSize: 14,
+    lineHeight: 14 * 1.4,
+    fontFamily: Fonts.primaryRegular,
+    color: '#999',
   },
 });

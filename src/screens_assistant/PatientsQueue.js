@@ -30,7 +30,7 @@ export default function PatientsQueue({navigation}) {
   const {t} = useTranslation();
   const fetchAppointments = async () => {
     const list = await getData(`appointment/${user?.doctor_id}`);
-   
+   console.log('list?.data==',list?.data);
   setAppointmentData(list?.data)
       
     setLoading(false);
@@ -41,6 +41,21 @@ export default function PatientsQueue({navigation}) {
     fetchAppointments();
    // filterAppointments();
   }, []);
+
+  const conditionalStyles = status => {
+    switch (status) {
+      case 2:
+        return styles.resolved;
+      case 3:
+        return styles.absent;
+      case 1:
+        return styles.current;
+      case 0:
+        return styles.pending;
+      default:
+        return styles.resolved;
+    }
+  };
 
 
   // const filterAppointments = () => {
@@ -217,6 +232,7 @@ export default function PatientsQueue({navigation}) {
               <AppointmentCard
                 key={index}
                 item={item}
+                bgColor={{ ...conditionalStyles(item.status)}}
                 //   onPress={() => navigation.navigate('Appointment', {item})}
                 // onDoublePress={() =>
                 //   navigation.navigate('AddPatient', {item, type: 'edit'})
@@ -277,4 +293,23 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.primarySemiBold,
     lineHeight: 16 * 1.4,
   },
+  resolved: {
+    backgroundColor: '#006400',
+ },
+ absent: {
+   // borderWidth: 5,
+   // borderColor: Color.red,
+  backgroundColor:Color.red,
+
+ },
+ current: {
+   backgroundColor: '#ff8c00',
+   //borderWidth: 5,
+  // borderColor: Color.blue,
+ },
+ pending: {
+   backgroundColor: Color.graylight,
+   // borderWidth: 2,
+   // borderStyle: 'dashed',
+ },
 });

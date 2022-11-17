@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React,{useEffect} from 'react';
-import {Color, Fonts,Dimension} from '../theme';
+import React, {useEffect} from 'react';
+import {Color, Fonts, Dimension} from '../theme';
 import SuccessModal from '../components/modals/SuccessModal';
 import {Avatar, Button, TextInput} from 'react-native-paper';
 import {Picker} from '@react-native-picker/picker';
@@ -26,15 +26,9 @@ export default function AddPatient({navigation, route}) {
   const user = useSelector(state => state.user);
 
   const itemData = route.params?.item;
- 
-
-
-
-
-
 
   const [category, setCategory] = React.useState(itemData?.category || '');
-  const [shiftName, setShiftName] = React.useState(itemData?.shift_name || '');
+  const [shiftName, setShiftName] = React.useState(itemData?.shift_name || 'Morning',);
   const [name, setName] = React.useState(itemData?.patient_name || '');
   const [age, setAge] = React.useState(itemData?.age || '');
   const [ageType, setAgeType] = React.useState(itemData?.ageType || 'Years');
@@ -51,25 +45,25 @@ export default function AddPatient({navigation, route}) {
   const [isDatePickerVisible, setIsDatePickerVisible] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [createTime, setCreateTime] = React.useState('');
-  const [createDate, setCreateDate] = React.useState(itemData?.create_date || '');
-  const [modalData,setModalData] = React.useState('')
+  const [createDate, setCreateDate] = React.useState(
+    itemData?.create_date || '',
+  );
+  const [modalData, setModalData] = React.useState('');
   const _scrollRef = React.useRef(null);
   const _inputRef = React.useRef(null);
 
- 
-
-  const onPrimaryPress = () => {
+  const onSecondaryPress = () => {
     setCategory('');
     setName('');
     setAge('');
-    setAgeType('');
+    setAgeType('Years');
     setWeight('');
-    setWeightType('');
+    setWeightType('Kg');
     setGender('male');
     setMobileNo('');
     setShowModal(false);
     setCreateDate('');
-    setShiftName('')
+    setShiftName('Morning');
 
     _scrollRef.current.scrollTo({x: 0, y: 0, animated: true});
     _inputRef.current.blur();
@@ -89,8 +83,8 @@ export default function AddPatient({navigation, route}) {
       gender,
       mobile: mobileNo,
       status: 0,
-      create_date:createDate,
-      shift_name:shiftName
+      create_date: createDate,
+      shift_name: shiftName,
     };
     var editbody = {
       id: itemData?.id,
@@ -105,32 +99,32 @@ export default function AddPatient({navigation, route}) {
       gender,
       mobile: mobileNo,
       status: 0,
-      create_date:createDate,
-      shift_name:shiftName
+      // create_date:createDate,
+      shift_name: shiftName,
     };
     const apiUrl =
       route.params?.type !== 'add' ? 'appointmentupdate' : 'createappointment';
     const body = route.params?.type !== 'add' ? editbody : addbody;
     const result = await postData(apiUrl, body);
-    console.log('res==',result);
+    console.log('res==', result);
     if (result.success) {
       setShowModal(true);
-      setModalData(result.data)
+      setModalData(result.data);
+   
     }
     setLoading(false);
+    
   };
 
-
- // const d1 = new Date(itemData.created_at);
+  // const d1 = new Date(itemData.created_at);
 
   // const getCreatedTime = () =>{
   //   const itemData2 = route.params?.item;
   //   const d1 = new Date(itemData2.created_at);
   //   const t1 = d1.getUTCHours();
-    
 
   //   if(t1 < 10){
-    
+
   //     setCreateTime('0'+d1.getUTCHours()+':'+d1.getUTCMinutes());
 
   //   }
@@ -138,8 +132,6 @@ export default function AddPatient({navigation, route}) {
   //   setCreateTime(d1.getUTCHours()+':'+d1.getUTCMinutes());
 
   // }
-
- 
 
   // }
 
@@ -149,10 +141,10 @@ export default function AddPatient({navigation, route}) {
   //   const dd =d9.getUTCDate();
   //   const dm = d9.getUTCMonth();
   //   if(dd < 10){
-  //     setCreateDate('0'+d9.getUTCDay()+'/'+d3.getUTCMonth()+'/'+d9.getUTCFullYear()); 
+  //     setCreateDate('0'+d9.getUTCDay()+'/'+d3.getUTCMonth()+'/'+d9.getUTCFullYear());
   //   }
   //   else if(dm < 10){
-  //     setCreateDate('0'+d9.getUTCDay()+'/0'+d3.getUTCMonth()+'/'+d9.getUTCFullYear()); 
+  //     setCreateDate('0'+d9.getUTCDay()+'/0'+d3.getUTCMonth()+'/'+d9.getUTCFullYear());
   //   }
   // else {
   //   setCreateDate(d9.getUTCDay()+'/'+d9.getUTCMonth()+'/'+d9.getUTCFullYear());
@@ -170,17 +162,10 @@ export default function AddPatient({navigation, route}) {
 
   FormatDate = async data => {
     let dateTimeString =
-      
-    data.getDate() +'/' +
-      (data.getMonth() + 1) +
-      '/' +
-      
-    
-      data.getFullYear() ;
-    
-     hideDatePicker();
-     setCreateDate(dateTimeString);
-    
+      data.getDate() + '/' + (data.getMonth() + 1) + '/' + data.getFullYear();
+
+    hideDatePicker();
+    setCreateDate(dateTimeString);
 
     return dateTimeString; // It will look something like this 3-5-2021 16:23
   };
@@ -189,96 +174,102 @@ export default function AddPatient({navigation, route}) {
     setIsDatePickerVisible(false);
   };
 
-
-
-
-
-  const printModal = async() => {
+  const printModal = async () => {
     try {
       await ThermalPrinterModule.printBluetooth({
         // payload:  '<View style={styles.centeredView}>'
-      //   <View style={[styles.modalView, { backgroundColor:'#fdf8db',borderColor:'#c8c5b0',borderWidth:2}]}>
-      //     {/* <Text
-      //       style={[
-      //         styles.modalText,
-      //         {
-      //           color: Color.black,
-      //         },
-      //       ]}>
-      //       {props.title}
-      //     </Text> */}
-      //     {/* <AnimatedLottieView
-      //       source={require('../../assets/animations/success.json')}
-      //       style={{width: 130, height: 130}}
-      //       autoPlay
-      //       loop={false}
-      //     /> */}
-      //     <View style={styles.card}>
-      //    <Text style={styles.token_no}>15</Text>
-      //    <Text style={styles.token_no_txt}>TOKEN NO.</Text>
-      //     </View>
-      //     <View style={styles.details_container}>
-      //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
-      //     <Text style={styles.title}>Category</Text>
-      //     <Text style={styles.title2}>:</Text>
-      //     <Text style={styles.descr}>{modalData.category}</Text>
-          
-      //     </View>
-      //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
-      //     <Text style={styles.title}>Name    </Text>
-      //     <Text style={styles.title2}>:</Text>
-      //     <Text style={styles.descr}>{modalData.patient_name}</Text>
-          
-      //     </View>
-      //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
-      //     <Text style={styles.title}>Age</Text>
-      //     <Text style={styles.title2}>:</Text>
-      //     <Text style={styles.descr}>{modalData.age}</Text>
-          
-      //     </View>
-      //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
-      //     <Text style={styles.title}>Weight</Text>
-      //     <Text style={styles.title2}>:</Text>
-      //     <Text style={styles.descr}>{modalData.weight}{modalData.weighttype}</Text>
-          
-      //     </View>
-      //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
-      //     <Text style={styles.title}>Gender</Text>
-      //     <Text style={styles.title2}>:</Text>
-      //     <Text style={styles.descr}>{modalData.gender}</Text>
-          
-      //     </View>
-      //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
-      //     <Text style={styles.title}>Time</Text>
-      //     <Text style={styles.title2}>:</Text>
-      //     <Text style={styles.descr}>{modalData.create_date}</Text>
-          
-      //     </View>
-      //     </View>
-        
-         
-      //   </View>
-      // </View>,
-        payload:<Text>Hello World</Text> 
-        
+        //   <View style={[styles.modalView, { backgroundColor:'#fdf8db',borderColor:'#c8c5b0',borderWidth:2}]}>
+        //     {/* <Text
+        //       style={[
+        //         styles.modalText,
+        //         {
+        //           color: Color.black,
+        //         },
+        //       ]}>
+        //       {props.title}
+        //     </Text> */}
+        //     {/* <AnimatedLottieView
+        //       source={require('../../assets/animations/success.json')}
+        //       style={{width: 130, height: 130}}
+        //       autoPlay
+        //       loop={false}
+        //     /> */}
+        //     <View style={styles.card}>
+        //    <Text style={styles.token_no}>15</Text>
+        //    <Text style={styles.token_no_txt}>TOKEN NO.</Text>
+        //     </View>
+        //     <View style={styles.details_container}>
+        //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
+        //     <Text style={styles.title}>Category</Text>
+        //     <Text style={styles.title2}>:</Text>
+        //     <Text style={styles.descr}>{modalData.category}</Text>
+
+        //     </View>
+        //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
+        //     <Text style={styles.title}>Name    </Text>
+        //     <Text style={styles.title2}>:</Text>
+        //     <Text style={styles.descr}>{modalData.patient_name}</Text>
+
+        //     </View>
+        //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
+        //     <Text style={styles.title}>Age</Text>
+        //     <Text style={styles.title2}>:</Text>
+        //     <Text style={styles.descr}>{modalData.age}</Text>
+
+        //     </View>
+        //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
+        //     <Text style={styles.title}>Weight</Text>
+        //     <Text style={styles.title2}>:</Text>
+        //     <Text style={styles.descr}>{modalData.weight}{modalData.weighttype}</Text>
+
+        //     </View>
+        //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
+        //     <Text style={styles.title}>Gender</Text>
+        //     <Text style={styles.title2}>:</Text>
+        //     <Text style={styles.descr}>{modalData.gender}</Text>
+
+        //     </View>
+        //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
+        //     <Text style={styles.title}>Time</Text>
+        //     <Text style={styles.title2}>:</Text>
+        //     <Text style={styles.descr}>{modalData.create_date}</Text>
+
+        //     </View>
+        //     </View>
+
+        //   </View>
+        // </View>,
+        payload: <Text>Hello World</Text>,
       });
     } catch (err) {
       //error handling
       console.log(err.message);
     }
+  };
 
-  }
-
-  const printHTML = async() => {
+  const printHTML = async () => {
     await RNPrint.print({
-       html: '<h1>Token No. :   '   +modalData.token_no+'</h1></br><h1>Category :    '   
-           +modalData.category+'</h1></br><h1>Name :   '+modalData.patient_name+'</h1></br><h1>Age :    '
-                 +modalData.age +modalData.agetype+'</h1></br><h1>Weight :    '   +modalData.weight +modalData.weighttype+'</h1></br><h1>Gender :     '
-                  +modalData.gender +'</h1></br><h1>Time :    '      +modalData.create_date +'</h1></br>'
-     })
-   }
-  
- 
+      html:
+        '<h1>Token No. :   ' +
+        modalData.token_no +
+        '</h1></br><h1>Category :    ' +
+        modalData.category +
+        '</h1></br><h1>Name :   ' +
+        modalData.patient_name +
+        '</h1></br><h1>Age :    ' +
+        modalData.age +
+        modalData.agetype +
+        '</h1></br><h1>Weight :    ' +
+        modalData.weight +
+        modalData.weighttype +
+        '</h1></br><h1>Gender :     ' +
+        modalData.gender +
+        '</h1></br><h1>Time :    ' +
+        modalData.create_date +
+        '</h1></br>',
+    });
+  };
+
   return (
     <View style={styles.container}>
       <AddpatientSuccessModal
@@ -290,15 +281,18 @@ export default function AddPatient({navigation, route}) {
             : 'Patient Added Successfully'
         }
         primaryBtnText={
-          route.params?.type !== 'add' ? 'Edit More Details' : 'ADD MORE PATIENT'
+          route.params?.type !== 'add'
+            ? 'Edit More Details'
+            : 'ADD MORE PATIENT'
         }
-       // onPrimaryPress={() => onPrimaryPress()}
-       onPrimaryPress={() =>  {setShowModal(false);
-          navigation.goBack();}}
-        // secondaryBtnText="Go Back"
-        onSecondaryPress={() => {
+        // onPrimaryPress={() => onPrimaryPress()}
+        onPrimaryPress={() => {
           setShowModal(false);
           navigation.goBack();
+        }}
+        // secondaryBtnText="Go Back"
+        onSecondaryPress={() => {
+          onSecondaryPress();
         }}
         category={modalData.category}
         patient_name={modalData.patient_name}
@@ -325,8 +319,54 @@ export default function AddPatient({navigation, route}) {
       <ScrollView
         ref={_scrollRef}
         style={styles.form}
-        keyboardShouldPersistTaps="always">
+        keyboardShouldPersistTaps="always"
+        showsVerticalScrollIndicator={false}>
+          {/* {route.params?.type == 'add' && */}
         <View>
+          <Text style={styles.label}>Shift Name</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginTop: 5,
+            }}>
+            <TouchableOpacity
+              onPress={() => setShiftName('Morning')}
+              style={{
+                ...styles.radioStyle,
+                backgroundColor:
+                  shiftName == 'Morning' ? `${Color.primary}50` : '#aaaaaa50',
+              }}>
+              <Text
+                style={{
+                  color: '#000',
+                  fontFamily: Fonts.primaryRegular,
+                  lineHeight: 14 * 1.5,
+                }}>
+                Morning
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setShiftName('Evening')}
+              style={{
+                ...styles.radioStyle,
+                backgroundColor:
+                  shiftName == 'Evening' ? `${Color.primary}50` : '#aaaaaa50',
+                marginLeft: 5,
+              }}>
+              <Text
+                style={{
+                  color: '#000',
+                  fontFamily: Fonts.primaryRegular,
+                  lineHeight: 14 * 1.5,
+                }}>
+                Evening
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {/* } */}
+        <View style={{marginTop: 15}}>
           <Text style={styles.label}>Category</Text>
           <View
             style={{
@@ -520,8 +560,8 @@ export default function AddPatient({navigation, route}) {
             </TouchableOpacity>
           </View>
         </View>
-        
-        <View style={{marginTop: 15}}>
+
+        {/* <View style={{marginTop: 15}}>
           <Text style={styles.label}>CreateDate</Text>
         
          <TouchableOpacity onPress={() => showDatePicker()}>
@@ -547,7 +587,7 @@ export default function AddPatient({navigation, route}) {
      />
    
          
-        </View>
+        </View> */}
         <View style={{marginTop: 15}}>
           <Text style={styles.label}>Mobile Number</Text>
           <TextInput
@@ -562,7 +602,7 @@ export default function AddPatient({navigation, route}) {
             activeUnderlineColor={Color.primary}
           />
         </View>
-        <View style={{marginTop:15}}>
+        {/* <View style={{marginTop:15}}>
           <Text style={styles.label}>Shift</Text>
           <View
             style={{
@@ -591,7 +631,7 @@ export default function AddPatient({navigation, route}) {
             
             </Picker>
           </View>
-        </View>
+        </View> */}
         {route.params?.type === 'edit' && (
           <Text style={styles.sectionTitle}>Token No. {itemData?.id}</Text>
         )}
@@ -672,7 +712,7 @@ const styles = StyleSheet.create({
     margin: 20,
     borderRadius: 25,
     padding: 25,
-   // alignItems: 'center',
+    // alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -683,33 +723,31 @@ const styles = StyleSheet.create({
     elevation: 5,
     flexDirection: 'column',
     // justifyContent: 'space-between',
-    
   },
   button: {
     borderRadius: 10,
     padding: 10,
-    marginVertical:5,
+    marginVertical: 5,
     elevation: 2,
     width: width * 0.7,
   },
-  close_button:{
+  close_button: {
     borderRadius: 10,
     padding: 10,
-    marginVertical:5,
+    marginVertical: 5,
     elevation: 2,
     width: width * 0.3,
-    borderWidth:1,
-    borderColor:Color.black
-   
+    borderWidth: 1,
+    borderColor: Color.black,
   },
-  print_button:{
+  print_button: {
     borderRadius: 10,
     padding: 10,
-    marginVertical:5,
+    marginVertical: 5,
     elevation: 2,
     width: width * 0.3,
-    borderWidth:1,
-    borderColor:Color.black
+    borderWidth: 1,
+    borderColor: Color.black,
   },
   textStyle: {
     color: Color.black,
@@ -722,51 +760,51 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-SemiBold',
     textAlign: 'center',
   },
-  card:{
-    paddingTop:10,
-   
-   //paddingHorizontal:10,
-    borderRadius:20,
-    borderWidth:1,
-    borderColor:Color.black,
-    width:width*0.4,
-    alignSelf:'center',
+  card: {
+    paddingTop: 10,
+
+    //paddingHorizontal:10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Color.black,
+    width: width * 0.4,
+    alignSelf: 'center',
   },
-  token_no:{
-fontSize:45,
-fontFamily:Fonts.primaryBold,
-color:Color.black,
-textAlign:'center'
+  token_no: {
+    fontSize: 45,
+    fontFamily: Fonts.primaryBold,
+    color: Color.black,
+    textAlign: 'center',
   },
-  token_no_txt:{
-    fontSize:15,
-    fontFamily:Fonts.primaryRegular,
-    color:Color.black ,
-    textAlign:'center'
+  token_no_txt: {
+    fontSize: 15,
+    fontFamily: Fonts.primaryRegular,
+    color: Color.black,
+    textAlign: 'center',
   },
-  title:{
-    fontSize:15,
-    fontFamily:Fonts.primaryRegular,
-    color:Color.black,
-   // textAlign:'center',
-    width:'28%'
+  title: {
+    fontSize: 15,
+    fontFamily: Fonts.primaryRegular,
+    color: Color.black,
+    // textAlign:'center',
+    width: '28%',
   },
-  title2:{
-    fontSize:15,
-    fontFamily:Fonts.primaryRegular,
-    color:Color.black,
-    textAlign:'center',
-    width:'28%'
+  title2: {
+    fontSize: 15,
+    fontFamily: Fonts.primaryRegular,
+    color: Color.black,
+    textAlign: 'center',
+    width: '28%',
   },
-  descr:{
-    fontSize:15,
-    fontFamily:Fonts.primarySemiBold,
-    color:Color.black ,
-    textAlign:'auto',
-    width:'50%'
+  descr: {
+    fontSize: 15,
+    fontFamily: Fonts.primarySemiBold,
+    color: Color.black,
+    textAlign: 'auto',
+    width: '50%',
   },
-  details_container:{
- alignSelf:'center',
-   width:width*0.7
-  }
+  details_container: {
+    alignSelf: 'center',
+    width: width * 0.7,
+  },
 });

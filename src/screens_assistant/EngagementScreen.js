@@ -10,31 +10,82 @@ import {getData, postData} from '../API';
 import EngagementPlaceholder from '../placeholders/EngagementPlaceholder';
 import {errorToast, successToast} from '../components/toasts';
 import {ActivityIndicator} from 'react-native-paper';
-
+import {useTranslation} from 'react-i18next';
 export default function EngagementScreen({navigation}) {
   const user = useSelector(state => state.user);
-
+//console.log('did--',user?.doctor_id)
   const [engagementData, setEngagementData] = React.useState([]);
+  const [engagements, setEngagements] = React.useState([]);
   const [selectedEngagement, setSelectedEngagement] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [statusLoading, setStatusLoading] = React.useState(false);
-
+  const [time, setTime] = React.useState('Morning');
+  const {t} = useTranslation();
   const fetchAppointments = async () => {
     const list = await getData(`appointment/${user?.doctor_id}`);
-    console.log('app ls--',list);
+    // console.log('app ls--', list?.data
+    // .filter(
+    //   item =>
+    //     new Date(item.created_at).setHours(0, 0, 0, 0) ==
+    //     new Date().setHours(0, 0, 0, 0),
+    // ));
+    
     setEngagementData(
-      list?.data.filter(
-        item =>
-          new Date(item.created_at).setHours(0, 0, 0, 0) ==
-          new Date().setHours(0, 0, 0, 0),
-      ),
+      list?.data
+      // .filter(
+      //   item =>
+      //     new Date(item.created_at).setHours(0, 0, 0, 0) ==
+      //     new Date().setHours(0, 0, 0, 0),
+      // ),
     );
     setLoading(false);
   };
 
   useEffect(() => {
     fetchAppointments();
+   
   }, []);
+
+  useEffect(() => {
+
+    // let filteredAppointments = appointmentData;
+       
+     if (time === 'Morning') {
+       // setAppointments(
+       //   filteredAppointments.filter(
+       //     item => new Date(item.created_at).getHours() < 12,
+       //   ),
+       // );
+ 
+       setEngagements(
+         engagementData.filter(
+           item => item.shift_name == 'Morning',
+         ),
+       );
+ 
+       console.log('ms==', engagementData.filter(
+        item => item.shift_name == 'Morning',
+      ))
+     } else {
+       // setAppointments(
+       //   filteredAppointments.filter(
+       //     item => new Date(item.created_at).getHours() >= 12,
+       //   ),
+       // );
+ 
+       setEngagements(
+        engagementData.filter(
+           item => item.shift_name == 'Evening',
+         ),
+       );
+       console.log('es==', engagementData.filter(
+        item => item.shift_name == 'Morning',
+      ))
+     
+     }
+    
+   }, [time,engagementData]);
+ 
 
   const _sheetRef = React.useRef(null);
 
@@ -54,10 +105,11 @@ export default function EngagementScreen({navigation}) {
   };
 
   const handleChange = async (id, status) => {
+    console.log('id--',id)
     setStatusLoading(true);
     let currentA = null;
     let previousA = null;
-    const newData = engagementData.map(item => {
+    const newData = engagements.map(item => {
       if (item.status === 1) {
         item.status = 2;
         previousA = item;
@@ -85,7 +137,7 @@ export default function EngagementScreen({navigation}) {
     setStatusLoading(false);
     if (result1?.success || result2?.success) {
       successToast('Appointment status updated successfully');
-      setEngagementData(newData);
+      setEngagements(newData);
       _sheetRef.current.close();
     } else {
       errorToast('Something went wrong');
@@ -122,7 +174,7 @@ export default function EngagementScreen({navigation}) {
           }
           style={{...styles.itemContainer}}> */}
           <Text style={styles.itemText}>
-            {item.id <= 9 ? `0${item.id}` : item.id}
+            {item.token_no <= 9 ? `0${item.token_no}` : item.token_no}
           </Text>
         {/* </LinearGradient> */}
       </TouchableOpacity>
@@ -158,6 +210,38 @@ export default function EngagementScreen({navigation}) {
         </TouchableOpacity>
         <Text style={styles.title}>Engagement Status</Text>
       </View>
+      <View style={styles.btnContainer}>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setTime('Morning') }
+            style={{
+              ...styles.btn,
+              backgroundColor: time === 'Morning' ? Color.primary : Color.white,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+                color: time === 'Morning' ? '#fff' : '#000',
+              }}>
+              {t('engagementStatus.morning')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setTime('Evening')}
+            style={{
+              ...styles.btn,
+              backgroundColor: time === 'Evening' ? Color.primary : Color.white,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+                color: time === 'Evening' ? '#fff' : '#000',
+              }}>
+              {t('engagementStatus.evening')}
+            </Text>
+          </TouchableOpacity>
+        </View>
       {loading ? (
         <FlatList
           data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
@@ -169,7 +253,7 @@ export default function EngagementScreen({navigation}) {
         />
       ) : (
         <FlatList
-          data={engagementData}
+          data={engagements}
           renderItem={renderItem}
           numColumns={2}
           keyExtractor={item => item.id}
@@ -228,5 +312,19 @@ const styles = StyleSheet.create({
     //textAlign:'center',
     
    
+  },
+  btnContainer: {
+    flexDirection: 'row',
+  },
+  btn: {
+    flex: 1,
+    paddingVertical: 15,
+  },
+  btnText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#000',
+    fontFamily: Fonts.primarySemiBold,
+    lineHeight: 16 * 1.4,
   },
 });

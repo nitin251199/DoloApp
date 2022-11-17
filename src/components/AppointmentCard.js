@@ -6,7 +6,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DoubleClick from 'react-native-double-tap';
 import LinearGradient from 'react-native-linear-gradient';
 
-export default function AppointmentCard({item, onPress, onDoublePress}) {
+export default function AppointmentCard({item, onPress, onDoublePress,bgColor}) {
   const [status, setStatus] = React.useState(item?.status);
 
   const conditionalStyles = status => {
@@ -33,7 +33,7 @@ export default function AppointmentCard({item, onPress, onDoublePress}) {
             padding: 15,
             alignItems: 'center',
             //justifyContent: 'center',
-            backgroundColor:'#a9a9a9'
+            backgroundColor:bgColor
           }}>
         {/* <LinearGradient
           start={{x: 0, y: 0}}
@@ -95,20 +95,22 @@ const styles = StyleSheet.create({
     
   },
   resolved: {
-    // backgroundColor: Color.primary,
-  },
-  absent: {
-    // borderWidth: 5,
-    // borderColor: '#00b050',
-  },
-  current: {
-    // backgroundColor: Color.primary,
-    // borderWidth: 5,
-    // borderColor: Color.blue,
-  },
-  pending: {
-    // backgroundColor: Color.white,
-    // borderWidth: 2,
-    // borderStyle: 'dashed',
-  },
+    backgroundColor: '#006400',
+ },
+ absent: {
+   // borderWidth: 5,
+   // borderColor: Color.red,
+  backgroundColor:Color.red,
+
+ },
+ current: {
+   backgroundColor: '#ff8c00',
+   //borderWidth: 5,
+  // borderColor: Color.blue,
+ },
+ pending: {
+   backgroundColor: Color.graylight,
+   // borderWidth: 2,
+   // borderStyle: 'dashed',
+ },
 });

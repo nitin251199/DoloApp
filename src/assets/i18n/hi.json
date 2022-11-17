@@ -38,6 +38,12 @@
       "morning": "सुबह",
       "evening": "शाम"
     },
+    "engaementStatus": {
+      "screenTitle": "संलग्न स्थिति",
+    
+      "morning": "सुबह",
+      "evening": "शाम"
+    },
     "login": {
       "screenTitle": "स्वागत !",
       "doctor": "चिकित्सक",

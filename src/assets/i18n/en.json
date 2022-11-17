@@ -133,6 +133,12 @@
      "morning": "Morning",
       "evening": "Evening"
     },
+    "engagementStatus": {
+      "screenTitle": "Engagement Status",
+    
+     "morning": "Morning",
+      "evening": "Evening"
+    },
     "assistantDashboard": {
       "addNew": "Add New Assistant",
       "yourAssistants": "Your Assistants",
