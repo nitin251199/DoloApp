@@ -111,9 +111,10 @@ export default function DoctorScreen({navigation, route}) {
     };
     const result = await postData('doctor_send_prescrition_patient', body);
     // console.log('result', result);
-    if (result.data) {
+    if (result.success) {
       successToast('Feedback Send SuccessFullly');
-      navigation.navigate('Home1');
+     // navigation.navigate('Home1');
+    // navigation.goBack();
     } else {
       errorToast('Something Went Wrong Please Check');
     }
@@ -827,6 +828,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     width: '100%',
+    marginTop:10
   },
   listImage: {
     // height: 75,
