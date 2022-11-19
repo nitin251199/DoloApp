@@ -13,7 +13,7 @@ import {ActivityIndicator} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
 export default function EngagementScreen({navigation}) {
   const user = useSelector(state => state.user);
-//console.log('did--',user?.doctor_id)
+  //console.log('did--',user?.doctor_id)
   const [engagementData, setEngagementData] = React.useState([]);
   const [engagements, setEngagements] = React.useState([]);
   const [selectedEngagement, setSelectedEngagement] = React.useState(null);
@@ -29,9 +29,9 @@ export default function EngagementScreen({navigation}) {
     //     new Date(item.created_at).setHours(0, 0, 0, 0) ==
     //     new Date().setHours(0, 0, 0, 0),
     // ));
-    
+
     setEngagementData(
-      list?.data
+      list?.data,
       // .filter(
       //   item =>
       //     new Date(item.created_at).setHours(0, 0, 0, 0) ==
@@ -41,51 +41,56 @@ export default function EngagementScreen({navigation}) {
     setLoading(false);
   };
 
+  // useEffect(() => {
+  //   fetchAppointments();
+  // }, []);
+
   useEffect(() => {
-    fetchAppointments();
+    const unsubscribe = navigation.addListener('focus', async() => {
+     
    
+     await fetchAppointments();
+    },[]);
+
+   
+    return unsubscribe;
+    
   }, []);
 
   useEffect(() => {
-
     // let filteredAppointments = appointmentData;
-       
-     if (time === 'Morning') {
-       // setAppointments(
-       //   filteredAppointments.filter(
-       //     item => new Date(item.created_at).getHours() < 12,
-       //   ),
-       // );
- 
-       setEngagements(
-         engagementData.filter(
-           item => item.shift_name == 'Morning',
-         ),
-       );
- 
-       console.log('ms==', engagementData.filter(
-        item => item.shift_name == 'Morning',
-      ))
-     } else {
-       // setAppointments(
-       //   filteredAppointments.filter(
-       //     item => new Date(item.created_at).getHours() >= 12,
-       //   ),
-       // );
- 
-       setEngagements(
-        engagementData.filter(
-           item => item.shift_name == 'Evening',
-         ),
-       );
-       console.log('es==', engagementData.filter(
-        item => item.shift_name == 'Morning',
-      ))
-     
-     }
-    
-   }, [time,engagementData]);
- 
+
+    if (time === 'Morning') {
+      // setAppointments(
+      //   filteredAppointments.filter(
+      //     item => new Date(item.created_at).getHours() < 12,
+      //   ),
+      // );
+
+      setEngagements(
+        engagementData.filter(item => item.shift_name == 'Morning'),
+      );
+
+      console.log(
+        'ms==',
+        engagementData.filter(item => item.shift_name == 'Morning'),
+      );
+    } else {
+      // setAppointments(
+      //   filteredAppointments.filter(
+      //     item => new Date(item.created_at).getHours() >= 12,
+      //   ),
+      // );
+
+      setEngagements(
+        engagementData.filter(item => item.shift_name == 'Evening'),
+      );
+      console.log(
+        'es==',
+        engagementData.filter(item => item.shift_name == 'Morning'),
+      );
+    }
+  }, [time, engagementData]);
 
   const _sheetRef = React.useRef(null);
 
@@ -105,28 +110,53 @@ export default function EngagementScreen({navigation}) {
   };
 
   const handleChange = async (id, status) => {
-    console.log('id--',id)
+    console.log('id--', id);
     setStatusLoading(true);
     let currentA = null;
     let previousA = null;
     const newData = engagements.map(item => {
-      if (item.status === 1) {
+      if (item.status === 1 && status === 1) {
         item.status = 2;
         previousA = item;
       }
+
+      // if (item.status === 4){
+      //   errorToast('cannot active previous token')
+  
+      //   }
+
       if (item.id === id) {
-        item.status = status;
         currentA = item;
-      }
+      
+     
+        if (item.status === 4 && shift_name == time){
+          errorToast('cannot change the staus of previous token')
+          item.status = status;
+          }
+
+      
+    
+        item.status = status;
+   
+        
+     
+    
+
+        }
+
+       
+
       return item;
     });
     let currentBody = {
       status: currentA?.status,
       id: currentA?.id,
+      shift_name:currentA?.shift_name
     };
     let previousBody = {
       status: previousA?.status,
       id: previousA?.id,
+      shift_name:previousA?.shift_name
     };
     if (currentA) {
       var result1 = await postData('statusappointmentupdate', currentBody);
@@ -146,8 +176,10 @@ export default function EngagementScreen({navigation}) {
 
   const renderItem = ({item, index}) => {
     return (
+      <>
+      { item.status !=4 ?
       <TouchableOpacity
-        onLongPress={() => {
+      onLongPress={() => {
           setSelectedEngagement(item);
           _sheetRef.current.open();
         }}
@@ -157,11 +189,12 @@ export default function EngagementScreen({navigation}) {
           borderRadius: 20,
           marginVertical: 10,
           marginHorizontal: 5,
-          height: 120,
+          //  width:10,
+          height: 80,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-       
+
           ...conditionalStyles(item.status),
         }}>
         {/* <LinearGradient
@@ -173,11 +206,47 @@ export default function EngagementScreen({navigation}) {
               : ['#d4f0da', '#9ee1ae']
           }
           style={{...styles.itemContainer}}> */}
-          <Text style={styles.itemText}>
-            {item.token_no <= 9 ? `0${item.token_no}` : item.token_no}
-          </Text>
+        <Text style={styles.itemText}>
+          {item.token_no <= 9 ? `0${item.token_no}` : item.token_no}
+        </Text>
         {/* </LinearGradient> */}
-      </TouchableOpacity>
+      </TouchableOpacity>:
+
+<TouchableOpacity
+// onLongPress={() => {
+//     setSelectedEngagement(item);
+//     _sheetRef.current.open();
+//   }}
+  style={{
+    flex: 1,
+    overflow: 'hidden',
+    borderRadius: 20,
+    marginVertical: 10,
+    marginHorizontal: 5,
+    //  width:10,
+    height: 80,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    ...conditionalStyles(item.status),
+  }}>
+  {/* <LinearGradient
+    start={{x: 0, y: 0}}
+    end={{x: 1, y: 0}}
+    colors={
+      item.status == 3 || item.status == 0
+        ? ['#ffffff', '#ffffff']
+        : ['#d4f0da', '#9ee1ae']
+    }
+    style={{...styles.itemContainer}}> */}
+  <Text style={styles.itemText}>
+    {item.token_no <= 9 ? `0${item.token_no}` : item.token_no}
+  </Text>
+  {/* </LinearGradient> */}
+</TouchableOpacity>
+        }
+        </>
     );
   };
 
@@ -211,37 +280,37 @@ export default function EngagementScreen({navigation}) {
         <Text style={styles.title}>Engagement Status</Text>
       </View>
       <View style={styles.btnContainer}>
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => setTime('Morning') }
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setTime('Morning')}
+          style={{
+            ...styles.btn,
+            backgroundColor: time === 'Morning' ? Color.primary : Color.white,
+          }}>
+          <Text
             style={{
-              ...styles.btn,
-              backgroundColor: time === 'Morning' ? Color.primary : Color.white,
+              ...styles.btnText,
+              color: time === 'Morning' ? '#fff' : '#000',
             }}>
-            <Text
-              style={{
-                ...styles.btnText,
-                color: time === 'Morning' ? '#fff' : '#000',
-              }}>
-              {t('engagementStatus.morning')}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => setTime('Evening')}
+            {t('engagementStatus.morning')}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setTime('Evening')}
+          style={{
+            ...styles.btn,
+            backgroundColor: time === 'Evening' ? Color.primary : Color.white,
+          }}>
+          <Text
             style={{
-              ...styles.btn,
-              backgroundColor: time === 'Evening' ? Color.primary : Color.white,
+              ...styles.btnText,
+              color: time === 'Evening' ? '#fff' : '#000',
             }}>
-            <Text
-              style={{
-                ...styles.btnText,
-                color: time === 'Evening' ? '#fff' : '#000',
-              }}>
-              {t('engagementStatus.evening')}
-            </Text>
-          </TouchableOpacity>
-        </View>
+            {t('engagementStatus.evening')}
+          </Text>
+        </TouchableOpacity>
+      </View>
       {loading ? (
         <FlatList
           data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
@@ -284,18 +353,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   resolved: {
-     backgroundColor: '#006400',
+    backgroundColor: '#006400',
   },
   absent: {
     // borderWidth: 5,
     // borderColor: Color.red,
-   backgroundColor:Color.red,
- 
+    backgroundColor: Color.red,
   },
   current: {
     backgroundColor: '#ff8c00',
     //borderWidth: 5,
-   // borderColor: Color.blue,
+    // borderColor: Color.blue,
   },
   pending: {
     backgroundColor: Color.graylight,
@@ -303,15 +371,13 @@ const styles = StyleSheet.create({
     // borderStyle: 'dashed',
   },
   itemText: {
-    fontSize: 50,
+    fontSize: 30,
     fontFamily: Fonts.primarySemiBold,
     color: Color.black,
     textShadowColor: Color.black,
     textShadowOffset: {width: 1, height: 2},
     textShadowRadius: 3.87,
     //textAlign:'center',
-    
-   
   },
   btnContainer: {
     flexDirection: 'row',

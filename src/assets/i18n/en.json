@@ -133,6 +133,18 @@
      "morning": "Morning",
       "evening": "Evening"
     },
+    "uploadPrescription": {
+      "screenTitle": "Upload Prescription",
+    
+     "morning": "Morning",
+      "evening": "Evening"
+    },
+    "todayAppointment": {
+      "screenTitle": "Today Appointments",
+    
+     "morning": "Morning",
+      "evening": "Evening"
+    },
     "engagementStatus": {
       "screenTitle": "Engagement Status",
     

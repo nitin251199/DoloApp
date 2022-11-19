@@ -36,11 +36,19 @@ export default function PatientsQueue({navigation}) {
     setLoading(false);
   };
 
-
   useEffect(() => {
-    fetchAppointments();
-   // filterAppointments();
+    const unsubscribe = navigation.addListener('focus', async() => {
+     
+   
+     await fetchAppointments();
+    },[]);
+
+   
+    return unsubscribe;
+    
   }, []);
+ 
+
 
   const conditionalStyles = status => {
     switch (status) {
@@ -125,20 +133,7 @@ export default function PatientsQueue({navigation}) {
    
   }, [time,appointmentData]);
 
-  // useEffect(() => {
-  //   navigation.addListener('focus', () => {
-  //     fetchAppointments();
-  //   });
-  // }, []);
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     console.log('focus');
-  //     // alert('Screen was focused');
-  //     // Do something when the screen is focused
-  //     fetchAppointments();
-  //   }, []),
-  // );
+ 
 
 
 

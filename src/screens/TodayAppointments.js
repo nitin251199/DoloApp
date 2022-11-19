@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity
 } from 'react-native';
 import React, {useEffect} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
@@ -12,13 +13,16 @@ import {useSelector} from 'react-redux';
 import {getData} from '../API';
 import DoctorPlaceholder from '../placeholders/DoctorPlaceholder';
 import AppointmentCard from '../components/AppointmentCard';
+import {useTranslation} from 'react-i18next';
 
 export default function TodayAppointments({navigation}) {
   const [appointmentData, setAppointmentData] = React.useState([]);
+  const [appointments, setAppointments] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  const [time, setTime] = React.useState('Morning');
 
   const user = useSelector(state => state.user);
-
+  const {t} = useTranslation();
   const fetchAppointments = async () => {
     setLoading(true);
     const list = await getData(`appointment/${user?.userid}`);
@@ -39,9 +43,75 @@ export default function TodayAppointments({navigation}) {
     fetchAppointments();
   }, []);
 
+  useEffect(() => {
+
+    // let filteredAppointments = appointmentData;
+       
+     if (time === 'Morning') {
+       // setAppointments(
+       //   filteredAppointments.filter(
+       //     item => new Date(item.created_at).getHours() < 12,
+       //   ),
+       // );
+ 
+        setAppointments(
+         appointmentData.filter(
+           item => item.shift_name == 'Morning',
+         ),
+       );
+ 
+     } else {
+       // setAppointments(
+       //   filteredAppointments.filter(
+       //     item => new Date(item.created_at).getHours() >= 12,
+       //   ),
+       // );
+ 
+       setAppointments(
+         appointmentData.filter(
+           item => item.shift_name == 'Evening',
+         ),
+       );
+       
+     }
+    
+   }, [time,appointmentData]);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Today Appointments. 🩺</Text>
+      <Text style={styles.heading}>{t('todayAppointment.screenTitle')}  🩺</Text>
+      <View style={styles.btnContainer}>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setTime('Morning')}
+            style={{
+              ...styles.btn,
+              backgroundColor: time === 'Morning' ? Color.primary : Color.white,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+                color: time === 'Morning' ? '#fff' : '#000',
+              }}>
+              {t('todayAppointment.morning')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setTime('Evening')}
+            style={{
+              ...styles.btn,
+              backgroundColor: time === 'Evening' ? Color.primary : Color.white,
+            }}>
+            <Text
+              style={{
+                ...styles.btnText,
+                color: time === 'Evening' ? '#fff' : '#000',
+              }}>
+              {t('todayAppointment.evening')}
+            </Text>
+          </TouchableOpacity>
+        </View>
       {loading ? (
         <View
           style={{
@@ -60,7 +130,7 @@ export default function TodayAppointments({navigation}) {
           style={{
             width: '100%',
           }}>
-          {appointmentData.length != 0 && appointmentData.map((item, index) => {
+          {appointmentData.length != 0 && appointments.map((item, index) => {
             return (
               <AppointmentCard
                 key={index}
@@ -103,5 +173,19 @@ const styles = StyleSheet.create({
     color: '#000',
     fontFamily: Fonts.primaryBold,
     width: '100%',
+  },
+  btnContainer: {
+    flexDirection: 'row',
+  },
+  btn: {
+    flex: 1,
+    paddingVertical: 15,
+  },
+  btnText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#000',
+    fontFamily: Fonts.primarySemiBold,
+    lineHeight: 16 * 1.4,
   },
 });

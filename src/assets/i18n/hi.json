@@ -44,6 +44,18 @@
       "morning": "सुबह",
       "evening": "शाम"
     },
+    "uploadPrescription": {
+      "screenTitle": "नुस्खा अपलोड करें",
+    
+      "morning": "सुबह",
+      "evening": "शाम"
+    },
+    "todayAppointment": {
+      "screenTitle": "आज की नियुक्तियाँ",
+    
+      "morning": "सुबह",
+      "evening": "शाम"
+    },
     "login": {
       "screenTitle": "स्वागत !",
       "doctor": "चिकित्सक",

@@ -142,7 +142,7 @@ export default function HomeScreen({navigation}) {
         <View style={styles.cardContainer}>
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate('AppointmentList', {
+              navigation.navigate('Today', {
                 appointments: appointments,
                 type: 1,
                 t: t,

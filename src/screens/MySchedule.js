@@ -23,7 +23,7 @@ export default function MySchedule({navigation, route}) {
   const user = useSelector(state => state.user);
 
   const fetchAppointments = async () => {
-    const list = await getData(`appointment/${user?.userid}`);
+    const list = await getData(`allappointment/${user?.userid}`);
     console.log('appointmentlistdata--',list);
     setAllAppointments(list?.data);
     setLoading(false);
@@ -192,7 +192,7 @@ console.log('parrraaamm---',route?.params)
               ...styles.btnText,
               fontFamily: Fonts.primaryRegular,
             }}>
-            {item.id}
+            {item.token_no}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity

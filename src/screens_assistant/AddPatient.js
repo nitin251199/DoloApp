@@ -28,7 +28,9 @@ export default function AddPatient({navigation, route}) {
   const itemData = route.params?.item;
 
   const [category, setCategory] = React.useState(itemData?.category || '');
-  const [shiftName, setShiftName] = React.useState(itemData?.shift_name || 'Morning',);
+  const [shiftName, setShiftName] = React.useState(
+    itemData?.shift_name || 'Morning',
+  );
   const [name, setName] = React.useState(itemData?.patient_name || '');
   const [age, setAge] = React.useState(itemData?.age || '');
   const [ageType, setAgeType] = React.useState(itemData?.ageType || 'Years');
@@ -90,7 +92,7 @@ export default function AddPatient({navigation, route}) {
       id: itemData?.id,
       doctor_id: user?.doctor_id,
       assistant_id: user?.userid,
-      category,
+      category: category,
       patient_name: name,
       age,
       agetype: ageType,
@@ -110,51 +112,9 @@ export default function AddPatient({navigation, route}) {
     if (result.success) {
       setShowModal(true);
       setModalData(result.data);
-   
     }
     setLoading(false);
-    
   };
-
-  // const d1 = new Date(itemData.created_at);
-
-  // const getCreatedTime = () =>{
-  //   const itemData2 = route.params?.item;
-  //   const d1 = new Date(itemData2.created_at);
-  //   const t1 = d1.getUTCHours();
-
-  //   if(t1 < 10){
-
-  //     setCreateTime('0'+d1.getUTCHours()+':'+d1.getUTCMinutes());
-
-  //   }
-  //   else {
-  //   setCreateTime(d1.getUTCHours()+':'+d1.getUTCMinutes());
-
-  // }
-
-  // }
-
-  // const getCreateddate=()=>{
-  //   const itemData = route.params?.item;
-  //   const d9 = new Date(itemData.created_at)
-  //   const dd =d9.getUTCDate();
-  //   const dm = d9.getUTCMonth();
-  //   if(dd < 10){
-  //     setCreateDate('0'+d9.getUTCDay()+'/'+d3.getUTCMonth()+'/'+d9.getUTCFullYear());
-  //   }
-  //   else if(dm < 10){
-  //     setCreateDate('0'+d9.getUTCDay()+'/0'+d3.getUTCMonth()+'/'+d9.getUTCFullYear());
-  //   }
-  // else {
-  //   setCreateDate(d9.getUTCDay()+'/'+d9.getUTCMonth()+'/'+d9.getUTCFullYear());
-  // }
-  // }
-
-  // useEffect(() => {
-  //   getCreateddate();
-  //   getCreatedTime();
-  // }, []);
 
   const showDatePicker = () => {
     setIsDatePickerVisible(true);
@@ -174,99 +134,44 @@ export default function AddPatient({navigation, route}) {
     setIsDatePickerVisible(false);
   };
 
-  const printModal = async () => {
-    try {
-      await ThermalPrinterModule.printBluetooth({
-        // payload:  '<View style={styles.centeredView}>'
-        //   <View style={[styles.modalView, { backgroundColor:'#fdf8db',borderColor:'#c8c5b0',borderWidth:2}]}>
-        //     {/* <Text
-        //       style={[
-        //         styles.modalText,
-        //         {
-        //           color: Color.black,
-        //         },
-        //       ]}>
-        //       {props.title}
-        //     </Text> */}
-        //     {/* <AnimatedLottieView
-        //       source={require('../../assets/animations/success.json')}
-        //       style={{width: 130, height: 130}}
-        //       autoPlay
-        //       loop={false}
-        //     /> */}
-        //     <View style={styles.card}>
-        //    <Text style={styles.token_no}>15</Text>
-        //    <Text style={styles.token_no_txt}>TOKEN NO.</Text>
-        //     </View>
-        //     <View style={styles.details_container}>
-        //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
-        //     <Text style={styles.title}>Category</Text>
-        //     <Text style={styles.title2}>:</Text>
-        //     <Text style={styles.descr}>{modalData.category}</Text>
-
-        //     </View>
-        //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
-        //     <Text style={styles.title}>Name    </Text>
-        //     <Text style={styles.title2}>:</Text>
-        //     <Text style={styles.descr}>{modalData.patient_name}</Text>
-
-        //     </View>
-        //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
-        //     <Text style={styles.title}>Age</Text>
-        //     <Text style={styles.title2}>:</Text>
-        //     <Text style={styles.descr}>{modalData.age}</Text>
-
-        //     </View>
-        //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
-        //     <Text style={styles.title}>Weight</Text>
-        //     <Text style={styles.title2}>:</Text>
-        //     <Text style={styles.descr}>{modalData.weight}{modalData.weighttype}</Text>
-
-        //     </View>
-        //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
-        //     <Text style={styles.title}>Gender</Text>
-        //     <Text style={styles.title2}>:</Text>
-        //     <Text style={styles.descr}>{modalData.gender}</Text>
-
-        //     </View>
-        //     <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
-        //     <Text style={styles.title}>Time</Text>
-        //     <Text style={styles.title2}>:</Text>
-        //     <Text style={styles.descr}>{modalData.create_date}</Text>
-
-        //     </View>
-        //     </View>
-
-        //   </View>
-        // </View>,
-        payload: <Text>Hello World</Text>,
-      });
-    } catch (err) {
-      //error handling
-      console.log(err.message);
-    }
-  };
-
   const printHTML = async () => {
     await RNPrint.print({
       html:
-        '<h1>Token No. :   ' +
+        // '<div style="background-color:#fdf8db;"> <h1>Token No. :   ' +
+        // modalData.token_no +
+        // '</h1></br><h1>Category :    ' +
+        // modalData.category +
+        // '</h1></br><h1>Name :   ' +
+        // modalData.patient_name +
+        // '</h1></br><h1>Age :    ' +
+        // modalData.age +
+        // modalData.agetype +
+        // '</h1></br><h1>Weight :    ' +
+        // modalData.weight +
+        // modalData.weighttype +
+        // '</h1></br><h1>Gender :     ' +
+        // modalData.gender +
+        // '</h1></br><h1>Time :    ' +
+        // modalData.create_date +
+        // '</h1></br></div>',
+
+        '  <div style="height:fit-content; border: 2px solid black; width: fit-content; background-color: #fdf8db;  padding-top: 30px;padding-right: 40px;padding-left: 40px;padding-bottom:100pxline-height: 1; border-radius: 20px; "><div style="border:2px solid black;border-radius: 20px; margin-left: 50px; width: 132px; "><h1 style="text-align: center;">' +
         modalData.token_no +
-        '</h1></br><h1>Category :    ' +
+        '</h1><p style="text-align: center;  font-weight: 600;margin-bottom: 4px;">  TOKEN NO.</p></div><div style="display:flex; font-weight: 600;margin-top:10"><p>Category&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
         modalData.category +
-        '</h1></br><h1>Name :   ' +
+        '</p></div><div style="display:flex; font-weight: 600;"><p>Name&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
         modalData.patient_name +
-        '</h1></br><h1>Age :    ' +
-        modalData.age +
+        '</p></div><div style="display:flex; font-weight: 600;"><p>Age&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
+        modalData.age + 
         modalData.agetype +
-        '</h1></br><h1>Weight :    ' +
+        '</p></div><div style="display:flex; font-weight: 600;"><p>Weight&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
         modalData.weight +
         modalData.weighttype +
-        '</h1></br><h1>Gender :     ' +
+        '</p></div><div style="display:flex; font-weight: 600;"><p>Gender&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
         modalData.gender +
-        '</h1></br><h1>Time :    ' +
+        '</p></div><div style="display:flex; font-weight: 600; "><p>Time&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
         modalData.create_date +
-        '</h1></br>',
+        '</p></div>',
     });
   };
 
@@ -297,9 +202,18 @@ export default function AddPatient({navigation, route}) {
         category={modalData.category}
         patient_name={modalData.patient_name}
         age={modalData.age}
+        agetype={modalData.agetype}
         weight={modalData.weight}
         gender={modalData.gender}
-        time={modalData.create_date}
+        // time={
+        //   new Date(modalData.created_at).getDate() /
+        //   new Date(modalData.created_at).getMonth() /
+        //   new Date(modalData.created_at).getFullYear()
+        // }
+        time={
+          `${new Date(modalData.created_at).getDate()}/${new Date(modalData.created_at).getMonth()}/${new Date(modalData.created_at).getFullYear()}`
+          
+        }
         weight_type={modalData.weighttype}
         onPrintPress={() => printHTML()}
         token_no={modalData.token_no}
@@ -321,7 +235,7 @@ export default function AddPatient({navigation, route}) {
         style={styles.form}
         keyboardShouldPersistTaps="always"
         showsVerticalScrollIndicator={false}>
-          {/* {route.params?.type == 'add' && */}
+        {/* {route.params?.type == 'add' && */}
         <View>
           <Text style={styles.label}>Shift Name</Text>
           <View
@@ -633,7 +547,7 @@ export default function AddPatient({navigation, route}) {
           </View>
         </View> */}
         {route.params?.type === 'edit' && (
-          <Text style={styles.sectionTitle}>Token No. {itemData?.id}</Text>
+          <Text style={styles.sectionTitle}>Token No.{itemData?.token_no}</Text>
         )}
         <Button
           style={{

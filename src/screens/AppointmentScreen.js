@@ -113,12 +113,13 @@ export default function DoctorScreen({navigation, route}) {
     // console.log('result', result);
     if (result.success) {
       successToast('Feedback Send SuccessFullly');
-     // navigation.navigate('Home1');
+      // navigation.navigate('Home1');
     // navigation.goBack();
     } else {
       errorToast('Something Went Wrong Please Check');
     }
     setLoading(false);
+    navigation.navigate('Home1');
   };
 
   const getFeedbackList = async () => {
