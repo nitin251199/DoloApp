@@ -172,7 +172,7 @@ export default function HomeScreen({navigation}) {
         </Menu>
       </View>
       <View style={styles.mainContainer}>
-        <ScrollView style={styles.cardContainer}>
+        <ScrollView style={styles.cardContainer} showsVerticalScrollIndicator={false}>
           <TouchableOpacity
             activeOpacity={0.5}
             style={styles.addContainer}

@@ -26,7 +26,7 @@ export default function TodayAppointments({navigation}) {
   const fetchAppointments = async () => {
     setLoading(true);
     const list = await getData(`appointment/${user?.userid}`);
-    console.log('listdata--',list)
+    console.log('listdataaaaa--',list)
     setAppointmentData(
       list?.data
         // .filter(

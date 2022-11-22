@@ -3,9 +3,10 @@ import React, {useEffect} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
 import ImageModal from 'react-native-image-modal';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-const FeedbackDetails = ({navigation, route}) => {
+
+const PerscriptionDetails = ({navigation, route}) => {
   const feedback = route.params;
-  const [feedbackImg, setFeedbackImg] = React.useState([]);
+  const [perscriptionImg, setPerscriptionImg] = React.useState([]);
   const [description, setDescription] = React.useState('');
   const [createDate, setCreateDate] = React.useState('');
 
@@ -19,8 +20,8 @@ const FeedbackDetails = ({navigation, route}) => {
     // }
     // console.log('appointment', appointment);
     setTimeout(() => {
-      setFeedbackImg(feedback.img);
-      setDescription(feedback.desc);
+        setPerscriptionImg(feedback.img);
+        setDescription(feedback.desc);
       setCreateDate(feedback.date);
     }, 100);
   };
@@ -40,17 +41,17 @@ const FeedbackDetails = ({navigation, route}) => {
             color={Color.black}
           />
         </TouchableOpacity>
-        <Text style={styles.title}>Feedback Details 🧾</Text>
-        
+        <Text style={styles.title}>Perscription Details 🧾</Text>
       </View>
       <Text style={styles.desc_style}>{description}</Text>
-        {feedbackImg.map((item, index) => {
+
+        {perscriptionImg.length > 0 && perscriptionImg.map((item, index) => {
           return (
             // <Image
             //   style={styles.img_style}
             //   source={{uri: `data:image/png;base64,${item}`}}
             // />
-          <ImageModal
+                          <ImageModal
                              //resizeMode="contain"
                              modalImageResizeMode='contain'
                              modalImageStyle={{
@@ -82,7 +83,7 @@ const FeedbackDetails = ({navigation, route}) => {
   );
 };
 
-export default FeedbackDetails;
+export default PerscriptionDetails;
 
 const styles = StyleSheet.create({
   container: {

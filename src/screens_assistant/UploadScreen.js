@@ -14,16 +14,17 @@ import {Color, Fonts} from '../theme';
 import ImagePicker from 'react-native-image-crop-picker';
 import {Button} from 'react-native-paper';
 import SuccessModal from '../components/modals/SuccessModal';
-import {errorToast, warnToast} from '../components/toasts';
-import {postData} from '../API';
-
+import {errorToast, warnToast,successToast} from '../components/toasts';
+import {postData,getData} from '../API';
+import PerscriptionCard from '../components/PerscriptionCard'
 export default function UploadScreen({navigation, route}) {
   const [prescriptions, setPrescriptions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
  const [uploadedPerscriptions,setUploadedPerscriptions] = React.useState([]);
   const itemData = route.params?.item;
+  // console.log('itemData==',itemData);
+   console.log('patent,assis,doct==',itemData.patient_id,itemData.assistant_id,itemData.doctor_id);
 
- // console.log('itemData==',itemData.patient_id);
 
   const [showModal, setShowModal] = React.useState(false);
 
@@ -85,10 +86,12 @@ export default function UploadScreen({navigation, route}) {
   const sendPrescriptions = async () => {
     if (prescriptions.length) {
       var body = {
-        id: itemData?.id,
+        patient_id: itemData.patient_id,
+        assitant_id: itemData.assistant_id,
+        doctor_id: itemData.doctor_id,
         prescription: prescriptions.map(item => item?.data),
       };
-      const result = await postData('appointmentprescrition', body);
+      const result = await postData('assistant_send_prescrition_patient', body);
       if (result.data) {
         setShowModal(true);
       } else {
@@ -100,21 +103,17 @@ export default function UploadScreen({navigation, route}) {
   };
 
   const getPerscriptionList = async() =>{
-    // console.log('dt==',itemData?.patient_id)
+    
      setLoading(true);
-     var body = {
-       patient_id:itemData?.patient_id,      
-      // assistant_id:itemData?.assistant_id,
-   
-      
-     };
-     const result = await postData('appointmentprescritionlist', body);
-    console.log('result----', result.data);
+    
+     const result = await getData(`assistantfeedback/${itemData?.doctor_id}/${itemData?.patient_id}`);
+    console.log('resultlist----', result.data);
     setUploadedPerscriptions(result.data)
   
     setLoading(false);
     }
 
+    
    useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async() => {
       // The screen is focused
@@ -127,6 +126,30 @@ export default function UploadScreen({navigation, route}) {
     return unsubscribe;
     
   }, []);
+
+
+  const deletePerscription = async (id) => {
+    console.log('perid==',id);
+      setLoading(true);
+      let res = await getData(
+        `doctorfeedbackdelete/${id}`,
+      );
+    
+      if (res.success) {
+      
+      successToast('Successfully Delete')
+      
+      }
+      else{
+        errorToast('Something Went wrong please check')
+      }
+      setLoading(false);
+    
+      getPerscriptionList();
+    
+     }
+  
+
 
   return (
     <View style={styles.container}>
@@ -141,6 +164,7 @@ export default function UploadScreen({navigation, route}) {
         </TouchableOpacity>
         <Text style={styles.title}>Upload Prescription</Text>
       </View>
+      <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
       <View
         style={{
           paddingHorizontal: 20,
@@ -155,6 +179,7 @@ export default function UploadScreen({navigation, route}) {
           <Text style={styles.addText}>Upload Prescription</Text>
         </TouchableOpacity>
       </View>
+    
       <Text
         style={{
           color: '#000',
@@ -169,6 +194,7 @@ export default function UploadScreen({navigation, route}) {
       <FlatList
         data={prescriptions}
         numColumns={2}
+        minHeight={170}
         renderItem={({item, index}) => {
           return (
             <>
@@ -179,6 +205,7 @@ export default function UploadScreen({navigation, route}) {
                   height: 150,
                   margin: 5,
                   marginTop: 15,
+                 
                   borderRadius: 5,
                   borderWidth: 1,
                   borderColor: '#ccc',
@@ -224,16 +251,16 @@ export default function UploadScreen({navigation, route}) {
         }}>
         Uploaded prescriptions
       </Text>
-      {uploadedPerscriptions.length > 0 && 
+      {/* {uploadedPerscriptions.length > 0 &&  */}
 
-<FlatList
+{/* <FlatList
 data={uploadedPerscriptions}
 numColumns={2}
 renderItem={({item, index}) => {
   return (
     <>
       <Image
-        source={{uri: `data:image/png;base64,${item}`}}
+        source={{uri: `data:image/png;base64,${item?.prescription[0]}`}}
         style={{
           flex: 1,
           height: 150,
@@ -252,11 +279,27 @@ keyExtractor={(item, index) => index.toString()}
 contentContainerStyle={{
   paddingHorizontal: 20,
 }}
-/>
+/> */}
       
+      {uploadedPerscriptions && uploadedPerscriptions.map((item, index) => {
+            return (
+              <PerscriptionCard
+               onEdit={ () =>navigation.navigate('PerscriptionDetails',{
+                desc:item.description != null ? item.description : 'Assistant Perscription',
+                date: new Date(item.date).toDateString().slice(3),
+                img:item?.prescription,
+              })}
+              date={new Date(item.date).toDateString().slice(3)}
+              source={{uri: `data:image/png;base64,${item?.prescription[0]}`}}
+              description={item.description != null ? item.description : 'Assistant Perscription' }
+              onDelete={ () => deletePerscription(item.id)}
+              />
+            );
+          })}   
     
-    
-    }
+    {/* } */}
+
+</ScrollView>
       <Button
         onPress={() => sendPrescriptions()}
         mode="contained"

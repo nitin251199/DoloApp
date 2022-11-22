@@ -8,6 +8,7 @@ import UploadScreen from '../screens_assistant/UploadScreen';
 import AssistantProfile from '../screens_assistant/AssistantProfile';
 import EngagementScreen from '../screens_assistant/EngagementScreen';
 import SettingsScreen from '../screens_assistant/SettingsScreen';
+import PerscriptionDetails from '../screens_assistant/PerscriptionDetails'
 
 const Stack = createStackNavigator();
 
@@ -43,6 +44,7 @@ function AssistantNavigator() {
         // }}
       />
       <Stack.Screen name="UploadPrescription" component={UploadPrescription} />
+      <Stack.Screen name="PerscriptionDetails" component={PerscriptionDetails} />
       <Stack.Screen name="Upload" component={UploadScreen} />
       <Stack.Screen name="AssistantProfile" component={AssistantProfile} />
       <Stack.Screen name="Engagements" component={EngagementScreen} />

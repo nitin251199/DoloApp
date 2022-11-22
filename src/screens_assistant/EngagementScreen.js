@@ -20,10 +20,11 @@ export default function EngagementScreen({navigation}) {
   const [loading, setLoading] = React.useState(true);
   const [statusLoading, setStatusLoading] = React.useState(false);
   const [time, setTime] = React.useState('Morning');
+  const [currentPatient, setCurrentPatient] = React.useState('');
   const {t} = useTranslation();
   const fetchAppointments = async () => {
     const list = await getData(`appointment/${user?.doctor_id}`);
-    // console.log('app ls--', list?.data
+    console.log('app ls--', list?.data)
     // .filter(
     //   item =>
     //     new Date(item.created_at).setHours(0, 0, 0, 0) ==
@@ -45,11 +46,27 @@ export default function EngagementScreen({navigation}) {
   //   fetchAppointments();
   // }, []);
 
+  const getCurrentPatient = async() =>{
+    setLoading(true);
+    let body = {
+     shift_name:time,
+     doctor_id:user?.doctor_id
+  
+    }
+  var result = await postData('patinemaximumtokenno',body);
+  console.log('result--',result)
+  setLoading(false);
+  
+    setCurrentPatient(result.token_no);
+
+    }
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async() => {
      
    
      await fetchAppointments();
+     await getCurrentPatient();
     },[]);
 
    
@@ -59,22 +76,19 @@ export default function EngagementScreen({navigation}) {
 
   useEffect(() => {
     // let filteredAppointments = appointmentData;
-
+    
     if (time === 'Morning') {
       // setAppointments(
       //   filteredAppointments.filter(
       //     item => new Date(item.created_at).getHours() < 12,
       //   ),
       // );
-
+     
       setEngagements(
         engagementData.filter(item => item.shift_name == 'Morning'),
       );
-
-      console.log(
-        'ms==',
-        engagementData.filter(item => item.shift_name == 'Morning'),
-      );
+      getCurrentPatient()
+     
     } else {
       // setAppointments(
       //   filteredAppointments.filter(
@@ -85,12 +99,9 @@ export default function EngagementScreen({navigation}) {
       setEngagements(
         engagementData.filter(item => item.shift_name == 'Evening'),
       );
-      console.log(
-        'es==',
-        engagementData.filter(item => item.shift_name == 'Morning'),
-      );
+      getCurrentPatient()
     }
-  }, [time, engagementData]);
+  }, [time, engagementData, currentPatient]);
 
   const _sheetRef = React.useRef(null);
 
@@ -100,49 +111,38 @@ export default function EngagementScreen({navigation}) {
         return styles.resolved;
       case 3:
         return styles.absent;
-      case 1:
-        return styles.current;
+      // case 1:
+      //   return styles.current;
       case 0:
         return styles.pending;
       default:
-        return styles.resolved;
+        return styles.pending;
     }
   };
 
   const handleChange = async (id, status) => {
-    console.log('id--', id);
+    
     setStatusLoading(true);
     let currentA = null;
-    let previousA = null;
+    //let previousA = null;
     const newData = engagements.map(item => {
-      if (item.status === 1 && status === 1) {
-        item.status = 2;
-        previousA = item;
-      }
+      // if (item.status === 1 && status === 1) {
+      //   item.status = 2;
+      //   previousA = item;
+      // }
 
       // if (item.status === 4){
       //   errorToast('cannot active previous token')
   
       //   }
 
-      if (item.id === id) {
-        currentA = item;
+      if (item.id === id ) {
+       
       
-     
-        if (item.status === 4 && shift_name == time){
-          errorToast('cannot change the staus of previous token')
+          currentA = item;
           item.status = status;
-          }
-
-      
-    
-        item.status = status;
    
-        
-     
-    
-
-        }
+         }
 
        
 
@@ -153,35 +153,40 @@ export default function EngagementScreen({navigation}) {
       id: currentA?.id,
       shift_name:currentA?.shift_name
     };
-    let previousBody = {
-      status: previousA?.status,
-      id: previousA?.id,
-      shift_name:previousA?.shift_name
-    };
+    // let previousBody = {
+    //   status: previousA?.status,
+    //   id: previousA?.id,
+    //   shift_name:previousA?.shift_name
+    // };
     if (currentA) {
       var result1 = await postData('statusappointmentupdate', currentBody);
     }
-    if (previousA) {
-      var result2 = await postData('statusappointmentupdate', previousBody);
-    }
+    // if (previousA) {
+    //   var result2 = await postData('statusappointmentupdate', previousBody);
+    // }
     setStatusLoading(false);
-    if (result1?.success || result2?.success) {
+    if (result1?.success) {
       successToast('Appointment status updated successfully');
       setEngagements(newData);
+      fetchAppointments();
       _sheetRef.current.close();
     } else {
       errorToast('Something went wrong');
     }
   };
 
+
+
   const renderItem = ({item, index}) => {
     return (
-      <>
-      { item.status !=4 ?
+    
+     
       <TouchableOpacity
-      onLongPress={() => {
+      onLongPress=  {() => {
           setSelectedEngagement(item);
+          {item.status !=2 &&
           _sheetRef.current.open();
+        } 
         }}
         style={{
           flex: 1,
@@ -210,43 +215,9 @@ export default function EngagementScreen({navigation}) {
           {item.token_no <= 9 ? `0${item.token_no}` : item.token_no}
         </Text>
         {/* </LinearGradient> */}
-      </TouchableOpacity>:
-
-<TouchableOpacity
-// onLongPress={() => {
-//     setSelectedEngagement(item);
-//     _sheetRef.current.open();
-//   }}
-  style={{
-    flex: 1,
-    overflow: 'hidden',
-    borderRadius: 20,
-    marginVertical: 10,
-    marginHorizontal: 5,
-    //  width:10,
-    height: 80,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-
-    ...conditionalStyles(item.status),
-  }}>
-  {/* <LinearGradient
-    start={{x: 0, y: 0}}
-    end={{x: 1, y: 0}}
-    colors={
-      item.status == 3 || item.status == 0
-        ? ['#ffffff', '#ffffff']
-        : ['#d4f0da', '#9ee1ae']
-    }
-    style={{...styles.itemContainer}}> */}
-  <Text style={styles.itemText}>
-    {item.token_no <= 9 ? `0${item.token_no}` : item.token_no}
-  </Text>
-  {/* </LinearGradient> */}
-</TouchableOpacity>
-        }
-        </>
+      </TouchableOpacity>
+       
+       
     );
   };
 
@@ -279,10 +250,13 @@ export default function EngagementScreen({navigation}) {
         </TouchableOpacity>
         <Text style={styles.title}>Engagement Status</Text>
       </View>
+      <Text style={{color:Color.black,paddingLeft:20,fontSize: 16,fontFamily: 'Poppins-Bold',}}>
+        Current Consulting Patient  <Text style={{fontSize:30,color:Color.green}}>   {currentPatient}  </Text> 
+        </Text>
       <View style={styles.btnContainer}>
         <TouchableOpacity
           activeOpacity={1}
-          onPress={() => setTime('Morning')}
+          onPress={() => setTime('Morning') }
           style={{
             ...styles.btn,
             backgroundColor: time === 'Morning' ? Color.primary : Color.white,
@@ -381,6 +355,7 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     flexDirection: 'row',
+    marginTop:15
   },
   btn: {
     flex: 1,

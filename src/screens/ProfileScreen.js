@@ -9,7 +9,7 @@ import {
 import React, {useEffect} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Avatar} from 'react-native-paper';
+import {Avatar,Button} from 'react-native-paper';
 import {
   Menu,
   MenuOption,
@@ -21,25 +21,40 @@ import {CommonActions} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {getData} from '../API';
 import ProfilePlaceholder from '../placeholders/ProfilePlaceholder';
+import EditDoctorProfile from '../components/bottomsheets/EditDoctorProfile';
 import {dummyProfile} from './test';
 
 export default function ProfileScreen({navigation}) {
   const dispatch = useDispatch();
 
   const user = useSelector(state => state.user);
-
+  const _sheetRef = React.useRef(null);
   const [profileData, setProfileData] = React.useState();
   const [loading, setLoading] = React.useState(false);
+  const [editLoading, setEditLoading] = React.useState(false);
 
   const fetchProfileInfo = async () => {
     setLoading(true);
     let res = await getData(`dolo/profile/${user?.userid}`);
-    // console.log(`dolo/profile/${user?.userid}`, res);
+    console.log(`dolo/profile/${user?.userid}`, res);
     if (res.status) {
       // console.log(res);
       setProfileData(res.data);
     }
     setLoading(false);
+  };
+
+  const handleEdit = async item => {
+    
+    setEditLoading(true);
+    const body = item;
+    const result = await postData('assistantprofileupdate', body);
+    if (result.success) {
+      fetchAssistants();
+      _sheetRef.current.close();
+      successToast('Successfully Updated');
+    }
+    setEditLoading(false);
   };
 
   useEffect(() => {
@@ -115,17 +130,20 @@ export default function ProfileScreen({navigation}) {
               }}
               style={styles.image}
             />
-            {/* <Avatar.Icon
-              size={40}
-              icon="pencil"
-              style={{
-                backgroundColor: Color.gray,
-                position: 'absolute',
-                left: '52%',
-                top: '38%',
-                elevation: 10,
-              }}
-            /> */}
+            <View style={{marginTop:10}}>
+            <Button
+              mode="contained"
+             onPress={() => _sheetRef.current.open()}
+              color={Color.primary}
+              dark
+              labelStyle={{
+                fontSize: 12,
+                fontFamily: 'Poppins-Regular',
+                lineHeight: 12 * 1.4,
+              }}>
+              Update Profile
+            </Button>
+            </View>
             <Text style={{...styles.imageText, color: Color.primary}}>
               {profileData?.name}
             </Text>
@@ -157,7 +175,9 @@ export default function ProfileScreen({navigation}) {
           style={styles.profileContainer}
           contentContainerStyle={{
             padding: 20,
-          }}>
+          }}
+          showsVerticalScrollIndicator={false}
+          >
           <Text style={styles.imageText}>Your Profile</Text>
           <View
             style={{
@@ -500,6 +520,13 @@ export default function ProfileScreen({navigation}) {
           </View>
         </ScrollView>
       )}
+
+     <EditDoctorProfile
+        ref={_sheetRef}
+        loading={editLoading}
+        item={profileData}
+      //  handleEdit={item => handleEdit(item)}
+      />
     </View>
   );
 }

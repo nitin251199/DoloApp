@@ -21,7 +21,12 @@ export default function FeedbackCard({item, onPress, onEdit, onDelete,date,sourc
           source={source}
         />
         <View style={styles.listItemText}>
-        <Text style={styles.listItemTitle} numberOfLines={1}>{description}</Text>
+            {/* {item?.description == null ?
+        
+        <Text style={styles.listItemTitle} numberOfLines={1}>Assistant Perscription</Text>:
+        <Text style={styles.listItemTitle} numberOfLines={1}>{item?.description}</Text> 
+            } */}
+          <Text style={styles.listItemTitle} numberOfLines={1}>{description}</Text> 
           <View
             style={{
               flexDirection: 'row',

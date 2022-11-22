@@ -21,20 +21,22 @@ import HomeScreen from './HomeScreen';
 import {postData, getData} from '../API';
 import {successToast, errorToast} from '../components/toasts';
 import FeedbackDetails from './FeedbackDetails';
+import FeedbackCard from '../components/FeedbackCard';
 
 export default function DoctorScreen({navigation, route}) {
   const appointment = route.params.item;
-  //console.log('appointment',appointment);
+
   const [appointmentData, setAppointmentData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [feedBack, setFeedBack] = React.useState('');
   const [description, setDescription] = React.useState('');
-
+  const [showFeedback, setShowFeedback] = React.useState(true);
   const [prescriptions, setPrescriptions] = React.useState([]);
   const [prescriptionList, setPrescriptionList] = React.useState([]);
   const [imgList, setImgList] = React.useState([]);
   const [prescriptionData, setPrescriptionData] = React.useState([]);
-  
+  const [status, setStatus] = React.useState('');
+
   const fetchDocProfile = async () => {
     // let res = await getData(`doctor/profile/${docId}`);
     // console.log('doc profile', JSON.stringify(res));
@@ -44,6 +46,15 @@ export default function DoctorScreen({navigation, route}) {
     // console.log('appointment', appointment);
     setTimeout(() => {
       setAppointmentData(appointment);
+      if(appointment.status === 0){
+        setStatus('Pending')
+      }
+      if(appointment.status === 2){
+        setStatus('Resolve')
+      }
+      if(appointment.status === 3){
+        setStatus('Absent')
+      }
       setLoading(false);
     }, 100);
   };
@@ -58,7 +69,8 @@ export default function DoctorScreen({navigation, route}) {
       multiple: true,
     }).then(image => {
       setPrescriptions(prev => [...prev, image]);
-      console.log('imggggcmr==', prescriptions);
+     
+    //  setShowFeedback(true)
     });
   };
 
@@ -73,7 +85,8 @@ export default function DoctorScreen({navigation, route}) {
     }).then(image => {
       // let images = image.map(item => item?.path);
       setPrescriptions(prev => [...prev, image].flat());
-      console.log('imggggcmr==', prescriptions);
+     
+     // setShowFeedback(true)
     });
   };
 
@@ -110,7 +123,7 @@ export default function DoctorScreen({navigation, route}) {
       prescription: prescriptions.map(item => item?.data),
     };
     const result = await postData('doctor_send_prescrition_patient', body);
-    // console.log('result', result);
+     console.log('result', result);
     if (result.success) {
       successToast('Feedback Send SuccessFullly');
       // navigation.navigate('Home1');
@@ -119,7 +132,9 @@ export default function DoctorScreen({navigation, route}) {
       errorToast('Something Went Wrong Please Check');
     }
     setLoading(false);
-    navigation.navigate('Home1');
+  
+     setPrescriptions([])
+     getFeedbackList();
   };
 
   const getFeedbackList = async () => {
@@ -130,12 +145,34 @@ export default function DoctorScreen({navigation, route}) {
 
     if (res.success) {
     
-
+     console.log('feedbaclist==',res.data);
       setPrescriptionList(res.data);
 
     }
     setLoading(false);
   };
+
+ const deleteFeedback = async (id) => {
+console.log('fid==',id);
+  setLoading(true);
+  let res = await getData(
+    `doctorfeedbackdelete/${id}`,
+  );
+
+  if (res.success) {
+  
+  successToast('Successfully Delete')
+
+  }
+  else{
+    errorToast('Something Went wrong please check')
+  }
+  setLoading(false);
+
+
+
+ }
+
 
   useEffect(() => {
     fetchDocProfile();
@@ -216,7 +253,8 @@ export default function DoctorScreen({navigation, route}) {
           contentContainerStyle={{
             paddingBottom: 30,
             padding: 10,
-          }}>
+
+          }} showsVerticalScrollIndicator={false}>
           {/* <View style={{...styles.card, backgroundColor: Color.white}}>
           <Text style={{...styles.cardTitle}}>Biography</Text>
           <View style={styles.cardContent}>
@@ -255,7 +293,7 @@ export default function DoctorScreen({navigation, route}) {
               }}>
               <Text style={{...styles.cardTitle}}>Status</Text>
               <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>Waiting</Text>
+                <Text style={{...styles.cardText}}>{status}</Text>
               </View>
             </View>
           </View>
@@ -263,7 +301,7 @@ export default function DoctorScreen({navigation, route}) {
             <Text style={{...styles.cardTitle}}>Patient Problem</Text>
             <View style={styles.cardContent}>
               <Text style={{...styles.cardText}}>
-                {appointmentData?.patient_problem_description}
+                {appointmentData?.category}
               </Text>
             </View>
           </View>
@@ -320,10 +358,11 @@ export default function DoctorScreen({navigation, route}) {
                   borderBottomColor: '#ccc',
                   fontFamily: 'Poppins-Regular',
                 }}
-                value={feedBack}
+               // value={feedBack}
                 onChangeText={setFeedBack}
                 multiline={true}
                 numberOfLines={3}
+               // ref={input => {TextInput=input}}
               />
             </View>
           </View>
@@ -380,45 +419,11 @@ export default function DoctorScreen({navigation, route}) {
               marginTop: 10,
               flexWrap: 'wrap',
             }}>
-            {/* {prescriptions.map((prescription, index) => {
-              return (
-                <>
-                  <Image
-                    source={{uri: prescription}}
-                    style={{
-                      // flex: 1,
-                      width: '38%',
-                      height: 150,
-                      margin: 5,
-                      borderRadius: 5,
-                    }}
-                  />
-                  <TouchableOpacity
-                    onPress={() => {
-                      setPrescriptions(
-                        prescriptions.filter((item, i) => i !== index),
-                      );
-                    }}
-                    style={{
-                      // position: 'absolute',
-                      margin: 5,
-                      // top: index % 3 == 0 ? index * 130 : (index - 1) * 130,
-                      // right: Dimension.window.width * 0.3 * index,
-                      zIndex: 999,
-                    }}>
-                    <MaterialCommunityIcons
-                      name="close"
-                      size={24}
-                      color={Color.white}
-                      style={styles.closeIcon}
-                    />
-                  </TouchableOpacity>
-                </>
-              );
-            })} */}
+          
 
             <FlatList
               data={prescriptions}
+              
               nestedScrollEnabled={true}
               numColumns={2}
               renderItem={({item, index}) => {
@@ -465,6 +470,7 @@ export default function DoctorScreen({navigation, route}) {
                 paddingHorizontal: 20,
               }}
             />
+    
           </View>
 
           <Text
@@ -479,140 +485,17 @@ export default function DoctorScreen({navigation, route}) {
 
           {prescriptionList.map((item, index) => {
             return (
-              <TouchableOpacity
-      activeOpacity={1}
-      style={styles.listItem}
-      //onPress={onPress}
-      >
-      <View
-        style={{
-          flexDirection: 'row',
-          flex: 1,
-        }}>
-        <Image
-          style={styles.listImage}
-          source={{uri: `data:image/png;base64,${item?.prescription[0]}`}}
-        />
-        <View style={styles.listItemText}>
-          <Text style={styles.listItemTitle} numberOfLines={1}>{item.description}</Text>
-          {/* <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginVertical: 3,
-            }}>
-            <View style={{flexDirection: 'row', width: '65%'}}>
-              <MaterialCommunityIcons
-                name="map-marker"
-                size={17}
-                color={Color.primary}
-                style={{
-                  marginRight: 10,
-                }}
+              <FeedbackCard 
+               onEdit={ () =>navigation.navigate('FeedbackDetails',{
+                desc:item.description != null ? item.description : 'Assistant Perscription',
+                date: new Date(item.date).toDateString().slice(3),
+                img:item.prescription,
+              })}
+              date={new Date(item.date).toDateString().slice(3)}
+              source={{uri: `data:image/png;base64,${item?.prescription[0]}`}}
+              description={item.description != null ? item.description : 'Assistant Perscription' }
+              onDelete={ () => deleteFeedback(item.id)}
               />
-              <Text style={styles.listItemSubTitle}>{item.address}</Text>
-            </View>
-            <View style={{flexDirection: 'row'}}>
-              <MaterialCommunityIcons
-                name="gender-male-female"
-                size={17}
-                color={Color.primary}
-                style={{
-                  marginRight: 10,
-                }}
-              />
-              <Text style={styles.listItemSubTitle}>{item.gender}</Text>
-            </View>
-          </View> */}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingTop:5
-            }}>
-            <MaterialCommunityIcons
-              name="clock"
-              size={20}
-              color={Color.primary}
-              style={{
-                marginRight: 5,
-              }}
-            />
-            <Text
-              style={{
-                fontFamily: Fonts.primaryRegular,
-                color: '#000',
-                lineHeight: 14 * 1.4,
-              }}>
-              {new Date(item.date).toDateString().slice(3)}
-            </Text>
-          </View>
-          <Button
-          mode="contained"
-          onPress={ () =>navigation.navigate('FeedbackDetails',{
-            desc:item.description,
-            date: new Date(item.date).toDateString().slice(3),
-            img:item.prescription,
-          })}
-          icon={({size, color}) => (
-            <MaterialCommunityIcons
-              name="file-eye-outline"
-              size={24}
-              style={{color}}
-            />
-          )}
-          labelStyle={{
-            fontFamily: Fonts.primaryBold,
-            fontSize: 14,
-          }}
-          dark
-          style={{
-            backgroundColor: Color.primary,
-            marginTop: 15,
-            borderRadius: 8,
-            marginRight: 5,
-            width:'70%'
-           // flex: 1,
-          }}>
-          View
-        </Button>
-        </View>
-       
-      </View>
-      {/* <View
-        style={{
-          //flexDirection: 'row',
-          width:'40%',
-          alignSelf:'center'
-        }}>
-        <Button
-          mode="contained"
-        //  onPress={onEdit}
-          icon={({size, color}) => (
-            <MaterialCommunityIcons
-              name="file-eye-outline"
-              size={24}
-              style={{color}}
-            />
-          )}
-          labelStyle={{
-            fontFamily: Fonts.primaryBold,
-            fontSize: 14,
-          }}
-          dark
-          style={{
-            backgroundColor: Color.green,
-            marginTop: 15,
-            borderRadius: 8,
-            marginRight: 10,
-            flex: 1,
-          }}>
-          View
-        </Button>
-      
-      </View> */}
-    </TouchableOpacity>
             );
           })}
         </ScrollView>

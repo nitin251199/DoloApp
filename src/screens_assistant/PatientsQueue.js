@@ -11,7 +11,7 @@ import {Color, Fonts} from '../theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DoctorCard from '../components/DoctorCard';
 import DoctorPlaceholder from '../placeholders/DoctorPlaceholder';
-import {getData} from '../API';
+import {getData, postData} from '../API';
 import {useSelector} from 'react-redux';
 import {useEffect} from 'react';
 import AppointmentCard from '../components/AppointmentCard';
@@ -26,29 +26,28 @@ export default function PatientsQueue({navigation}) {
   const [loading, setLoading] = React.useState(true);
   const [refresh, setRefresh] = React.useState(false);
   const [time, setTime] = React.useState('Morning');
+
   const _scrollRef = React.useRef(null);
   const {t} = useTranslation();
   const fetchAppointments = async () => {
     const list = await getData(`appointment/${user?.doctor_id}`);
-   console.log('list?.data==',list?.data);
-  setAppointmentData(list?.data)
-      
+    console.log('quedata==', list?.data);
+    setAppointmentData(list?.data);
+
     setLoading(false);
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async() => {
-     
-   
-     await fetchAppointments();
-    },[]);
+    const unsubscribe = navigation.addListener(
+      'focus',
+      async () => {
+        await fetchAppointments();
+      },
+      [],
+    );
 
-   
     return unsubscribe;
-    
   }, []);
- 
-
 
   const conditionalStyles = status => {
     switch (status) {
@@ -65,10 +64,9 @@ export default function PatientsQueue({navigation}) {
     }
   };
 
-
   // const filterAppointments = () => {
   //  // let filteredAppointments = appointmentData;
-      
+
   //   if (time === 'Morning') {
   //     // setAppointments(
   //     //   filteredAppointments.filter(
@@ -94,15 +92,14 @@ export default function PatientsQueue({navigation}) {
   //         item => item.shift_name == 'Evening',
   //       ),
   //     );
-      
+
   //   }
 
   // }
 
   useEffect(() => {
+    // let filteredAppointments = appointmentData;
 
-   // let filteredAppointments = appointmentData;
-      
     if (time === 'Morning') {
       // setAppointments(
       //   filteredAppointments.filter(
@@ -110,12 +107,9 @@ export default function PatientsQueue({navigation}) {
       //   ),
       // );
 
-       setAppointments(
-        appointmentData.filter(
-          item => item.shift_name == 'Morning',
-        ),
+      setAppointments(
+        appointmentData.filter(item => item.shift_name == 'Morning'),
       );
-
     } else {
       // setAppointments(
       //   filteredAppointments.filter(
@@ -124,18 +118,10 @@ export default function PatientsQueue({navigation}) {
       // );
 
       setAppointments(
-        appointmentData.filter(
-          item => item.shift_name == 'Evening',
-        ),
+        appointmentData.filter(item => item.shift_name == 'Evening'),
       );
-      
     }
-   
-  }, [time,appointmentData]);
-
- 
-
-
+  }, [time, appointmentData]);
 
   return (
     <View style={styles.container}>
@@ -149,38 +135,39 @@ export default function PatientsQueue({navigation}) {
         </TouchableOpacity>
         <Text style={styles.title}> {t('patientQueue.screenTitle')}</Text>
       </View>
+
       <View style={styles.btnContainer}>
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => setTime('Morning') }
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setTime('Morning')}
+          style={{
+            ...styles.btn,
+            backgroundColor: time === 'Morning' ? Color.primary : Color.white,
+          }}>
+          <Text
             style={{
-              ...styles.btn,
-              backgroundColor: time === 'Morning' ? Color.primary : Color.white,
+              ...styles.btnText,
+              color: time === 'Morning' ? '#fff' : '#000',
             }}>
-            <Text
-              style={{
-                ...styles.btnText,
-                color: time === 'Morning' ? '#fff' : '#000',
-              }}>
-              {t('patientQueue.morning')}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => setTime('Evening')}
+            {t('patientQueue.morning')}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setTime('Evening')}
+          style={{
+            ...styles.btn,
+            backgroundColor: time === 'Evening' ? Color.primary : Color.white,
+          }}>
+          <Text
             style={{
-              ...styles.btn,
-              backgroundColor: time === 'Evening' ? Color.primary : Color.white,
+              ...styles.btnText,
+              color: time === 'Evening' ? '#fff' : '#000',
             }}>
-            <Text
-              style={{
-                ...styles.btnText,
-                color: time === 'Evening' ? '#fff' : '#000',
-              }}>
-              {t('patientQueue.evening')}
-            </Text>
-          </TouchableOpacity>
-        </View>
+            {t('patientQueue.evening')}
+          </Text>
+        </TouchableOpacity>
+      </View>
       {loading ? (
         <View
           style={{
@@ -207,39 +194,42 @@ export default function PatientsQueue({navigation}) {
               />
             );
           })} */}
-          <FlatList
-            ref={_scrollRef}
-            // onScrollToIndexFailed={() => {}}
-            // onLayout={() => {
-            //   _scrollRef.current.scrollToIndex({
-            //     animated: true,
-            //     index: appointmentData.findIndex(item => item.status === 1),
-            //     viewPosition: 0.5,
-            //   });
-            // }}
-            showsVerticalScrollIndicator={false}
-            style={{
-              width: '100%',
-            }}
-            contentContainerStyle={{paddingHorizontal: 20}}
-            data={appointments}
-            renderItem={({item, index}) => (
-              <AppointmentCard
-                key={index}
-                item={item}
-                bgColor={{ ...conditionalStyles(item.status)}}
-                //   onPress={() => navigation.navigate('Appointment', {item})}
-                // onDoublePress={() =>
-                //   navigation.navigate('AddPatient', {item, type: 'edit'})
-                // }
-                onPress={() =>
-                  navigation.navigate('AddPatient', {item, type: 'edit'})
-                   }
-              />
-            )}
-            keyExtractor={item => item.id}
-          />
-
+          <ScrollView
+            contentContainerStyle={{paddingBottom: 30}}
+            showsVerticalScrollIndicator={false}>
+            <FlatList
+              ref={_scrollRef}
+              // onScrollToIndexFailed={() => {}}
+              // onLayout={() => {
+              //   _scrollRef.current.scrollToIndex({
+              //     animated: true,
+              //     index: appointmentData.findIndex(item => item.status === 1),
+              //     viewPosition: 0.5,
+              //   });
+              // }}
+              showsVerticalScrollIndicator={false}
+              style={{
+                width: '100%',
+              }}
+              contentContainerStyle={{paddingHorizontal: 20}}
+              data={appointments}
+              renderItem={({item, index}) => (
+                <AppointmentCard
+                  key={index}
+                  item={item}
+                  bgColor={{...conditionalStyles(item.status)}}
+                  //   onPress={() => navigation.navigate('Appointment', {item})}
+                  // onDoublePress={() =>
+                  //   navigation.navigate('AddPatient', {item, type: 'edit'})
+                  // }
+                  onPress={() =>
+                    navigation.navigate('AddPatient', {item, type: 'edit'})
+                  }
+                />
+              )}
+              keyExtractor={item => item.id}
+            />
+          </ScrollView>
           {appointmentData.length === 0 && (
             <View
               style={{
@@ -290,21 +280,20 @@ const styles = StyleSheet.create({
   },
   resolved: {
     backgroundColor: '#006400',
- },
- absent: {
-   // borderWidth: 5,
-   // borderColor: Color.red,
-  backgroundColor:Color.red,
-
- },
- current: {
-   backgroundColor: '#ff8c00',
-   //borderWidth: 5,
-  // borderColor: Color.blue,
- },
- pending: {
-   backgroundColor: Color.graylight,
-   // borderWidth: 2,
-   // borderStyle: 'dashed',
- },
+  },
+  absent: {
+    // borderWidth: 5,
+    // borderColor: Color.red,
+    backgroundColor: Color.red,
+  },
+  current: {
+    backgroundColor: '#ff8c00',
+    //borderWidth: 5,
+    // borderColor: Color.blue,
+  },
+  pending: {
+    backgroundColor: Color.graylight,
+    // borderWidth: 2,
+    // borderStyle: 'dashed',
+  },
 });

@@ -63,6 +63,7 @@ export default function UploadPrescription({navigation}) {
   const fetchAppointments = async () => {
     console.log('api', `allappointment/${user?.doctor_id}`);
     const list = await getData(`allappointment/${user?.doctor_id}`);
+    console.log('listdata-->',  list?.data)
     setAppointmentData(
       list?.data
         // .filter(
@@ -72,7 +73,7 @@ export default function UploadPrescription({navigation}) {
         // )
         // .sort((a, b) => new Date(a.create_date) - new Date(b.create_date)),
     );
-    console.log('dddtt==',list?.data);
+   // console.log('dddtt==',list?.data);
     setLoading(false);
   };
 
@@ -141,6 +142,9 @@ export default function UploadPrescription({navigation}) {
     }
   }, [selectedDate.date, selectedDate.month, time, appointmentData]);
 
+
+
+
   return (
     <View style={styles.container}>
       <View style={{flexDirection: 'row', padding: 20}}>
@@ -153,7 +157,7 @@ export default function UploadPrescription({navigation}) {
         </TouchableOpacity>
         <Text style={styles.title}>{t('uploadPrescription.screenTitle')}</Text>
       </View>
-
+     
       <View
         style={{
           width: '100%',
