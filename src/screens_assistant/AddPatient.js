@@ -507,6 +507,8 @@ export default function AddPatient({navigation, route}) {
           <TextInput
             ref={_inputRef}
             theme={theme}
+            maxLength={10}
+            
             keyboardType="numeric"
             dense
             onChangeText={text => setMobileNo(text)}

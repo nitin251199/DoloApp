@@ -172,7 +172,7 @@ export default function UploadScreen({navigation, route}) {
         <TouchableOpacity style={styles.addContainer} onPress={addPrescription}>
           <MaterialCommunityIcons
             name="upload"
-            size={64}
+            size={50}
             color={Color.primary}
             style={styles.addIcon}
           />
@@ -201,15 +201,18 @@ export default function UploadScreen({navigation, route}) {
               <Image
                 source={{uri: item?.path}}
                 style={{
-                  flex: 1,
-                  height: 150,
+                  flex: 0.5,
+                  minHeight:150,
                   margin: 5,
                   marginTop: 15,
                  
                   borderRadius: 5,
                   borderWidth: 1,
                   borderColor: '#ccc',
+
+
                 }}
+                resizeMode='cover'
               />
               <TouchableOpacity
                 onPress={() => {
@@ -285,13 +288,13 @@ contentContainerStyle={{
             return (
               <PerscriptionCard
                onEdit={ () =>navigation.navigate('PerscriptionDetails',{
-                desc:item.description != null ? item.description : 'Assistant Perscription',
+                desc:item.description != null ? item.description : 'Perscription',
                 date: new Date(item.date).toDateString().slice(3),
                 img:item?.prescription,
               })}
               date={new Date(item.date).toDateString().slice(3)}
               source={{uri: `data:image/png;base64,${item?.prescription[0]}`}}
-              description={item.description != null ? item.description : 'Assistant Perscription' }
+              description={item.description != null ? item.description : 'Perscription' }
               onDelete={ () => deletePerscription(item.id)}
               />
             );

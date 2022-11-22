@@ -43,14 +43,14 @@ export default function DoctorScreen({navigation, route}) {
     // if (res.success) {
     //   setAppointmentData(res.data);
     // }
-    // console.log('appointment', appointment);
+     console.log('appointment', appointment);
     setTimeout(() => {
       setAppointmentData(appointment);
       if(appointment.status === 0){
         setStatus('Pending')
       }
       if(appointment.status === 2){
-        setStatus('Resolve')
+        setStatus('Done')
       }
       if(appointment.status === 3){
         setStatus('Absent')
@@ -218,7 +218,7 @@ console.log('fid==',id);
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.ratingText}>Appointment No.</Text>
-                  <Text style={styles.ratingStat}>{appointmentData?.id}</Text>
+                  <Text style={styles.ratingStat}>{appointmentData?.token_no}</Text>
                 </View>
               </View>
               <View style={{...styles.ratingContainer, marginTop: 10}}>
@@ -432,8 +432,9 @@ console.log('fid==',id);
                     <Image
                       source={{uri: item?.path}}
                       style={{
-                        flex: 1,
-                        height: 150,
+                        flex: 0.5,
+                       // height: 150,
+                        minHeight:150,
                         margin: 5,
                         marginTop: 15,
                         borderRadius: 5,
@@ -487,13 +488,13 @@ console.log('fid==',id);
             return (
               <FeedbackCard 
                onEdit={ () =>navigation.navigate('FeedbackDetails',{
-                desc:item.description != null ? item.description : 'Assistant Perscription',
+                desc:item.description != null ? item.description : 'Perscription',
                 date: new Date(item.date).toDateString().slice(3),
                 img:item.prescription,
               })}
               date={new Date(item.date).toDateString().slice(3)}
               source={{uri: `data:image/png;base64,${item?.prescription[0]}`}}
-              description={item.description != null ? item.description : 'Assistant Perscription' }
+              description={item.description != null ? item.description : 'Perscription' }
               onDelete={ () => deleteFeedback(item.id)}
               />
             );

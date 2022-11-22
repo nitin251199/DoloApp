@@ -195,10 +195,11 @@ export default function PatientsQueue({navigation}) {
             );
           })} */}
           <ScrollView
-            contentContainerStyle={{paddingBottom: 30}}
+            contentContainerStyle={{paddingBottom: 50}}
             showsVerticalScrollIndicator={false}>
             <FlatList
               ref={_scrollRef}
+              nestedScrollEnabled={true}
               // onScrollToIndexFailed={() => {}}
               // onLayout={() => {
               //   _scrollRef.current.scrollToIndex({
@@ -211,7 +212,7 @@ export default function PatientsQueue({navigation}) {
               style={{
                 width: '100%',
               }}
-              contentContainerStyle={{paddingHorizontal: 20}}
+              contentContainerStyle={{paddingHorizontal: 30,paddingBottom:100}}
               data={appointments}
               renderItem={({item, index}) => (
                 <AppointmentCard
