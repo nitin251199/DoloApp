@@ -19,6 +19,7 @@ import AddpatientSuccessModal from '../components/modals/AddPatientSuccessModal'
 import ThermalPrinterModule from 'react-native-thermal-printer';
 import Reciept from '../components/Reciept';
 import RNPrint from 'react-native-print';
+import { errorToast } from '../components/toasts';
 const {width, height} = Dimension;
 export default function AddPatient({navigation, route}) {
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
@@ -33,11 +34,11 @@ export default function AddPatient({navigation, route}) {
   );
   const [name, setName] = React.useState(itemData?.patient_name || '');
   const [age, setAge] = React.useState(itemData?.age || '');
-  const [ageType, setAgeType] = React.useState(itemData?.ageType || 'Years');
+  // const [ageType, setAgeType] = React.useState(itemData?.ageType || 'Years');
   const [weight, setWeight] = React.useState(itemData?.weight || '');
-  const [weightType, setWeightType] = React.useState(
-    itemData?.weightType || 'Kg',
-  );
+  // const [weightType, setWeightType] = React.useState(
+  //   itemData?.weightType || 'Kg',
+  // );
   const [gender, setGender] = React.useState(
     itemData?.gender.toLowerCase() || 'male',
   );
@@ -58,9 +59,9 @@ export default function AddPatient({navigation, route}) {
     setCategory('');
     setName('');
     setAge('');
-    setAgeType('Years');
+  //  setAgeType('Years');
     setWeight('');
-    setWeightType('Kg');
+   // setWeightType('Kg');
     setGender('male');
     setMobileNo('');
     setShowModal(false);
@@ -73,15 +74,16 @@ export default function AddPatient({navigation, route}) {
 
   const onSubmit = async () => {
     setLoading(true);
+    
     var addbody = {
       doctor_id: user?.doctor_id,
       assistant_id: user?.userid,
       category,
       patient_name: name,
       age,
-      agetype: ageType,
+    //  agetype: ageType,
       weight,
-      weighttype: weightType,
+     // weighttype: weightType,
       gender,
       mobile: mobileNo,
       status: 0,
@@ -95,9 +97,9 @@ export default function AddPatient({navigation, route}) {
       category: category,
       patient_name: name,
       age,
-      agetype: ageType,
+     // agetype: ageType,
       weight,
-      weighttype: weightType,
+     // weighttype: weightType,
       gender,
       mobile: mobileNo,
       status: 0,
@@ -115,6 +117,16 @@ export default function AddPatient({navigation, route}) {
     }
     setLoading(false);
   };
+
+  const checkValidation = () => {
+    if(mobileNo.length < 10){
+      errorToast('Please enter minimum 10 digit mobile number')
+    }
+    else {
+      onSubmit()
+    }
+
+  }
 
   const showDatePicker = () => {
     setIsDatePickerVisible(true);
@@ -163,14 +175,14 @@ export default function AddPatient({navigation, route}) {
         modalData.patient_name +
         '</p></div><div style="display:flex; font-weight: 600;"><p>Age&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
         modalData.age + 
-        modalData.agetype +
+       'Years' +
         '</p></div><div style="display:flex; font-weight: 600;"><p>Weight&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
         modalData.weight +
-        modalData.weighttype +
+       'Kg' +
         '</p></div><div style="display:flex; font-weight: 600;"><p>Gender&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
         modalData.gender +
         '</p></div><div style="display:flex; font-weight: 600; "><p>Time&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-        modalData.create_date +
+        `${new Date(modalData.created_at).getDate()}/${new Date(modalData.created_at).getMonth()}/${new Date(modalData.created_at).getFullYear()}` +
         '</p></div>',
     });
   };
@@ -202,7 +214,7 @@ export default function AddPatient({navigation, route}) {
         category={modalData.category}
         patient_name={modalData.patient_name}
         age={modalData.age}
-        agetype={modalData.agetype}
+       // agetype={modalData.agetype}
         weight={modalData.weight}
         gender={modalData.gender}
         // time={
@@ -214,7 +226,7 @@ export default function AddPatient({navigation, route}) {
           `${new Date(modalData.created_at).getDate()}/${new Date(modalData.created_at).getMonth()}/${new Date(modalData.created_at).getFullYear()}`
           
         }
-        weight_type={modalData.weighttype}
+      //  weight_type={modalData.weighttype}
         onPrintPress={() => printHTML()}
         token_no={modalData.token_no}
       />
@@ -316,6 +328,7 @@ export default function AddPatient({navigation, route}) {
           <TextInput
             theme={theme}
             dense
+            style={{height: 45,}}
             onChangeText={text => setName(text)}
             value={name}
             mode="flat"
@@ -323,18 +336,20 @@ export default function AddPatient({navigation, route}) {
             activeUnderlineColor={Color.primary}
           />
         </View>
-        <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Age</Text>
+        <View style={{marginTop: 15,flexDirection: 'row',flex:1,justifyContent:'space-between'}}>
+          
+         
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
+              
               marginTop: 5,
+              width:'49%'
             }}>
+              <Text style={styles.label}>Age (Years)</Text>
             <TextInput
               theme={theme}
               dense
-              style={{flex: 3, height: 55}}
+              style={{height: 45,}}
               keyboardType="numeric"
               onChangeText={text => setAge(text)}
               value={age}
@@ -342,7 +357,7 @@ export default function AddPatient({navigation, route}) {
               underlineColor="#000"
               activeUnderlineColor={Color.primary}
             />
-            <View
+            {/* <View
               style={{
                 borderBottomWidth: 1,
                 borderTopLeftRadius: 5,
@@ -365,11 +380,30 @@ export default function AddPatient({navigation, route}) {
                 <Picker.Item label="Month" value="Months" />
                 <Picker.Item label="Days" value="Days" />
               </Picker>
-            </View>
+            </View> */}
           </View>
+          <View
+            style={{
+              
+              marginTop: 5,
+              width:'49%'
+            }}>
+              <Text style={styles.label}>Weight (kg)</Text>
+            <TextInput
+              theme={theme}
+              dense
+              style={{height: 45,}}
+              keyboardType="numeric"
+              onChangeText={text => setWeight(text)}
+              value={weight}
+              mode="flat"
+              underlineColor="#000"
+              activeUnderlineColor={Color.primary}
+            />
+            </View>
         </View>
-        <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Weight</Text>
+        {/* <View style={{marginTop: 15}}>
+          <Text style={styles.label}>Weight (kg)</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -379,7 +413,7 @@ export default function AddPatient({navigation, route}) {
             <TextInput
               theme={theme}
               dense
-              style={{flex: 3, height: 55}}
+              style={{flex: 3, height: 45}}
               keyboardType="numeric"
               onChangeText={text => setWeight(text)}
               value={weight}
@@ -413,7 +447,7 @@ export default function AddPatient({navigation, route}) {
               </Picker>
             </View>
           </View>
-        </View>
+        </View> */}
         <View style={{marginTop: 15}}>
           <Text style={styles.label}>Gender</Text>
           <View
@@ -508,7 +542,7 @@ export default function AddPatient({navigation, route}) {
             ref={_inputRef}
             theme={theme}
             maxLength={10}
-            
+            style={{height: 45,}}
             keyboardType="numeric"
             dense
             onChangeText={text => setMobileNo(text)}
@@ -561,7 +595,7 @@ export default function AddPatient({navigation, route}) {
           dark
           loading={loading}
           mode="contained"
-          onPress={onSubmit}>
+          onPress={checkValidation}>
           Save & Approve
         </Button>
       </ScrollView>

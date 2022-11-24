@@ -114,7 +114,7 @@ export default function DoctorScreen({navigation, route}) {
   };
 
   const sendPerscription = async () => {
-    // console.log('dt',appointment?.patient_id,appointment?.doctor_id,feedBack,prescriptions)
+    // console.log('dt==',appointment?.patient_id,appointment?.doctor_id,feedBack,prescriptions)
     setLoading(true);
     var body = {
       patient_id: appointment?.patient_id,
@@ -158,7 +158,7 @@ console.log('fid==',id);
   let res = await getData(
     `doctorfeedbackdelete/${id}`,
   );
-
+  console.log('res==',res);
   if (res.success) {
   
   successToast('Successfully Delete')
@@ -168,7 +168,7 @@ console.log('fid==',id);
     errorToast('Something Went wrong please check')
   }
   setLoading(false);
-
+  getFeedbackList();
 
 
  }
@@ -434,13 +434,14 @@ console.log('fid==',id);
                       style={{
                         flex: 0.5,
                        // height: 150,
-                        minHeight:150,
+                        minHeight:190,
                         margin: 5,
                         marginTop: 15,
                         borderRadius: 5,
                         borderWidth: 1,
                         borderColor: '#ccc',
                       }}
+                      resizeMode='center'
                     />
                     <TouchableOpacity
                       onPress={() => {

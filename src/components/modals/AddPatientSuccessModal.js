@@ -52,13 +52,13 @@ export default function AddpatientSuccessModal(props) {
           <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
           <Text style={styles.title}>Age</Text>
           <Text style={styles.title2}>:</Text>
-          <Text style={styles.descr}>{props.age}{props.agetype}</Text>
+          <Text style={styles.descr}>{props.age} Years</Text>
           
           </View>
           <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
           <Text style={styles.title}>Weight</Text>
           <Text style={styles.title2}>:</Text>
-          <Text style={styles.descr}>{props.weight}{props.weight_type}</Text>
+          <Text style={styles.descr}>{props.weight} Kg</Text>
           
           </View>
           <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>

@@ -17,6 +17,7 @@ import SuccessModal from '../components/modals/SuccessModal';
 import {errorToast, warnToast,successToast} from '../components/toasts';
 import {postData,getData} from '../API';
 import PerscriptionCard from '../components/PerscriptionCard'
+import autoMergeLevel1 from 'redux-persist/es/stateReconciler/autoMergeLevel1';
 export default function UploadScreen({navigation, route}) {
   const [prescriptions, setPrescriptions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -202,17 +203,18 @@ export default function UploadScreen({navigation, route}) {
                 source={{uri: item?.path}}
                 style={{
                   flex: 0.5,
-                  minHeight:150,
+                  minHeight:190,
                   margin: 5,
                   marginTop: 15,
-                 
+                
+                  
                   borderRadius: 5,
                   borderWidth: 1,
                   borderColor: '#ccc',
 
 
                 }}
-                resizeMode='cover'
+                resizeMode='center'
               />
               <TouchableOpacity
                 onPress={() => {
