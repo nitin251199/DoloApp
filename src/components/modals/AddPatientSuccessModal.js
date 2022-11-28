@@ -58,7 +58,7 @@ export default function AddpatientSuccessModal(props) {
           <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
           <Text style={styles.title}>Weight</Text>
           <Text style={styles.title2}>:</Text>
-          <Text style={styles.descr}>{props.weight} Kg</Text>
+          <Text style={styles.descr}>{props.weight} {props.weighttype}</Text>
           
           </View>
           <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>

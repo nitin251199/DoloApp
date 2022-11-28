@@ -270,6 +270,7 @@ export default function UploadPrescription({navigation}) {
           <DoctorPlaceholder />
         </View>
       ) : (
+        <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
         <View>
           <FlatList
             ref={_scrollRef}
@@ -285,7 +286,7 @@ export default function UploadPrescription({navigation}) {
             style={{
               width: '100%',
             }}
-            contentContainerStyle={{paddingHorizontal: 20}}
+           // contentContainerStyle={{paddingHorizontal: 20,paddingBottom:70}}
             data={appointments}
             renderItem={({item, index}) => (
               <AppointmentCard
@@ -314,6 +315,7 @@ export default function UploadPrescription({navigation}) {
             </View>
           )}
         </View>
+        </ScrollView>
       )}
     </View>
   );

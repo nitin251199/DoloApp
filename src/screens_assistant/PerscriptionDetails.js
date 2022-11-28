@@ -54,6 +54,7 @@ const PerscriptionDetails = ({navigation, route}) => {
                           <ImageModal
                              //resizeMode="contain"
                              modalImageResizeMode='contain'
+                             
                              modalImageStyle={{
                             //   height: 182,
                             //   width: 317,

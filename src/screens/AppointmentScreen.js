@@ -36,6 +36,8 @@ export default function DoctorScreen({navigation, route}) {
   const [imgList, setImgList] = React.useState([]);
   const [prescriptionData, setPrescriptionData] = React.useState([]);
   const [status, setStatus] = React.useState('');
+  const [currentAge, setCurrentAge] = React.useState('');
+
 
   const fetchDocProfile = async () => {
     // let res = await getData(`doctor/profile/${docId}`);
@@ -46,6 +48,7 @@ export default function DoctorScreen({navigation, route}) {
      console.log('appointment', appointment);
     setTimeout(() => {
       setAppointmentData(appointment);
+      getAge(appointment?.age)
       if(appointment.status === 0){
         setStatus('Pending')
       }
@@ -58,6 +61,29 @@ export default function DoctorScreen({navigation, route}) {
       setLoading(false);
     }, 100);
   };
+
+  const getAge = (dateString) => {
+    var dates = dateString.split("/");
+    var d = new Date();
+
+    var userday = dates[0];
+    var usermonth = dates[1];
+    var useryear = dates[2];
+
+    var curday = d.getDate();
+    var curmonth = d.getMonth()+1;
+    var curyear = d.getFullYear();
+
+    var age = curyear - useryear;
+
+    if((curmonth < usermonth) || ( (curmonth == usermonth) && curday < userday )){
+
+        age--;
+
+    }
+    console.log('age1=',age);
+    return setCurrentAge(age);
+}
 
   const takePhotoFromCamera = () => {
     ImagePicker.openCamera({
@@ -326,7 +352,7 @@ console.log('fid==',id);
               <Text style={{...styles.cardTitle}}>Age</Text>
               <View style={styles.cardContent}>
                 <Text style={{...styles.cardText}}>
-                  {appointmentData?.age} {appointmentData?.agetype}
+                  {currentAge} Years
                 </Text>
               </View>
             </View>

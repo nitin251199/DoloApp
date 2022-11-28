@@ -116,6 +116,11 @@
       "appointments": "अपॉइंटमेंट",
       "noAppointments": "आज कोई अपॉइंटमेंट नहीं"
     },
+    "searchPatient": {
+      "screenTitle": "रोगी खोजें",
+      "Enter patient mobile number": "मरीज का मोबाइल नंबर दर्ज करें",
+      "Patient History" : "रोगी की जानकारी"
+    },
     "scheduleScreen": {
       "screenTitle": "मेरे अनुसूची",
       "jan": "जनवरी",

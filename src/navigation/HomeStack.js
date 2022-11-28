@@ -13,6 +13,9 @@ import SettingScreen from '../screens/SettingScreen';
 import TodayAppointments from '../screens/TodayAppointments';
 import ProfileScreen from '../screens/ProfileScreen';
 import FeedbackDetails from '../screens/FeedbackDetails';
+import SearchPatient from '../screens/SearchPatient';
+import UpdateProfile from '../screens/UpdateProfile';
+import AllAppointments from '../screens/AllAppointments';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +39,9 @@ export const HomeStack = () => {
       <Stack.Screen name="Today" component={TodayAppointments} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="FeedbackDetails" component={FeedbackDetails} />
+      <Stack.Screen name="SearchPatient" component={SearchPatient} />
+      <Stack.Screen name="UpdateProfile" component={UpdateProfile} />
+      <Stack.Screen name="AllAppointments" component={AllAppointments} />
     </Stack.Navigator>
   );
 };

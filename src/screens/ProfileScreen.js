@@ -22,6 +22,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getData} from '../API';
 import ProfilePlaceholder from '../placeholders/ProfilePlaceholder';
 import EditDoctorProfile from '../components/bottomsheets/EditDoctorProfile';
+
 import {dummyProfile} from './test';
 
 export default function ProfileScreen({navigation}) {
@@ -36,7 +37,7 @@ export default function ProfileScreen({navigation}) {
   const fetchProfileInfo = async () => {
     setLoading(true);
     let res = await getData(`dolo/profile/${user?.userid}`);
-    console.log(`dolo/profile/${user?.userid}`, res);
+    console.log(`dolo/profile/${user?.userid}`, JSON.stringify(res));
     if (res.status) {
       // console.log(res);
       setProfileData(res.data);
@@ -44,19 +45,7 @@ export default function ProfileScreen({navigation}) {
     setLoading(false);
   };
 
-  const handleEdit = async item => {
-    
-    setEditLoading(true);
-    const body = item;
-    const result = await postData('assistantprofileupdate', body);
-    if (result.success) {
-      fetchAssistants();
-      _sheetRef.current.close();
-      successToast('Successfully Updated');
-    }
-    setEditLoading(false);
-  };
-
+ 
   useEffect(() => {
     fetchProfileInfo();
   }, []);
@@ -73,6 +62,7 @@ export default function ProfileScreen({navigation}) {
   };
 
   return (
+   
     <View style={styles.container}>
       {/* <Menu renderer={renderers.SlideInMenu} style={styles.dots}>
         <MenuTrigger>
@@ -114,6 +104,7 @@ export default function ProfileScreen({navigation}) {
           />
         </MenuOptions>
       </Menu> */}
+      
       <View style={styles.imageView}>
         {loading ? (
           <ProfilePlaceholder />
@@ -133,7 +124,7 @@ export default function ProfileScreen({navigation}) {
             <View style={{marginTop:10}}>
             <Button
               mode="contained"
-             onPress={() => _sheetRef.current.open()}
+             onPress={() => navigation.navigate('UpdateProfile')}
               color={Color.primary}
               dark
               labelStyle={{
@@ -521,12 +512,7 @@ export default function ProfileScreen({navigation}) {
         </ScrollView>
       )}
 
-     <EditDoctorProfile
-        ref={_sheetRef}
-        loading={editLoading}
-        item={profileData}
-      //  handleEdit={item => handleEdit(item)}
-      />
+     
     </View>
   );
 }

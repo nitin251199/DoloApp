@@ -107,12 +107,22 @@ export function DrawerContent(props) {
                 props.navigation.navigate('Home1');
               }}
             />
+               <DrawerItem
+              labelStyle={{fontFamily: 'Poppins-Medium'}}
+              icon={({color, size}) => (
+                <Icon name="text-box-search" size={size} color={color} />
+              )}
+              label={t('searchPatient.screenTitle')}
+              onPress={() => {
+                props.navigation.navigate('SearchPatient');
+              }}
+            />
              <DrawerItem
               labelStyle={{fontFamily: 'Poppins-Medium'}}
               icon={({color, size}) => (
                 <Icon name="stethoscope" size={size} color={color} />
               )}
-              label={'TodaysAppointments'}
+              label={t('todayAppointment.screenTitle')}
               onPress={() => {
                 props.navigation.navigate('Today');
               }}

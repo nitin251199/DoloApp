@@ -21,6 +21,7 @@ import autoMergeLevel1 from 'redux-persist/es/stateReconciler/autoMergeLevel1';
 export default function UploadScreen({navigation, route}) {
   const [prescriptions, setPrescriptions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [uploading, setUploading] = React.useState(false);
  const [uploadedPerscriptions,setUploadedPerscriptions] = React.useState([]);
   const itemData = route.params?.item;
   // console.log('itemData==',itemData);
@@ -83,8 +84,10 @@ export default function UploadScreen({navigation, route}) {
   const onPrimaryPress = () => {
     setPrescriptions([]);
     setShowModal(false);
+    getPerscriptionList();
   };
   const sendPrescriptions = async () => {
+    setUploading(true)
     if (prescriptions.length) {
       var body = {
         patient_id: itemData.patient_id,
@@ -92,6 +95,7 @@ export default function UploadScreen({navigation, route}) {
         doctor_id: itemData.doctor_id,
         prescription: prescriptions.map(item => item?.data),
       };
+      console.log('ubody==',body)
       const result = await postData('assistant_send_prescrition_patient', body);
       if (result.data) {
         setShowModal(true);
@@ -101,6 +105,7 @@ export default function UploadScreen({navigation, route}) {
     } else {
       warnToast('Please add at least one prescription');
     }
+    setUploading(false)
   };
 
   const getPerscriptionList = async() =>{
@@ -121,7 +126,7 @@ export default function UploadScreen({navigation, route}) {
       // Call any action
      await getPerscriptionList();
 
-    },[]);
+    },[uploadedPerscriptions]);
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return unsubscribe;
@@ -308,6 +313,7 @@ contentContainerStyle={{
       <Button
         onPress={() => sendPrescriptions()}
         mode="contained"
+        loading={uploading}
         dark
         color={Color.primary}
         style={{
@@ -334,6 +340,7 @@ contentContainerStyle={{
         onSecondaryPress={() => {
           setShowModal(false);
           navigation.goBack();
+         
         }}
       />
     

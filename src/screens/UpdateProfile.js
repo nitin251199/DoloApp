@@ -2,454 +2,466 @@ import {Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react
 import React from 'react';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {Avatar, Button, TextInput, Checkbox, HelperText,} from 'react-native-paper';
-import {Color, Dimension, Fonts} from '../../theme';
-import { postData } from '../../API';
+import {Color, Dimension, Fonts} from '../theme';
+import { postData,getData } from '../API/index'
 import {useEffect} from 'react';
 import ImagePicker from 'react-native-image-crop-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import MapModal from '../modals/MapModal';
-import DocProfilePlaceholder from '../../placeholders/DocProfilePlaceholder';
+import MapModal from '../components/modals/MapModal'
+import {useDispatch, useSelector} from 'react-redux';
+import DocProfilePlaceholder from '../placeholders/DocProfilePlaceholder';
+import { errorToast, successToast } from '../components/toasts';
 
-export default EditAssistant = React.forwardRef((props, ref) => {
-  const {item} = props;
 
-  const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
+const UpdateProfile = ({navigation}) => {
+  const dispatch = useDispatch();
 
+  const user = useSelector(state => state.user);
+    const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
+
+    const [profileData, setProfileData] = React.useState('');
+
+    const fetchProfileInfo = async () => {
+      setLoading(true);
+      let res = await getData(`dolo/profile/${user?.userid}`);
+      console.log(`prodata==`, res.data);
+      if (res.status) {
+        // console.log(res);
+        setProfileData(res.data);
+      }
+      setLoading(false);
+    };
   
-  let morningSchedule = [
-    {
-      day: 'Sunday',
-      start_time: new Date(new Date().setHours(10, 0, 0)),
-      end_time: new Date(new Date().setHours(13, 0, 0)),
-      checked: false,
-    },
-    {
-      day: 'Monday',
-      start_time: new Date(new Date().setHours(10, 0, 0)),
-      end_time: new Date(new Date().setHours(13, 0, 0)),
-      checked: true,
-    },
-    {
-      day: 'Tuesday',
-      start_time: new Date(new Date().setHours(10, 0, 0)),
-      end_time: new Date(new Date().setHours(13, 0, 0)),
-      checked: true,
-    },
-    {
-      day: 'Wednesday',
-      start_time: new Date(new Date().setHours(10, 0, 0)),
-      end_time: new Date(new Date().setHours(13, 0, 0)),
-      checked: true,
-    },
-    {
-      day: 'Thursday',
-      start_time: new Date(new Date().setHours(10, 0, 0)),
-      end_time: new Date(new Date().setHours(13, 0, 0)),
-      checked: true,
-    },
-    {
-      day: 'Friday',
-      start_time: new Date(new Date().setHours(10, 0, 0)),
-      end_time: new Date(new Date().setHours(13, 0, 0)),
-      checked: true,
-    },
-    {
-      day: 'Saturday',
-      start_time: new Date(new Date().setHours(17, 0, 0)),
-      end_time: new Date(new Date().setHours(19, 0, 0)),
-      checked: true,
-    },
-  ];
+   
+    useEffect(() => {
+      fetchProfileInfo();
+    }, []);
 
-  let eveningSchedule = [
-    {
-      day: 'Sunday',
-      start_time: new Date(new Date().setHours(17, 0, 0)),
-      end_time: new Date(new Date().setHours(19, 0, 0)),
-      checked: false,
-    },
-    {
-      day: 'Monday',
-      start_time: new Date(new Date().setHours(17, 0, 0)),
-      end_time: new Date(new Date().setHours(19, 0, 0)),
-      checked: true,
-    },
-    {
-      day: 'Tuesday',
-      start_time: new Date(new Date().setHours(17, 0, 0)),
-      end_time: new Date(new Date().setHours(19, 0, 0)),
-      checked: true,
-    },
-    {
-      day: 'Wednesday',
-      start_time: new Date(new Date().setHours(17, 0, 0)),
-      end_time: new Date(new Date().setHours(19, 0, 0)),
-      checked: true,
-    },
-    {
-      day: 'Thursday',
-      start_time: new Date(new Date().setHours(17, 0, 0)),
-      end_time: new Date(new Date().setHours(19, 0, 0)),
-      checked: true,
-    },
-    {
-      day: 'Friday',
-      start_time: new Date(new Date().setHours(17, 0, 0)),
-      end_time: new Date(new Date().setHours(19, 0, 0)),
-      checked: true,
-    },
-    {
-      day: 'Saturday',
-      start_time: new Date(new Date().setHours(17, 0, 0)),
-      end_time: new Date(new Date().setHours(19, 0, 0)),
-      checked: true,
-    },
-  ];
-
-  const [editLoading,setEditLoading] = React.useState(false);
-  const [address, setAddress] = React.useState('');
-  const [name, setName] = React.useState('');
-  const [gender, setGender] = React.useState(
-    item?.gender?.toLowerCase() || 'male',
-  );
-  const [password, setPassword] = React.useState('');
-  const [profilePic, setProfilePic] = React.useState('');
-  const [clinicLocation, setClinicLocation] = React.useState('');
-  const [fees, setFees] = React.useState('');
-  const [registration_number, setRegNumber] = React.useState('');
-  const [specialization, setSpecialization] = React.useState('');
-  const [yearOfPassout, setYearOfPassout] = React.useState('');
-  const [facilities, setFacilities] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
-  const [Degree, setDegree] = React.useState('');
-  const [adhar, setAdhar] = React.useState('');
-  const [awardList, setAwardList] = React.useState('');
- 
-  const [morningschedule, setMorningSchedule] = React.useState(morningSchedule);
-  const [eveningschedule, setEveningSchedule] = React.useState(eveningSchedule);
-  const [achievementList, setAchievementList] = React.useState([]);
-  const [checked, setChecked] = React.useState(false);
-  const [doctorPic, setDoctorPic] = React.useState('');
-  const [showModal, setShowModal] = React.useState(false);
-  const [showMap, setShowMap] = React.useState(false);
-  const [avgTime, setAvgTime] = React.useState('');
-  const [clinicLocations, setClinicLocations] = React.useState([]);
-  const [clinicLocationText, setClinicLocationText] = React.useState('');
-  const [collegename, setCollegename] = React.useState('');
-  const [year_of_passout, setYear_of_passout] = React.useState('');
-  const [college_location, setCollege_location] = React.useState('');
-  const [award_name, setAward_name] = React.useState('');
-  const [certifications, setCertifications] = React.useState('');
-  const [certList, setCertList] = React.useState([]);
-
-  const [award_giving_authority_name, setAward_giving_authority_name] =
-    React.useState('');
-
-  const [achievement_year, setAchievement_year] = React.useState('');
-  const [achievement_specialization, setAchievement_specialization] =
-    React.useState('');
     
-    const [maritalStatus, setMaritalStatus] = React.useState('Married');
-    const [clinicContact, setClinicContact] = React.useState('');
-    const [pinCode, setPinCode] = React.useState('');
-
- 
-  const _scrollRef = React.useRef(null);
-
-  useEffect(() => {
-    setName(item?.name || '')
-    setAddress(item?.address || '');
-    setPassword(item?.password || '');
-    setProfilePic(item?.profileimage || '');
-    setClinicLocation(item?.clinic_location[0] || '');
-    setFees(item?.fees || '');
-    setRegNumber(item?.registration_number || '');
-    setSpecialization(item?.specialization || '');
-    setYear_of_passout(item?.year_of_passout || '');
-    setFacilities(item?.facilities || '');
-    setCollegename(item?.collegename || '');
-    setDegree(item?.Degree || '');
-    setAdhar(item?.adhar || '');
-    setAwardList(item?.award_list || '');
-    setLoading(item?.loading )
-    
-    setMaritalStatus(item?.marital_status || '');
-    setCollege_location(item?.college_location || '')
-    setAvgTime(item?.avgTime || '')
-    setAwardList(item?.award_list || '')
-    setCertList(item?.certList || '')
-    setAchievementList(item?.achievementList || '')
-    setClinicContact(item?.clinic_contact || '')
-    setPinCode(item?.pincode || '')
-    
-
-  }, [item]);
-
-  const takePhotoFromCamera = () => {
-    ImagePicker.openCamera({
-      compressImageMaxWidth: 300,
-      compressImageMaxHeight: 300,
-      cropping: true,
-      compressImageQuality: 0.7,
-      includeBase64: true,
-    }).then(image => {
-      setProfilePic(image.data);
-    });
-  };
-
-  const choosePhotoFromLibrary = () => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 300,
-      cropping: true,
-      compressImageQuality: 0.7,
-      includeBase64: true,
-    }).then(image => {
-      setProfilePic(image.data);
-    });
-  };
-
-  const selectProfilePic = () => {
-    Alert.alert(
-      'Select Profile Picture from',
-      '',
-      [
+    let morningSchedule = [
         {
-          text: 'Cancel',
-          onPress: () => {},
+          day: 'Sunday',
+          start_time: new Date(new Date().setHours(10, 0, 0)),
+          end_time: new Date(new Date().setHours(13, 0, 0)),
+          checked: false,
         },
         {
-          text: 'Camera',
-          onPress: () => takePhotoFromCamera(),
+          day: 'Monday',
+          start_time: new Date(new Date().setHours(10, 0, 0)),
+          end_time: new Date(new Date().setHours(13, 0, 0)),
+          checked: true,
         },
         {
-          text: 'Gallery',
-          onPress: () => choosePhotoFromLibrary(),
+          day: 'Tuesday',
+          start_time: new Date(new Date().setHours(10, 0, 0)),
+          end_time: new Date(new Date().setHours(13, 0, 0)),
+          checked: true,
         },
-      ],
-      {
-        cancelable: true,
-      },
-    );
-  };
-
-
-  const setMorningSchedules = index => {
-    let temp = [...morningschedule];
-    // console.log('temp', temp[index]['day']);
-    if (temp[index]['checked']) {
-      temp[index]['checked'] = false;
-      setMorningSchedule(temp);
-    } else {
-      temp[index]['checked'] = true;
-      setMorningSchedule(temp);
-    }
-  };
-
-  const setEveningSchedules = index => {
-    let temp = [...eveningschedule];
-    // console.log('temp', temp[index]['day']);
-    if (temp[index]['checked']) {
-      temp[index]['checked'] = false;
-      setEveningSchedule(temp);
-    } else {
-      temp[index]['checked'] = true;
-      setEveningSchedule(temp);
-    }
-  };
-
-  const setMorningScheduleStartTime = index => {
-    let temp = [...morningschedule];
-    DateTimePickerAndroid.open({
-      value: temp[index]['start_time'],
-      onChange: (event, date) => {
-        temp[index]['start_time'] = date;
-        setMorningSchedule(temp);
-      },
-      mode: 'time',
-      is24Hour: false,
-    });
-  };
-
-  const setMorningScheduleEndTime = index => {
-    let temp = [...morningschedule];
-    DateTimePickerAndroid.open({
-      value: temp[index]['end_time'],
-      onChange: (event, date) => {
-        temp[index]['end_time'] = date;
-        setMorningSchedule(temp);
-      },
-      mode: 'time',
-      is24Hour: false,
-    });
-  };
-
-  const setEveningScheduleStartTime = index => {
-    let temp = [...eveningschedule];
-    DateTimePickerAndroid.open({
-      value: temp[index]['start_time'],
-      onChange: (event, date) => {
-        temp[index]['start_time'] = date;
-        setEveningSchedule(temp);
-      },
-      mode: 'time',
-      is24Hour: false,
-    });
-  };
-
-  const setEveningScheduleEndTime = index => {
-    let temp = [...eveningschedule];
-    DateTimePickerAndroid.open({
-      value: temp[index]['end_time'],
-      onChange: (event, date) => {
-        temp[index]['end_time'] = date;
-        setEveningSchedule(temp);
-      },
-      mode: 'time',
-      is24Hour: false,
-    });
-  };
-
-  const addClinicLocations = () => {
-    setClinicLocations(prev => [...prev, clinicLocationText]);
-    setClinicLocationText('');
-  };
-
-  const addAwards = () => {
-    setAwardList(prev => [
-      ...prev,
-      {
-        award_name,
-        award_giving_authority_name,
-      },
-    ]);
-    setAward_name('');
-    setAward_giving_authority_name('');
-  };
-
-  const addAchievements = () => {
-    setAchievementList(prev => [
-      ...prev,
-      {
-        achievement_specialization,
-        achievement_year,
-      },
-    ]);
-    setAchievement_year('');
-    setAchievement_specialization('');
-  };
-
-  const handleEdit = async() => {
+        {
+          day: 'Wednesday',
+          start_time: new Date(new Date().setHours(10, 0, 0)),
+          end_time: new Date(new Date().setHours(13, 0, 0)),
+          checked: true,
+        },
+        {
+          day: 'Thursday',
+          start_time: new Date(new Date().setHours(10, 0, 0)),
+          end_time: new Date(new Date().setHours(13, 0, 0)),
+          checked: true,
+        },
+        {
+          day: 'Friday',
+          start_time: new Date(new Date().setHours(10, 0, 0)),
+          end_time: new Date(new Date().setHours(13, 0, 0)),
+          checked: true,
+        },
+        {
+          day: 'Saturday',
+          start_time: new Date(new Date().setHours(17, 0, 0)),
+          end_time: new Date(new Date().setHours(19, 0, 0)),
+          checked: true,
+        },
+      ];
     
-    setEditLoading(true);
-    let body1 = 
-      {
+      let eveningSchedule = [
+        {
+          day: 'Sunday',
+          start_time: new Date(new Date().setHours(17, 0, 0)),
+          end_time: new Date(new Date().setHours(19, 0, 0)),
+          checked: false,
+        },
+        {
+          day: 'Monday',
+          start_time: new Date(new Date().setHours(17, 0, 0)),
+          end_time: new Date(new Date().setHours(19, 0, 0)),
+          checked: true,
+        },
+        {
+          day: 'Tuesday',
+          start_time: new Date(new Date().setHours(17, 0, 0)),
+          end_time: new Date(new Date().setHours(19, 0, 0)),
+          checked: true,
+        },
+        {
+          day: 'Wednesday',
+          start_time: new Date(new Date().setHours(17, 0, 0)),
+          end_time: new Date(new Date().setHours(19, 0, 0)),
+          checked: true,
+        },
+        {
+          day: 'Thursday',
+          start_time: new Date(new Date().setHours(17, 0, 0)),
+          end_time: new Date(new Date().setHours(19, 0, 0)),
+          checked: true,
+        },
+        {
+          day: 'Friday',
+          start_time: new Date(new Date().setHours(17, 0, 0)),
+          end_time: new Date(new Date().setHours(19, 0, 0)),
+          checked: true,
+        },
+        {
+          day: 'Saturday',
+          start_time: new Date(new Date().setHours(17, 0, 0)),
+          end_time: new Date(new Date().setHours(19, 0, 0)),
+          checked: true,
+        },
+      ];
+    
+      const [editLoading,setEditLoading] = React.useState(false);
+      const [address, setAddress] = React.useState('');
+      const [name, setName] = React.useState('');
+      const [gender, setGender] = React.useState(
+        profileData?.gender?.toLowerCase() || 'male',
+      );
+      const [password, setPassword] = React.useState('');
+      const [profilePic, setProfilePic] = React.useState('');
+      const [dob, setDob] = React.useState('');
+      const [fees, setFees] = React.useState('');
+      const [registration_number, setRegNumber] = React.useState('');
+      const [specialization, setSpecialization] = React.useState('');
+      const [yearOfPassout, setYearOfPassout] = React.useState('');
+      const [facilities, setFacilities] = React.useState('');
+      const [loading, setLoading] = React.useState(false);
+      const [Degree, setDegree] = React.useState('');
+      const [adhar, setAdhar] = React.useState('');
+      const [awardList, setAwardList] = React.useState('');
+     
+      const [morningschedule, setMorningSchedule] = React.useState(morningSchedule);
+      const [eveningschedule, setEveningSchedule] = React.useState(eveningSchedule);
+      const [achievementList, setAchievementList] = React.useState([]);
+      const [checked, setChecked] = React.useState(false);
+      const [doctorPic, setDoctorPic] = React.useState('');
+      const [showModal, setShowModal] = React.useState(false);
+      const [showMap, setShowMap] = React.useState(false);
+      const [avgTime, setAvgTime] = React.useState('');
+      const [clinicLocations, setClinicLocations] = React.useState([]);
+      const [languages, setLanguages] = React.useState('');
+      const [clinicLocationText, setClinicLocationText] = React.useState('');
+      const [collegename, setCollegename] = React.useState('');
+      const [year_of_passout, setYear_of_passout] = React.useState('');
+      const [college_location, setCollege_location] = React.useState('');
+      const [award_name, setAward_name] = React.useState('');
+      const [certifications, setCertifications] = React.useState('');
+      const [certList, setCertList] = React.useState([]);
+    
+      const [award_giving_authority_name, setAward_giving_authority_name] =
+        React.useState('');
+    
+      const [achievement_year, setAchievement_year] = React.useState('');
+      const [achievement_specialization, setAchievement_specialization] =
+        React.useState('');
         
-        name,
-        // date_of_birth: dob,
-        marital_status: maritalStatus,
-        gender,
-      
-        fees: fees,
+        const [maritalStatus, setMaritalStatus] = React.useState('Married');
+        const [clinicContact, setClinicContact] = React.useState('');
+        const [pinCode, setPinCode] = React.useState('');
+       
+        const [location, setLocation] = React.useState('');
         
+     
+      const _scrollRef = React.useRef(null);
+
     
-        clinic_contact: clinicContact,
-       // location,
-       // pincode: pinCode,
-        adhar,
-        registration_number:registration_number,
-        schedule_morning: morningschedule.map(item => {
-          return {
-            day: item.day,
-            start_time: item.start_time.toString(),
-            end_time: item.end_time.toString(),
-            checked: item.checked,
-          };
-        }),
-        schedule_evening: eveningschedule.map(item => {
-          return {
-            day: item.day,
-            start_time: item.start_time.toString(),
-            end_time: item.end_time.toString(),
-            checked: item.checked,
-          };
-        }),
-        avgTime,
-        clinicLocations:
-          clinicLocations.length > 0 ? clinicLocations : [clinicLocationText],
-        facilities,
-        specialization,
-        Degree,
-        collegename,
-        year_of_passout,
-        college_location,
-        feeconsultation: checked,
-        // languages,
-        awardList:
-          awardList.length > 0
-            ? awardList
-            : [
-                {
-                  award_name,
-                  award_giving_authority_name,
-                },
-              ],
-        certList: certList.length > 0 ? certList : [certifications],
-        achievementList:
-          achievementList.length > 0
-            ? achievementList
-            : [{achievement_specialization, achievement_year}],
-        profileimage: doctorPic.data,
+    
+      useEffect(() => {
+        setName(profileData?.name || '')
+        setAddress(profileData?.address || '');
+        setPassword(profileData?.password || '');
+        setProfilePic(profileData?.profileimage || '');
+        setClinicLocations(profileData?.clinic_location || '');
+        setFees(profileData?.fees || '');
+        setRegNumber(profileData?.registration_number || '');
+        setSpecialization(profileData?.specialization || '');
+        setYear_of_passout(profileData?.year_of_passout || '');
+        setFacilities(profileData?.facilities || '');
+        setCollegename(profileData?.collegename || '');
+        setDegree(profileData?.Degree || '');
+        setAdhar(profileData?.adhar || '');
+        setAwardList(profileData?.award_list || '');
+       setDob(profileData?.date_of_birth || '')
+        
+        setMaritalStatus(profileData?.marital_status || '');
+        setCollege_location(profileData?.college_location || '')
+        setAvgTime(profileData?.avgTime || '')
+        setAwardList(profileData?.award_list || '')
+        setCertList(profileData?.certList || '')
+        setAchievementList(profileData?.achievementList || '')
+        setClinicContact(profileData?.clinic_contact || '')
+        setPinCode(profileData?.pincode || '')
+        setLocation(profileData?.location || '')
+        setLanguages(profileData?.location || '')
+    
+      }, [profileData]);
+    
+      const takePhotoFromCamera = () => {
+        ImagePicker.openCamera({
+          compressImageMaxWidth: 300,
+          compressImageMaxHeight: 300,
+          cropping: true,
+          compressImageQuality: 0.7,
+          includeBase64: true,
+        }).then(image => {
+          setProfilePic(image.data);
+        });
       };
     
-    const body = JSON.stringify(body1)
-    const result = await postData(`doctorprofile/update/${item?.id}`, body);
-    if (result.success) {
-     // fetchAssistants();
-      _sheetRef.current.close();
-      successToast('Successfully Updated');
-    }
-    setEditLoading(false);
-  };
+      const choosePhotoFromLibrary = () => {
+        ImagePicker.openPicker({
+          width: 300,
+          height: 300,
+          cropping: true,
+          compressImageQuality: 0.7,
+          includeBase64: true,
+        }).then(image => {
+          setProfilePic(image.data);
+        });
+      };
+    
+      const selectProfilePic = () => {
+        Alert.alert(
+          'Select Profile Picture from',
+          '',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => {},
+            },
+            {
+              text: 'Camera',
+              onPress: () => takePhotoFromCamera(),
+            },
+            {
+              text: 'Gallery',
+              onPress: () => choosePhotoFromLibrary(),
+            },
+          ],
+          {
+            cancelable: true,
+          },
+        );
+      };
+    
+    
+      const setMorningSchedules = index => {
+        let temp = [...morningschedule];
+        // console.log('temp', temp[index]['day']);
+        if (temp[index]['checked']) {
+          temp[index]['checked'] = false;
+          setMorningSchedule(temp);
+        } else {
+          temp[index]['checked'] = true;
+          setMorningSchedule(temp);
+        }
+      };
+    
+      const setEveningSchedules = index => {
+        let temp = [...eveningschedule];
+        // console.log('temp', temp[index]['day']);
+        if (temp[index]['checked']) {
+          temp[index]['checked'] = false;
+          setEveningSchedule(temp);
+        } else {
+          temp[index]['checked'] = true;
+          setEveningSchedule(temp);
+        }
+      };
+    
+      const setMorningScheduleStartTime = index => {
+        let temp = [...morningschedule];
+        DateTimePickerAndroid.open({
+          value: temp[index]['start_time'],
+          onChange: (event, date) => {
+            temp[index]['start_time'] = date;
+            setMorningSchedule(temp);
+          },
+          mode: 'time',
+          is24Hour: false,
+        });
+      };
+    
+      const setMorningScheduleEndTime = index => {
+        let temp = [...morningschedule];
+        DateTimePickerAndroid.open({
+          value: temp[index]['end_time'],
+          onChange: (event, date) => {
+            temp[index]['end_time'] = date;
+            setMorningSchedule(temp);
+          },
+          mode: 'time',
+          is24Hour: false,
+        });
+      };
+    
+      const setEveningScheduleStartTime = index => {
+        let temp = [...eveningschedule];
+        DateTimePickerAndroid.open({
+          value: temp[index]['start_time'],
+          onChange: (event, date) => {
+            temp[index]['start_time'] = date;
+            setEveningSchedule(temp);
+          },
+          mode: 'time',
+          is24Hour: false,
+        });
+      };
+    
+      const setEveningScheduleEndTime = index => {
+        let temp = [...eveningschedule];
+        DateTimePickerAndroid.open({
+          value: temp[index]['end_time'],
+          onChange: (event, date) => {
+            temp[index]['end_time'] = date;
+            setEveningSchedule(temp);
+          },
+          mode: 'time',
+          is24Hour: false,
+        });
+      };
+    
+      const addClinicLocations = () => {
+        setClinicLocations(prev => [...prev, clinicLocationText]);
+        setClinicLocationText('');
+      };
+    
+      const addAwards = () => {
+        setAwardList(prev => [
+          ...prev,
+          {
+            award_name,
+            award_giving_authority_name,
+          },
+        ]);
+        setAward_name('');
+        setAward_giving_authority_name('');
+      };
+    
+      const addAchievements = () => {
+        setAchievementList(prev => [
+          ...prev,
+          {
+            achievement_specialization,
+            achievement_year,
+          },
+        ]);
+        setAchievement_year('');
+        setAchievement_specialization('');
+      };
+    
+      const handleEdit = async() => {
+        
+        setEditLoading(true);
+        let body1 = 
+          {
+            
+            name,
+            date_of_birth: dob,
+            marital_status: maritalStatus,
+            gender,
+          
+            fees: fees,
+            
+        
+            clinic_contact: clinicContact,
+            location,
+            pincode: pinCode,
+            adhar,
+            registration_number:registration_number,
+            schedule_morning: morningschedule.map(item => {
+              return {
+                day: item.day,
+                start_time: item.start_time.toString(),
+                end_time: item.end_time.toString(),
+                checked: item.checked,
+              };
+            }),
+            schedule_evening: eveningschedule.map(item => {
+              return {
+                day: item.day,
+                start_time: item.start_time.toString(),
+                end_time: item.end_time.toString(),
+                checked: item.checked,
+              };
+            }),
+            avgTime,
+            clinicLocations:
+              clinicLocations.length > 0 ? clinicLocations : [clinicLocationText],
+            facilities,
+            specialization,
+            Degree,
+            collegename,
+            year_of_passout,
+            college_location,
+            feeconsultation: checked,
+            // languages,
+            awardList:
+              awardList.length > 0
+                ? awardList
+                : [
+                    {
+                      award_name,
+                      award_giving_authority_name,
+                    },
+                  ],
+            certList: certList.length > 0 ? certList : [certifications],
+            achievementList:
+              achievementList.length > 0
+                ? achievementList
+                : [{achievement_specialization, achievement_year}],
+            profileimage: profilePic,
+          };
+        
+        const body = JSON.stringify(body1)
+        console.log('body==',body);
+        const result = await postData(`doctorprofile/update/${profileData?.id}`, body1);
+        if (result.success) {
+       
+          successToast('Successfully Updated');
+          fetchProfileInfo()
+        }
+        else {
+        
+          errorToast('Something went wrong plz check')
 
-  <MapModal
-  setLocation={setLocation}
-  onRequestClose={() => setShowMap(false)}
-  onPress={() => {
-    setShowMap(false);
-    // navigation.goBack();
-  }}
-  visible={showMap}
-/>
-
-  
+        }
+        setEditLoading(false);
+      };
   return (
-   
-    <RBSheet
-      ref={ref}
-     closeOnDragDown={false}
-    //  closeOnPressMask={true}
-      customStyles={{
-        wrapper: {
-          backgroundColor: 'transparent',
-        },
-        draggableIcon: {
-          // backgroundColor: textColor,
-        },
-        container: {
-          backgroundColor: Color.white,
-          borderTopLeftRadius: 25,
-          borderTopRightRadius: 25,
-        },
-      }}
-      height={Dimension.window.height * 0.8}>
-        <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
-        {item.loading ? (
+    <View style={styles.container}>
+       <MapModal
+        setLocation={setLocation}
+        onRequestClose={() => setShowMap(false)}
+        onPress={() => {
+          setShowMap(false);
+          // navigation.goBack();
+        }}
+        visible={showMap}
+      />
+     <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
+     {loading ? (
           <View>
             <DocProfilePlaceholder />
-          </View>)
-        :
-        (
+          </View>
+        ) : (
       <View
         style={{
           paddingHorizontal: 30,
@@ -459,7 +471,6 @@ export default EditAssistant = React.forwardRef((props, ref) => {
           <Text style={{...styles.sheetTitle, color: Color.primary}}>
             Edit the Doctor details
           </Text>
-          
           <View
             style={{
               flexDirection: 'row',
@@ -631,18 +642,18 @@ export default EditAssistant = React.forwardRef((props, ref) => {
               flexDirection: 'row',
               marginTop: 15,
             }}>
-            {/* <View style={{marginRight: 10, flex: 1}}>
-              <Text style={styles.label}>Specialization</Text>
+            <View style={{marginRight: 10, flex: 1}}>
+              <Text style={styles.label}>Date of birth</Text>
               <TextInput
                 theme={theme}
                 dense
-                onChangeText={text => setSpecialization(text)}
-                value={specialization}
+                onChangeText={text => setDob(text)}
+                value={dob}
                 mode="flat"
                 underlineColor="#000"
                 activeUnderlineColor={Color.primary}
               />
-            </View> */}
+            </View>
             <View style={{flex: 1}}>
               <Text style={styles.label}>Fees</Text>
               <TextInput
@@ -656,7 +667,7 @@ export default EditAssistant = React.forwardRef((props, ref) => {
               />
             </View>
           </View>
-          <View
+          {/* <View
             style={{
               flexDirection: 'row',
               marginTop: 15,
@@ -673,7 +684,7 @@ export default EditAssistant = React.forwardRef((props, ref) => {
                 activeUnderlineColor={Color.primary}
               />
             </View>
-          </View>
+          </View> */}
           <View
             style={{
               flexDirection: 'row',
@@ -715,6 +726,7 @@ export default EditAssistant = React.forwardRef((props, ref) => {
           <Text style={styles.label}>Pin Code</Text>
           <TextInput
             theme={theme}
+            keyboardType="numeric"
             dense
             onChangeText={text => setPinCode(text)}
             value={pinCode}
@@ -1157,7 +1169,7 @@ export default EditAssistant = React.forwardRef((props, ref) => {
               activeUnderlineColor={Color.primary}
             />
           </View>
-          <View style={{flex: 1}}>
+          {/* <View style={{flex: 1}}>
             <Text style={styles.label}>College Location</Text>
             <TextInput
               theme={theme}
@@ -1168,7 +1180,7 @@ export default EditAssistant = React.forwardRef((props, ref) => {
               underlineColor="#000"
               activeUnderlineColor={Color.primary}
             />
-          </View>
+          </View> */}
         </View>
         <View style={{marginTop: 15}}>
           <Text
@@ -1515,53 +1527,57 @@ export default EditAssistant = React.forwardRef((props, ref) => {
       </View>
         )}
       </ScrollView>
-    </RBSheet>
-   
-  );
- 
-});
+    </View>
+  )
+}
+
+export default UpdateProfile
 
 const styles = StyleSheet.create({
-  sheetTitle: {
-    fontSize: 20,
-    fontFamily: 'Poppins-SemiBold',
-    color: Color.black,
-  },
-  sheetSubTitle: {
-    fontSize: 12,
-    fontFamily: 'Poppins-Regular',
-    color: Color.gray,
-  },
-  label: {
-    fontFamily: 'Poppins-Regular',
-    color: '#000',
-  },
-  button: {
-    width: '100%',
-    backgroundColor: Color.primary,
-    borderRadius: 10,
-  },
-  buttonLabel: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 16,
-    lineHeight: 16 * 1.4,
-  },
-  buttonContent: {
-    padding: 5,
-  },
-  radioStyle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    // width: '49%',
-    padding: 12,
-    borderRadius: 5,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    color: Color.black,
-    fontFamily: Fonts.primaryBold,
-    marginBottom: 10,
-  },
-});
+    container: {
+        flex: 1,
+        alignItems: 'center',
+      },
+    sheetTitle: {
+        fontSize: 20,
+        fontFamily: 'Poppins-SemiBold',
+        color: Color.black,
+      },
+      sheetSubTitle: {
+        fontSize: 12,
+        fontFamily: 'Poppins-Regular',
+        color: Color.gray,
+      },
+      label: {
+        fontFamily: 'Poppins-Regular',
+        color: '#000',
+      },
+      button: {
+        width: '100%',
+        backgroundColor: Color.primary,
+        borderRadius: 10,
+      },
+      buttonLabel: {
+        fontFamily: 'Poppins-Medium',
+        fontSize: 16,
+        lineHeight: 16 * 1.4,
+      },
+      buttonContent: {
+        padding: 5,
+      },
+      radioStyle: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center',
+        // width: '49%',
+        padding: 12,
+        borderRadius: 5,
+      },
+      sectionTitle: {
+        fontSize: 18,
+        color: Color.black,
+        fontFamily: Fonts.primaryBold,
+        marginBottom: 10,
+      },
+})

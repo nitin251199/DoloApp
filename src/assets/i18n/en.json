@@ -92,6 +92,11 @@
       "appointments": "Appointments",
       "noAppointments": "No Appointments here"
     },
+    "searchPatient": {
+      "screenTitle": "Search Patient",
+      "Enter patient mobile number": "Enter patient mobile number",
+      "Patient History" : "Patient History"
+    },
     "scheduleScreen": {
       "screenTitle": "My Schedule",
       "jan": "January",

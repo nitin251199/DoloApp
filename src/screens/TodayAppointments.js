@@ -129,7 +129,9 @@ export default function TodayAppointments({navigation}) {
           showsVerticalScrollIndicator={false}
           style={{
             width: '100%',
-          }}>
+          }}
+          contentContainerStyle={{paddingBottom:30}}
+          >
           {appointmentData.length != 0 && appointments.map((item, index) => {
             return (
               <AppointmentCard

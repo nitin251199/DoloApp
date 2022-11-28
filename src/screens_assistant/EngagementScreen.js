@@ -11,6 +11,7 @@ import EngagementPlaceholder from '../placeholders/EngagementPlaceholder';
 import {errorToast, successToast} from '../components/toasts';
 import {ActivityIndicator} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
+import { ScrollView } from 'react-native-gesture-handler';
 export default function EngagementScreen({navigation}) {
   const user = useSelector(state => state.user);
   //console.log('did--',user?.doctor_id)
@@ -295,14 +296,16 @@ export default function EngagementScreen({navigation}) {
           contentContainerStyle={{paddingBottom: 20, margin: 10}}
         />
       ) : (
+        <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
         <FlatList
           data={engagements}
           renderItem={renderItem}
           numColumns={2}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{paddingBottom: 20, margin: 10}}
+         // contentContainerStyle={{paddingBottom: 20, margin: 10}}
         />
+        </ScrollView>
       )}
     </View>
   );
