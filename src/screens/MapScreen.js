@@ -121,6 +121,7 @@ export default MapScreen = props => {
           latitudeDelta: 0.001,
           longitudeDelta: 0.001,
         };
+        console.log('region==',region)
         setRegion(region);
         setLoading(false);
         mapRef.current.animateToRegion(region, 2 * 1000);
@@ -154,6 +155,7 @@ export default MapScreen = props => {
     )
       .then(response => response.json())
       .then(responseJson => {
+        console.log('map respo==',responseJson);
         const userLocation = responseJson.results[0].formatted_address;
         setUserLocation(userLocation);
         setRegionChangeProgress(false);

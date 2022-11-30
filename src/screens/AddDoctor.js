@@ -29,6 +29,95 @@ import MapModal from '../components/modals/MapModal';
 
 export default function AddDoctor({navigation}) {
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
+  let morningSchedule = [
+    {
+      day: 'Sunday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: false,
+    },
+    {
+      day: 'Monday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Tuesday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Wednesday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Thursday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Friday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Saturday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+  ];
+
+  let eveningSchedule = [
+    {
+      day: 'Sunday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: false,
+    },
+    {
+      day: 'Monday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Tuesday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Wednesday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Thursday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Friday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Saturday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+  ];
 
   let defaultSchedule = [
     {
@@ -110,6 +199,8 @@ export default function AddDoctor({navigation}) {
   const [clinicLocations, setClinicLocations] = React.useState([]);
   const [clinicLocationText, setClinicLocationText] = React.useState('');
   const [schedule, setSchedule] = React.useState(defaultSchedule);
+  const [morningschedule, setMorningSchedule] = React.useState(morningSchedule);
+  const [eveningschedule, setEveningSchedule] = React.useState(eveningSchedule);
   const [doctor_fees, setDoctor_fees] = React.useState('');
   const [dolo_id, setDolo_id] = React.useState('');
   const [doctorPic, setDoctorPic] = React.useState('');
@@ -126,7 +217,7 @@ export default function AddDoctor({navigation}) {
     }
     setLoading(true);
 
-    let body = [
+    let body1 = 
       {
         user_id: user?.userid,
         name,
@@ -142,7 +233,15 @@ export default function AddDoctor({navigation}) {
         pincode: pinCode,
         adhar,
         registration_number,
-        schedule: schedule.map(item => {
+        schedule_morning: morningschedule.map(item => {
+          return {
+            day: item.day,
+            start_time: item.start_time.toString(),
+            end_time: item.end_time.toString(),
+            checked: item.checked,
+          };
+        }),
+        schedule_evening: eveningschedule.map(item => {
           return {
             day: item.day,
             start_time: item.start_time.toString(),
@@ -176,12 +275,13 @@ export default function AddDoctor({navigation}) {
             ? achievementList
             : [{achievement_specialization, achievement_year}],
         profileimage: doctorPic.data,
-      },
-    ];
-    // console.log(formData);
+      };
+    
+    const body = JSON.stringify(body1)
+    console.log('body-->',body)
     // let result = await postDataAndImage('agent/doctorcreate', formData);
-    let result = await postData('agent/doctorcreate', body);
-    // console.log(result);
+    let result = await postData('agent/doctorcreate', body1);
+     console.log('add doc',result);
     if (!result.success) {
       if (result.msg === 'Validation Error.') {
         Alert.alert('Error', 'Doctor already exists');
@@ -218,6 +318,82 @@ export default function AddDoctor({navigation}) {
       temp[index]['checked'] = true;
       setSchedule(temp);
     }
+  };
+
+  const setMorningSchedules = index => {
+    let temp = [...morningschedule];
+    // console.log('temp', temp[index]['day']);
+    if (temp[index]['checked']) {
+      temp[index]['checked'] = false;
+      setMorningSchedule(temp);
+    } else {
+      temp[index]['checked'] = true;
+      setMorningSchedule(temp);
+    }
+  };
+
+  const setEveningSchedules = index => {
+    let temp = [...eveningschedule];
+    // console.log('temp', temp[index]['day']);
+    if (temp[index]['checked']) {
+      temp[index]['checked'] = false;
+      setEveningSchedule(temp);
+    } else {
+      temp[index]['checked'] = true;
+      setEveningSchedule(temp);
+    }
+  };
+
+  const setMorningScheduleStartTime = index => {
+    let temp = [...morningschedule];
+    DateTimePickerAndroid.open({
+      value: temp[index]['start_time'],
+      onChange: (event, date) => {
+        temp[index]['start_time'] = date;
+        setMorningSchedule(temp);
+      },
+      mode: 'time',
+      is24Hour: false,
+    });
+  };
+
+  const setMorningScheduleEndTime = index => {
+    let temp = [...morningschedule];
+    DateTimePickerAndroid.open({
+      value: temp[index]['end_time'],
+      onChange: (event, date) => {
+        temp[index]['end_time'] = date;
+        setMorningSchedule(temp);
+      },
+      mode: 'time',
+      is24Hour: false,
+    });
+  };
+
+  const setEveningScheduleStartTime = index => {
+    let temp = [...eveningschedule];
+    DateTimePickerAndroid.open({
+      value: temp[index]['start_time'],
+      onChange: (event, date) => {
+        temp[index]['start_time'] = date;
+        setEveningSchedule(temp);
+      },
+      mode: 'time',
+      is24Hour: false,
+    });
+  };
+
+  const setEveningScheduleEndTime = index => {
+    let temp = [...eveningschedule];
+    DateTimePickerAndroid.open({
+      value: temp[index]['end_time'],
+      onChange: (event, date) => {
+        temp[index]['end_time'] = date;
+        setEveningSchedule(temp);
+      },
+      mode: 'time',
+      is24Hour: false,
+    });
   };
 
   const setScheduleStartTime = index => {
@@ -749,7 +925,7 @@ export default function AddDoctor({navigation}) {
             }}>
             Clinic Details
           </Text>
-          <Text style={styles.label}>Clinic Schedule</Text>
+          {/* <Text style={styles.label}>Clinic Schedule</Text>
           {schedule.map((item, index) => (
             <View
               key={index}
@@ -812,6 +988,170 @@ export default function AddDoctor({navigation}) {
                   activeOpacity={item.checked ? 0.5 : 1}
                   onPress={() =>
                     item.checked ? setScheduleEndTime(index) : null
+                  }>
+                  <Text
+                    style={{
+                      color: item.checked ? Color.black : '#ccc',
+                      fontSize: 16,
+                      fontFamily: Fonts.primaryRegular,
+                    }}>
+                    {item.end_time
+                      .toLocaleTimeString()
+                      .replace(
+                        item.end_time.toLocaleTimeString().slice(-6, -3),
+                        '',
+                      )}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))} */}
+
+         <Text style={styles.label}>Morning Schedule</Text>
+          {morningschedule.map((item, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 5,
+              }}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Checkbox
+                  uncheckedColor={Color.grey}
+                  color={Color.primary}
+                  onPress={() => setMorningSchedules(index)}
+                  status={item.checked ? 'checked' : 'unchecked'}
+                />
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => setMorningSchedules(index)}>
+                  <Text
+                    style={{
+                      color: '#000',
+                      fontFamily: Fonts.primaryRegular,
+                      marginHorizontal: 5,
+                    }}>
+                    {item.day}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <TouchableOpacity
+                  activeOpacity={item.checked ? 0.5 : 1}
+                  onPress={() =>
+                    item.checked ? setMorningScheduleStartTime(index) : null
+                  }>
+                  <Text
+                    style={{
+                      color: item.checked ? Color.black : '#ccc',
+                      fontSize: 16,
+                      fontFamily: Fonts.primaryRegular,
+                    }}>
+                    {item.start_time
+                      .toLocaleTimeString()
+                      .replace(
+                        item.start_time.toLocaleTimeString().slice(-6, -3),
+                        '',
+                      )}
+                  </Text>
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    marginHorizontal: 20,
+                    fontFamily: Fonts.primaryRegular,
+                    color: item.checked ? Color.black : '#ccc',
+                  }}>
+                  -
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={item.checked ? 0.5 : 1}
+                  onPress={() =>
+                    item.checked ? setMorningScheduleEndTime(index) : null
+                  }>
+                  <Text
+                    style={{
+                      color: item.checked ? Color.black : '#ccc',
+                      fontSize: 16,
+                      fontFamily: Fonts.primaryRegular,
+                    }}>
+                    {item.end_time
+                      .toLocaleTimeString()
+                      .replace(
+                        item.end_time.toLocaleTimeString().slice(-6, -3),
+                        '',
+                      )}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+
+<Text style={styles.label}>Evening Schedule</Text>
+          {eveningschedule.map((item, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 5,
+              }}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Checkbox
+                  uncheckedColor={Color.grey}
+                  color={Color.primary}
+                  onPress={() => setEveningSchedules(index)}
+                  status={item.checked ? 'checked' : 'unchecked'}
+                />
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => setEveningSchedules(index)}>
+                  <Text
+                    style={{
+                      color: '#000',
+                      fontFamily: Fonts.primaryRegular,
+                      marginHorizontal: 5,
+                    }}>
+                    {item.day}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <TouchableOpacity
+                  activeOpacity={item.checked ? 0.5 : 1}
+                  onPress={() =>
+                    item.checked ? setEveningScheduleStartTime(index) : null
+                  }>
+                  <Text
+                    style={{
+                      color: item.checked ? Color.black : '#ccc',
+                      fontSize: 16,
+                      fontFamily: Fonts.primaryRegular,
+                    }}>
+                    {item.start_time
+                      .toLocaleTimeString()
+                      .replace(
+                        item.start_time.toLocaleTimeString().slice(-6, -3),
+                        '',
+                      )}
+                  </Text>
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    marginHorizontal: 20,
+                    fontFamily: Fonts.primaryRegular,
+                    color: item.checked ? Color.black : '#ccc',
+                  }}>
+                  -
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={item.checked ? 0.5 : 1}
+                  onPress={() =>
+                    item.checked ? setEveningScheduleEndTime(index) : null
                   }>
                   <Text
                     style={{
