@@ -18,6 +18,7 @@ import {Color} from '../theme';
 import {CommonActions} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import TodayAppointments from '../screens/TodayAppointments';
+import DisableAppointments from '../screens/DisableAppointments';
 
 export function DrawerContent(props) {
   //   const paperTheme = useTheme();
@@ -135,6 +136,17 @@ export function DrawerContent(props) {
               label={t('doctorHome.schedule')}
               onPress={() => {
                 props.navigation.navigate('Schedule');
+              }}
+            />
+             <DrawerItem
+              labelStyle={{fontFamily: 'Poppins-Medium'}}
+              icon={({color, size}) => (
+                <Icon name="calendar-month" size={size} color={color} />
+              )}
+              // label={t('doctorHome.schedule')}
+              label={t('disableAppointments.screenTitle')}
+              onPress={() => {
+                props.navigation.navigate('DisableAppointments');
               }}
             />
             <DrawerItem

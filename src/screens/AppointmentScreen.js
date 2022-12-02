@@ -22,6 +22,7 @@ import {postData, getData} from '../API';
 import {successToast, errorToast} from '../components/toasts';
 import FeedbackDetails from './FeedbackDetails';
 import FeedbackCard from '../components/FeedbackCard';
+import SuccessModal from '../components/modals/SuccessModal';
 
 export default function DoctorScreen({navigation, route}) {
   const appointment = route.params.item;
@@ -37,6 +38,8 @@ export default function DoctorScreen({navigation, route}) {
   const [prescriptionData, setPrescriptionData] = React.useState([]);
   const [status, setStatus] = React.useState('');
   const [currentAge, setCurrentAge] = React.useState('');
+  const [showModal, setShowModal] = React.useState(false);
+  const [sendLoading, setSendLoading] = React.useState(false);
 
 
   const fetchDocProfile = async () => {
@@ -87,10 +90,10 @@ export default function DoctorScreen({navigation, route}) {
 
   const takePhotoFromCamera = () => {
     ImagePicker.openCamera({
-      compressImageMaxWidth: 300,
-      compressImageMaxHeight: 300,
+      compressImageMaxWidth: 2048,
+      compressImageMaxHeight: 1024,
       cropping: true,
-      compressImageQuality: 0.7,
+      compressImageQuality: 1,
       includeBase64: true,
       multiple: true,
     }).then(image => {
@@ -102,8 +105,8 @@ export default function DoctorScreen({navigation, route}) {
 
   const choosePhotoFromLibrary = () => {
     ImagePicker.openPicker({
-      width: 300,
-      height: 300,
+      width: 2048,
+      height: 1024,
       cropping: true,
       compressImageQuality: 0.7,
       includeBase64: true,
@@ -141,7 +144,7 @@ export default function DoctorScreen({navigation, route}) {
 
   const sendPerscription = async () => {
     // console.log('dt==',appointment?.patient_id,appointment?.doctor_id,feedBack,prescriptions)
-    setLoading(true);
+    setSendLoading(true);
     var body = {
       patient_id: appointment?.patient_id,
       doctor_id: appointment?.doctor_id,
@@ -152,19 +155,20 @@ export default function DoctorScreen({navigation, route}) {
      console.log('result', result);
     if (result.success) {
       successToast('Feedback Send SuccessFullly');
+      setShowModal(true)
       // navigation.navigate('Home1');
     // navigation.goBack();
     } else {
       errorToast('Something Went Wrong Please Check');
     }
-    setLoading(false);
+    setSendLoading(false);
   
      setPrescriptions([])
      getFeedbackList();
   };
 
   const getFeedbackList = async () => {
-    setLoading(true);
+   // setLoading(true);
     let res = await getData(
       `doctorfeedback/${appointment?.doctor_id}/${appointment?.patient_id}`,
     );
@@ -175,7 +179,7 @@ export default function DoctorScreen({navigation, route}) {
       setPrescriptionList(res.data);
 
     }
-    setLoading(false);
+   // setLoading(false);
   };
 
  const deleteFeedback = async (id) => {
@@ -203,8 +207,16 @@ console.log('fid==',id);
   useEffect(() => {
     fetchDocProfile();
     getFeedbackList();
+    
    
   }, []);
+
+  const onPrimaryPress = () => {
+    setPrescriptions([]);
+    setShowModal(false);
+    getFeedbackList();
+    setFeedBack('')
+  };
 
   return (
     <View style={styles.container}>
@@ -384,7 +396,7 @@ console.log('fid==',id);
                   borderBottomColor: '#ccc',
                   fontFamily: 'Poppins-Regular',
                 }}
-               // value={feedBack}
+                value={feedBack}
                 onChangeText={setFeedBack}
                 multiline={true}
                 numberOfLines={3}
@@ -417,6 +429,7 @@ console.log('fid==',id);
             </Button>
             <Button
               mode="contained"
+              loading={sendLoading}
               icon="send"
               onPress={sendPerscription}
               uppercase={false}
@@ -527,7 +540,7 @@ console.log('fid==',id);
             );
           })}
         </ScrollView>
-      )}
+       )} 
       {/* <View style={styles.bottom}>
         {new Date(appointmentData.date) >= new Date().setHours(0, 0, 0, 0) &&
         !appointmentData?.status ? (
@@ -595,6 +608,20 @@ console.log('fid==',id);
           </Button>
         )}
       </View> */}
+      <SuccessModal
+        visible={showModal}
+        onRequestClose={() => setShowModal(false)}
+        title="Prescriptions Sent Successfully"
+        primaryBtnText="Add More"
+       onPrimaryPress={() => onPrimaryPress()}
+        secondaryBtnText="Go Back"
+        onSecondaryPress={() => {
+          setShowModal(false);
+          getFeedbackList();
+         navigation.goBack();
+         
+        }}
+      />
     </View>
   );
 }

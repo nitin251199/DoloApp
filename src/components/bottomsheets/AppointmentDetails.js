@@ -15,6 +15,10 @@ import DocProfilePlaceholder from '../../placeholders/DocProfilePlaceholder';
 
 export default AppointmentDetails = React.forwardRef((props, ref) => {
   const {item,loading} = props;
+  
+
+
+  console.log('item.age==',item.age)
 
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
 
@@ -22,18 +26,15 @@ export default AppointmentDetails = React.forwardRef((props, ref) => {
   const [status, setStatus] = React.useState(''); 
 
 
-  const getAge = (dateString) => {
-    console.log('dateString==',dateString)
-    var dates =  `${new Date(dateString).getDate()}`/
-    `${new Date(dateString).getMonth()}`/
-    `${new Date(dateString).getFullYear()}`;
-    console.log('dates==',dates)
+  const getAge = () => {
+    const {item,loading} = props;
+ 
     var d = new Date();
-
+    var dates = item?.age.split('/');
     var userday = dates[0];
     var usermonth = dates[1];
     var useryear = dates[2];
-
+  
     var curday = d.getDate();
     var curmonth = d.getMonth()+1;
     var curyear = d.getFullYear();
@@ -45,7 +46,7 @@ export default AppointmentDetails = React.forwardRef((props, ref) => {
         age--;
 
     }
-    console.log('age1=',age);
+   
     return setCurrentAge(age);
 }
 
@@ -62,9 +63,9 @@ const getStatus = (status) => {
 }
 
 useEffect(() => {
-  getAge(item.age);
+ getAge();
   getStatus(item.status)
-}, []);
+}, [item]);
 
    return (
    

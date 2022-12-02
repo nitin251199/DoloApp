@@ -19,7 +19,8 @@ import AddpatientSuccessModal from '../components/modals/AddPatientSuccessModal'
 import ThermalPrinterModule from 'react-native-thermal-printer';
 import Reciept from '../components/Reciept';
 import RNPrint from 'react-native-print';
-import { errorToast } from '../components/toasts';
+import {errorToast} from '../components/toasts';
+
 const {width, height} = Dimension;
 export default function AddPatient({navigation, route}) {
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
@@ -53,38 +54,40 @@ export default function AddPatient({navigation, route}) {
     itemData?.create_date || '',
   );
   const [modalData, setModalData] = React.useState('');
+  const [docorName, setDoctorName] = React.useState('');
   const _scrollRef = React.useRef(null);
   const _inputRef = React.useRef(null);
 
   const onSecondaryPress = () => {
-    setCategory('');
+   setCategory('');
     setName('');
     setAge('');
-  //  setAgeType('Years');
+    //  setAgeType('Years');
     setWeight('');
-   // setWeightType('Kg');
+     setWeightType('Kg');
     setGender('male');
     setMobileNo('');
     setShowModal(false);
     setCreateDate('');
     setShiftName('Morning');
-
     _scrollRef.current.scrollTo({x: 0, y: 0, animated: true});
     _inputRef.current.blur();
+  
+  
   };
 
   const onSubmit = async () => {
     setLoading(true);
-    
+
     var addbody = {
       doctor_id: user?.doctor_id,
       assistant_id: user?.userid,
       category,
       patient_name: name,
       age,
-    //  agetype: ageType,
+      //  agetype: ageType,
       weight,
-     // weighttype: weightType,
+      weighttype: weightType,
       gender,
       mobile: mobileNo,
       status: 0,
@@ -98,7 +101,7 @@ export default function AddPatient({navigation, route}) {
       category: category,
       patient_name: name,
       age,
-     // agetype: ageType,
+      // agetype: ageType,
       weight,
       weighttype: weightType,
       gender,
@@ -116,22 +119,21 @@ export default function AddPatient({navigation, route}) {
       setShowModal(true);
       setModalData(result.data);
       getAge(result.data?.age);
+      setDoctorName(result?.doctorname);
     }
     setLoading(false);
   };
 
   const checkValidation = () => {
-    if(mobileNo.length < 10){
-      errorToast('Please enter minimum 10 digit mobile number')
+    if (mobileNo.length < 10) {
+      errorToast('Please enter minimum 10 digit mobile number');
+    } else {
+      onSubmit();
     }
-    else {
-      onSubmit()
-    }
+  };
 
-  }
-
-  const getAge = (dateString) => {
-    var dates = dateString.split("/");
+  const getAge = dateString => {
+    var dates = dateString.split('/');
     var d = new Date();
 
     var userday = dates[0];
@@ -139,19 +141,17 @@ export default function AddPatient({navigation, route}) {
     var useryear = dates[2];
 
     var curday = d.getDate();
-    var curmonth = d.getMonth()+1;
+    var curmonth = d.getMonth() + 1;
     var curyear = d.getFullYear();
 
     var age = curyear - useryear;
 
-    if((curmonth < usermonth) || ( (curmonth == usermonth) && curday < userday )){
-
-        age--;
-
+    if (curmonth < usermonth || (curmonth == usermonth && curday < userday)) {
+      age--;
     }
-    console.log('age1=',age);
+   
     return setCurrentAge(age);
-}
+  };
 
   const showDatePicker = () => {
     setIsDatePickerVisible(true);
@@ -174,34 +174,63 @@ export default function AddPatient({navigation, route}) {
   const printHTML = async () => {
     await RNPrint.print({
       html:
-      
+        //   '  <div style="height:320px; border: 2px solid black; width: 225px; background-color: #fdf8db;  padding-top: 10px;padding-right: 10px;padding-left: 10px;padding-bottom:10px; border-radius: 20px; "><div style="border:2px solid black;border-radius: 20px; margin-left: 50px; width: 132px; "><h1 style="text-align: center;">' +
+        //   modalData.token_no +
+        //   '</h1><p style="text-align: center;  font-weight: 600;margin-bottom: 4px;">  TOKEN NO.</p></div><div style="display:flex; font-weight: 600;margin-top:10px"><p>Category&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
+        //   modalData.category +
+        //   '</p></div><div style="display:flex; font-weight: 600;"><p>Name&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
+        //   modalData.patient_name +
+        //   '</p></div><div style="display:flex; font-weight: 600;"><p>Age&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
+        //   currentAge +
+        //  'Years' +
+        //   '</p></div><div style="display:flex; font-weight: 600;"><p>Weight&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
+        //   modalData.weight +
+        //   modalData.weighttype +
+        //   '</p></div><div style="display:flex; font-weight: 600;"><p>Gender&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
+        //   modalData.gender +
+        //   '</p></div><div style="display:flex; font-weight: 600; "><p>Time&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
+        //   `${new Date(modalData.created_at).getDate()}/${new Date(modalData.created_at).getMonth()}/${new Date(modalData.created_at).getFullYear()}` +
+        //   '</p></div>',
 
-      //   '  <div style="height:320px; border: 2px solid black; width: 225px; background-color: #fdf8db;  padding-top: 10px;padding-right: 10px;padding-left: 10px;padding-bottom:10px; border-radius: 20px; "><div style="border:2px solid black;border-radius: 20px; margin-left: 50px; width: 132px; "><h1 style="text-align: center;">' +
-      //   modalData.token_no +
-      //   '</h1><p style="text-align: center;  font-weight: 600;margin-bottom: 4px;">  TOKEN NO.</p></div><div style="display:flex; font-weight: 600;margin-top:10px"><p>Category&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-      //   modalData.category +
-      //   '</p></div><div style="display:flex; font-weight: 600;"><p>Name&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-      //   modalData.patient_name +
-      //   '</p></div><div style="display:flex; font-weight: 600;"><p>Age&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-      //   currentAge + 
-      //  'Years' +
-      //   '</p></div><div style="display:flex; font-weight: 600;"><p>Weight&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-      //   modalData.weight +
-      //   modalData.weighttype +
-      //   '</p></div><div style="display:flex; font-weight: 600;"><p>Gender&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-      //   modalData.gender +
-      //   '</p></div><div style="display:flex; font-weight: 600; "><p>Time&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-      //   `${new Date(modalData.created_at).getDate()}/${new Date(modalData.created_at).getMonth()}/${new Date(modalData.created_at).getFullYear()}` +
-      //   '</p></div>',
+        // '<div class="container" style="text-align: center; font-size: 5px; border: 1px solid black; border-radius: 15px;  background-color: rgb(236, 245, 245);  width: fit-content;"><br><table style="margin: auto;"><div style="border: 1px solid black; width: 120px; margin: auto; border-radius: 15px;"> <h1 class="token_no">' +
+        // modalData.token_no +
+        // '</h1><h4>TOKEN NO.</h4></div><br> <tr> <th style="width: 45%; font-size: 12px;">CATEGORY &nbsp;&nbsp;<label>:</label>&nbsp;&nbsp;</th><td style="width: 45%;font-size: 12px;">' +
+        // modalData.category +
+        // '</td> </tr><tr><th style="width: 45%;font-size: 12px;">NAME &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label style="text-align: center;">&nbsp;&nbsp;:</label>&nbsp;&nbsp;</th> <td style="width: 45%;font-size: 12px;">' +
+        // modalData.patient_name +
+        // '</td></tr> <tr> <th style="width: 45%;font-size: 12px;">AGE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>:</label>&nbsp;&nbsp;</th><td style="width: 45%;font-size: 12px;">' +
+        // currentAge +
+        // 'Years' +
+        // '</td></tr><tr><th style="width: 45%;font-size: 12px;">WEIGHT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>:</label>&nbsp;&nbsp;</th><td style="width: 45%;font-size: 12px;">' +
+        // modalData.weight +
+        //   modalData.weighttype +
+        // '</td></tr><tr><th style="width: 45%;font-size: 12px;">GENDER &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>:</label>&nbsp;&nbsp;</th><td style="width: 45%;font-size: 12px;">' +
+        // modalData.gender +
+        // '</td></tr><tr><th style="width: 45%;font-size: 12px;">TIME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label style="text-align: center;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>&nbsp;&nbsp;</th><td style="width: 45%;font-size: 12px;">' +
+        // `${new Date(modalData.created_at).getDate()}/${new Date( modalData.created_at).getMonth()}/${new Date(modalData.created_at).getFullYear()}` +
+        // '</td></tr></table><br></div>',
 
-
-
-
-        '<div class="container" style="text-align: center; font-size: smaller; border: 1px solid black; border-radius: 15px;  background-color: rgb(236, 245, 245);  width: fit-content;"><br><table style="margin: auto; "><div style="border: 1px solid black; width: 120px; margin: auto; border-radius: 15px;"> <h1 class="token_no">'+modalData.token_no +'</h1><h4>TOKEN NO.</h4></div><br> <tr> <th style="width: 45%;">CATEGORY &nbsp;&nbsp;<label>:</label>&nbsp;&nbsp;</th><td style="width: 45%;">' +modalData.category +'</td> </tr><tr><th style="width: 45%;">NAME &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label style="text-align: center;">&nbsp;&nbsp;:</label>&nbsp;&nbsp;</th> <td style="width: 45%;">'+modalData.patient_name +'</td></tr> <tr> <th style="width: 45%;">AGE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>:</label>&nbsp;&nbsp;</th><td style="width: 45%;">'+currentAge+'Years'+'</td></tr><tr><th style="width: 45%;">WEIGHT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>:</label>&nbsp;&nbsp;</th><td style="width: 45%;">'+modalData.weight +modalData.weighttype+'</td></tr><tr><th style="width: 45%;">GENDER &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>:</label>&nbsp;&nbsp;</th><td style="width: 45%;">'+modalData.gender +'</td></tr><tr><th style="width: 45%;">TIME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label style="text-align: center;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>&nbsp;&nbsp;</th><td style="width: 45%;">'+`${new Date(modalData.created_at).getDate()}/${new Date(modalData.created_at).getMonth()}/${new Date(modalData.created_at).getFullYear()}` +'</td></tr></table><br></div>'
+        '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"></head><style>tr {line-height:8px; }</style><body style="font-size:8px;"><div class="container" style="width: fit-content; width: min-content; height:min-content; border: 1px solid black; border-radius: 17px; background-color: aliceblue;"><p> Dr.' +
+        docorName +
+        '</p><div class="table-responsive-sm"><table class="table table-borderless"><div class="row" style="border: 1px solid black; width: 90px; left: 26%; border-radius: 5px; text-align: center; margin-left: 17%;"><br><br><h3 class="token_no">' +
+        modalData.token_no +
+        '</h3><strong>TOKEN NO.</strong></div><tbody><tr><th scope="col">Category</th><th scope="col">:</th><td>' +
+        modalData.category +
+        '</td></tr><tr><th scope="col">Name</th><th>:</th><td>' +
+        modalData.patient_name +
+        '</td></tr><tr><th scope="col">Age</th><th>:</th><td>' +
+        currentAge +
+        ' Years' +
+        '</td></tr><tr><th scope="col">Weight</th><th>:</th><td>' +
+        modalData.weight +
+        modalData.weighttype +
+        '</td></tr><tr><th scope="col">Gender</th><th>:</th><td>' +
+        modalData.gender +
+        '</td></tr><tr><th scope="col">Time</th><th>:</th><td>' +
+        `${new Date(modalData.created_at).getDate()}/${new Date(modalData.created_at).getMonth()+1}/${new Date(modalData.created_at).getFullYear()}` +
+        '</td></tr></tbody></table></div></div></body></html>',
     });
   };
-
-
 
   return (
     <View style={styles.container}>
@@ -225,25 +254,31 @@ export default function AddPatient({navigation, route}) {
         }}
         // secondaryBtnText="Go Back"
         onSecondaryPress={() => {
-          onSecondaryPress();
+         {route.params?.type == 'add' ?
+          onSecondaryPress()
+          : setShowModal(false)
+          _scrollRef.current.scrollTo({x: 0, y: 0, animated: true});
+         
+        }
+       
         }}
         category={modalData.category}
         patient_name={modalData.patient_name}
         age={currentAge}
-       // agetype={modalData.agetype}
+        // agetype={modalData.agetype}
         weight={modalData.weight}
         weightType={modalData.weighttype}
         gender={modalData.gender}
+        doctor_name={docorName}
         // time={
         //   new Date(modalData.created_at).getDate() /
         //   new Date(modalData.created_at).getMonth() /
         //   new Date(modalData.created_at).getFullYear()
         // }
-        time={
-          `${new Date(modalData.created_at).getDate()}/${new Date(modalData.created_at).getMonth()}/${new Date(modalData.created_at).getFullYear()}`
-          
-        }
-      //  weight_type={modalData.weighttype}
+        time={`${new Date(modalData.created_at).getDate()}/${new Date(
+          modalData.created_at,
+        ).getMonth()+1}/${new Date(modalData.created_at).getFullYear()}`}
+        //  weight_type={modalData.weighttype}
         onPrintPress={() => printHTML()}
         token_no={modalData.token_no}
       />
@@ -345,7 +380,7 @@ export default function AddPatient({navigation, route}) {
           <TextInput
             theme={theme}
             dense
-            style={{height: 45,}}
+            style={{height: 45}}
             onChangeText={text => setName(text)}
             value={name}
             mode="flat"
@@ -374,7 +409,7 @@ export default function AddPatient({navigation, route}) {
               underlineColor="#000"
               activeUnderlineColor={Color.primary}
             /> */}
-            {/* <View
+        {/* <View
               style={{
                 borderBottomWidth: 1,
                 borderTopLeftRadius: 5,
@@ -398,7 +433,7 @@ export default function AddPatient({navigation, route}) {
                 <Picker.Item label="Days" value="Days" />
               </Picker>
             </View> */}
-          {/* </View>
+        {/* </View>
           <View
             style={{
               
@@ -419,11 +454,11 @@ export default function AddPatient({navigation, route}) {
             />
             </View>
         </View> */}
-         <View style={{marginTop: 15}}>
+        <View style={{marginTop: 15}}>
           <Text style={styles.label}>Age</Text>
-        
-         {/* <TouchableOpacity > */}
-         <TextInput
+
+          {/* <TouchableOpacity > */}
+          <TextInput
             ref={_inputRef}
             theme={theme}
             //keyboardType="numeric"
@@ -441,17 +476,14 @@ export default function AddPatient({navigation, route}) {
                 onPress={() => showDatePicker()}
               />
             }
-            
           />
-       {/* </TouchableOpacity> */}
-       <DateTimePickerModal
-       isVisible={isDatePickerVisible}
-       mode="date"
-       onConfirm={FormatDate}
-       onCancel={hideDatePicker}
-     />
-   
-         
+          {/* </TouchableOpacity> */}
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={FormatDate}
+            onCancel={hideDatePicker}
+          />
         </View>
         <View style={{marginTop: 15}}>
           <Text style={styles.label}>Weight (kg)</Text>
@@ -560,14 +592,13 @@ export default function AddPatient({navigation, route}) {
           </View>
         </View>
 
-       
         <View style={{marginTop: 15}}>
           <Text style={styles.label}>Mobile Number</Text>
           <TextInput
             ref={_inputRef}
             theme={theme}
             maxLength={10}
-            style={{height: 45,}}
+            style={{height: 45}}
             keyboardType="numeric"
             dense
             onChangeText={text => setMobileNo(text)}

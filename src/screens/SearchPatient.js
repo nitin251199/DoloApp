@@ -71,6 +71,7 @@ const SearchPatient = ({navigation}) => {
           onChangeText={(txt) => searchPatient(txt)}
          // value={searchQuery}
           keyboardType="number-pad"
+          maxLength={10}
         />
    
 

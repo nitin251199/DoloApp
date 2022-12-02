@@ -32,10 +32,10 @@ export default function UploadScreen({navigation, route}) {
 
   const takePhotoFromCamera = () => {
     ImagePicker.openCamera({
-      compressImageMaxWidth: 300,
-      compressImageMaxHeight: 300,
+      compressImageMaxWidth: 2048,
+      compressImageMaxHeight: 1024,
       cropping: true,
-      compressImageQuality: 0.7,
+      compressImageQuality: 1,
       includeBase64: true,
       multiple: true,
     }).then(image => {

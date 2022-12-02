@@ -121,6 +121,14 @@
       "Enter patient mobile number": "मरीज का मोबाइल नंबर दर्ज करें",
       "Patient History" : "रोगी की जानकारी"
     },
+    "disableAppointments": {
+      "screenTitle": "नियुक्तियों को अक्षम करें",
+      "Disable": "बंद करना",
+      "FromDate": "की तिथि से",
+      "ToDate": "तारीख तक",
+      "holidaysList": "छुट्टियों की सूची"
+      
+    },
     "scheduleScreen": {
       "screenTitle": "मेरे अनुसूची",
       "jan": "जनवरी",

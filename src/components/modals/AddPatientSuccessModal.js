@@ -32,7 +32,9 @@ export default function AddpatientSuccessModal(props) {
             autoPlay
             loop={false}
           /> */}
+          <Text style={{fontFamily:Fonts.primaryLight,color:Color.black,paddingBottom:10}}>Dr. {props.doctor_name}</Text>
           <View style={styles.card}>
+            
          <Text style={styles.token_no}>{props.token_no}</Text>
          <Text style={styles.token_no_txt}>TOKEN NO.</Text>
           </View>
@@ -58,7 +60,7 @@ export default function AddpatientSuccessModal(props) {
           <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
           <Text style={styles.title}>Weight</Text>
           <Text style={styles.title2}>:</Text>
-          <Text style={styles.descr}>{props.weight} {props.weighttype}</Text>
+          <Text style={styles.descr}>{props.weight} {props.weightType}</Text>
           
           </View>
           <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>

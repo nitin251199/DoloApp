@@ -97,6 +97,15 @@
       "Enter patient mobile number": "Enter patient mobile number",
       "Patient History" : "Patient History"
     },
+    "disableAppointments": {
+      "screenTitle": "Disable Appointments",
+      "Disable": "Disable",
+      "FromDate": "FromDate",
+      "ToDate": "To Date",
+      "holidaysList": "Holidays List"
+
+      
+    },
     "scheduleScreen": {
       "screenTitle": "My Schedule",
       "jan": "January",

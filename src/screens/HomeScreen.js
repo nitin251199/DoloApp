@@ -48,7 +48,7 @@ export default function HomeScreen({navigation}) {
     setAvailabilityLoading(true);
     let res = await getData(`dolo/profile/${user?.userid}`);
     if (res.status) {
-     // console.log('Annn--',res.data)
+     
       setAvailable(res.data?.doctor_available);
       
     }

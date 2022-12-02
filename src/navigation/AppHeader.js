@@ -34,6 +34,7 @@ export default function AppHeader(props) {
 
   const fetchProfileInfo = async () => {
     let res = await getData(`dolo/profile/${user?.userid}`);
+    console.log('headres==',res)
     if (res.status) {
       setProfileData(res.data);
     }

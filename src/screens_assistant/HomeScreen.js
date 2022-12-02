@@ -26,11 +26,13 @@ import {useTranslation} from 'react-i18next';
 
 export default function HomeScreen({navigation}) {
   const user = useSelector(state => state.user);
-
+   
+  console.log('user==',user?.username)
   const {t, i18n} = useTranslation();
 
   const [available, setAvailable] = React.useState(1);
   const [loading, setLoading] = React.useState(true);
+  const [profileData, setProfileData] = React.useState();
 
   const dispatch = useDispatch();
 
@@ -48,14 +50,28 @@ export default function HomeScreen({navigation}) {
   const fetchProfileInfo = async () => {
     setLoading(true);
     let res = await getData(`dolo/profile/${user?.doctor_id}`);
+ 
     if (res.status) {
       setAvailable(res.data?.doctor_available);
+      
+    }
+    setLoading(false);
+  };
+
+  const fetchAssProfileInfo = async () => {
+    setLoading(true);
+    let res = await getData(`doctorassitantprofile/${user?.userid}`);
+    console.log(`dolo/profile/${user?.userid}`, res);
+    if (res.success) {
+      // console.log(res);
+      setProfileData(res.data[0]);
     }
     setLoading(false);
   };
 
   useEffect(() => {
     fetchProfileInfo();
+    fetchAssProfileInfo();
   }, []);
 
   const handleAvailable = async () => {
@@ -96,13 +112,11 @@ export default function HomeScreen({navigation}) {
             <Avatar.Image
               size={45}
               source={{
-                uri:
-                  //  profileData?.profileimage
-                  //   ? profileData?.profileimage.length > 20
-                  //     ? `data:image/png;base64,${profileData?.profileimage}`
-                  //     : `https://rapidhealth.me/assets/doctor/${profileData?.profileimage}`
-                  //   :
-                  'https://www.w3schools.com/w3images/avatar6.png',
+                uri: profileData?.profileimage
+                  ? profileData?.profileimage.length > 20
+                    ? `data:image/png;base64,${profileData?.profileimage}`
+                    : `https://rapidhealth.me/assets/doctor/${profileData?.profileimage}`
+                  : 'https://www.w3schools.com/w3images/avatar6.png',
               }}
             />
           </MenuTrigger>
