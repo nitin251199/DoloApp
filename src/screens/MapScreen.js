@@ -150,7 +150,7 @@ export default MapScreen = props => {
         ',' +
         region.longitude +
         '&key=' +
-        'AIzaSyA-SzexRysHY0bGTeTjsss7BYw6JQzorqw',
+        'AIzaSyCF8BRYo9pIN3E-kPPG7mq-0oFhjnG59a0',
     )
       .then(response => response.json())
       .then(responseJson => {
@@ -174,7 +174,9 @@ export default MapScreen = props => {
   // Action to be taken after select location button click
   const onLocationSelect = () => {
     // alert(userLocation);
-    props.setLocation('Gwalior');
+    props.setLocation(userLocation);
+    props.setLatitude(region.latitude);
+    props.setLongitude(region.longitude);
     props.onPress();
     // props.onPress ?  : null;
     // props.navigation.goBack();

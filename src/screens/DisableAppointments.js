@@ -5,6 +5,7 @@ import {
     Text,
     TouchableOpacity,
     View,
+    Alert
   } from 'react-native';
   import React,{useEffect} from 'react';
   import {Color, Fonts} from '../theme';
@@ -132,6 +133,29 @@ import {
         getHolidayList();
       },[])
 
+
+      const deleteListItem = () => {
+        Alert.alert(
+          'Are you sure you want to Delete ?',
+         // 'Upload prescription from',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel'),
+              style: 'cancel',
+            },
+            // {
+            //   text: 'Camera',
+            //  // onPress: () => takePhotoFromCamera(),
+            // },
+            {
+              text: 'Yes',
+             // onPress: () => choosePhotoFromLibrary(),
+            },
+          ],
+          {cancelable: true},
+        );
+      };
      
   return (
     <View style={styles.container}>
@@ -226,7 +250,7 @@ import {
                   backgroundColor:Color.graylight
                 }} 
                  
-                
+              // onPress={()=>deleteListItem()} 
               >
                 <Text style={styles.list_item_style}>
                  {item.start_date} To {item.End_date}

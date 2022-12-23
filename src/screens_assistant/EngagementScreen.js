@@ -333,20 +333,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#006400',
   },
   absent: {
-    // borderWidth: 5,
-    // borderColor: Color.red,
-    backgroundColor: Color.red,
+   backgroundColor: Color.red,
   },
   current: {
     backgroundColor: '#ff8c00',
-    //borderWidth: 5,
-    // borderColor: Color.blue,
-  },
+   },
   pending: {
     backgroundColor: Color.graylight,
-    // borderWidth: 2,
-    // borderStyle: 'dashed',
-  },
+    },
   itemText: {
     fontSize: 30,
     fontFamily: Fonts.primarySemiBold,

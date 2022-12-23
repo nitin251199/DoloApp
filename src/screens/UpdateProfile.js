@@ -1,4 +1,4 @@
-import {Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View,FlatList} from 'react-native';
 import React from 'react';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {Avatar, Button, TextInput, Checkbox, HelperText,} from 'react-native-paper';
@@ -20,6 +20,7 @@ const UpdateProfile = ({navigation}) => {
     const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
 
     const [profileData, setProfileData] = React.useState('');
+    const [categoryList,setCatagoryList] = React.useState([]);
 
     const fetchProfileInfo = async () => {
       setLoading(true);
@@ -32,9 +33,59 @@ const UpdateProfile = ({navigation}) => {
       setLoading(false);
     };
   
+
+    const fetchCategoryList = async () => {
+      setCloading(true)
+      let result = await getData('doctorspeacialist');
+          if (result?.success) {
+           
+            setCatagoryList(result.data)
+          console.log('clist==',result.data)
+          setCloading(false) 
+          }
+    };
+
+//     const setDoctorCategory = async (id,specialist,index) => {
+//       let temp = [...specialization];
+   
+//    if (temp[index]['checked']) {
+//      temp[index]['checked'] = false;
+//      setSpecialization(temp);
+//    } else {
+//      temp[index]['checked'] = true;
+//      setSpecialization(temp);
+//    }
+//    let data = selectedId;
+//    let data2 = specialities;
+
+//    if (selectedId.includes(id)) {
+//      var index = data.indexOf(id);
+//      if (index !== -1) {
+//        data.splice(index, 1);
+//        data2.splice(index, 1);
+
+//       setSelectedId(data)
+//       setSpecialities(data2)
+     
+//      }
+//    } else {
+//      data.push(id);
+//      data2.push(specialist);
+//      setSelectedId(data)
+//      setSpecialities(data2)
+     
+//    }
+  
+  
+//  };
+
+const setDoctorCategory = async (specialist,index) => {
+  setSpecialization(specialist);
+  };
    
     useEffect(() => {
       fetchProfileInfo();
+      fetchCategoryList();
     }, []);
 
     
@@ -139,10 +190,11 @@ const UpdateProfile = ({navigation}) => {
       const [dob, setDob] = React.useState('');
       const [fees, setFees] = React.useState('');
       const [registration_number, setRegNumber] = React.useState('');
-      const [specialization, setSpecialization] = React.useState('');
+      const [specialization, setSpecialization] = React.useState([]);
       const [yearOfPassout, setYearOfPassout] = React.useState('');
       const [facilities, setFacilities] = React.useState('');
       const [loading, setLoading] = React.useState(false);
+      const [cloading, setCloading] = React.useState(false);
       const [Degree, setDegree] = React.useState('');
       const [adhar, setAdhar] = React.useState('');
       const [awardList, setAwardList] = React.useState('');
@@ -177,7 +229,11 @@ const UpdateProfile = ({navigation}) => {
         const [pinCode, setPinCode] = React.useState('');
        
         const [location, setLocation] = React.useState('');
-        
+        const [latitude, setLatitude] = React.useState('');
+        const [longitude, setLongitude] = React.useState('');
+        const [specialities, setSpecialities] = React.useState([]);
+        const [selectedId, setSelectedId] = React.useState([]);
+
      
       const _scrollRef = React.useRef(null);
 
@@ -366,6 +422,25 @@ const UpdateProfile = ({navigation}) => {
         setAchievement_year('');
         setAchievement_specialization('');
       };
+
+      const openDobCalender = () => {
+        DateTimePickerAndroid.open({
+          value: dob,
+          onChange: (event, date) => {
+            setDob(date);
+          },
+          mode: 'date',
+          is24Hour: false,
+        });
+      };
+
+      const getDateValue = date => {
+        let d = new Date(date);
+        let day = d.getDate();
+        let month = d.getMonth() + 1;
+        let year = d.getFullYear();
+        return `${day}-${month}-${year}`;
+      };
     
       const handleEdit = async() => {
         
@@ -383,6 +458,8 @@ const UpdateProfile = ({navigation}) => {
         
             clinic_contact: clinicContact,
             location,
+            latitude:latitude,
+            longitude:longitude,
             pincode: pinCode,
             adhar,
             registration_number:registration_number,
@@ -406,7 +483,7 @@ const UpdateProfile = ({navigation}) => {
             clinicLocations:
               clinicLocations.length > 0 ? clinicLocations : [clinicLocationText],
             facilities,
-            specialization,
+            specialization:specialization,
             Degree,
             collegename,
             year_of_passout,
@@ -449,6 +526,8 @@ const UpdateProfile = ({navigation}) => {
     <View style={styles.container}>
        <MapModal
         setLocation={setLocation}
+        setLatitude={setLatitude}
+        setLongitude={setLongitude}
         onRequestClose={() => setShowMap(false)}
         onPress={() => {
           setShowMap(false);
@@ -642,18 +721,27 @@ const UpdateProfile = ({navigation}) => {
               flexDirection: 'row',
               marginTop: 15,
             }}>
-            <View style={{marginRight: 10, flex: 1}}>
-              <Text style={styles.label}>Date of birth</Text>
-              <TextInput
-                theme={theme}
-                dense
-                onChangeText={text => setDob(text)}
-                value={dob}
-                mode="flat"
-                underlineColor="#000"
-                activeUnderlineColor={Color.primary}
+            <View style={{flex:1}}>
+          <Text style={styles.label}>Date of Birth</Text>
+          <TextInput
+            theme={theme}
+            dense
+            editable={false}
+            onChangeText={text => setDob(text)}
+            forceTextInputFocus={false}
+            right={
+              <TextInput.Icon
+                icon="calendar"
+                color={Color.primary}
+                onPress={openDobCalender}
               />
-            </View>
+            }
+            value={getDateValue(dob)}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          />
+        </View>
             <View style={{flex: 1}}>
               <Text style={styles.label}>Fees</Text>
               <TextInput
@@ -1118,14 +1206,61 @@ const UpdateProfile = ({navigation}) => {
           </Text>
           <Text style={styles.label}>Specialization</Text>
           <TextInput
+           placeholderTextColor={Color.black}
             theme={theme}
             dense
-            onChangeText={text => setSpecialization(text)}
-            value={specialization}
+           // onChangeText={text => setDegree(text)}
+            value={specialization == '' ? 'Heart' : specialization}
             mode="flat"
+           // disabled={true}
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
           />
+
+        {categoryList && 
+            <FlatList
+            data={categoryList}
+           
+            numColumns={2}
+           // keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
+             <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+             <View style={styles.specialization_container}>
+                {/* <Checkbox
+                  uncheckedColor={Color.grey}
+                  color={Color.primary}
+                  onPress={() => setDoctorCategory(item.id,item.specialist,index)}
+                  //status={selectedId.includes(item.id) ? 'checked' : 'unchecked'}
+                  status={item.checked ? 'checked' : 'unchecked'}
+                 
+                /> */}
+                 <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => setDoctorCategory(item.specialist)}>
+                  <Text
+                    style={{
+                      color: '#000',
+                      fontFamily: Fonts.primaryRegular,
+                      marginHorizontal: 5,
+                    }}>
+                    {item.specialist}
+                  </Text>
+                </TouchableOpacity>
+
+           </View>
+
+           </View>
+
+
+          )}
+
+          />
+          
+          
+          
+          
+          
+          }
         </View>
         <View style={{marginTop: 15}}>
           <Text style={styles.label}>Degree</Text>
@@ -1580,4 +1715,13 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.primaryBold,
         marginBottom: 10,
       },
+      specialization_container:{
+        flexDirection: 'row',
+       // alignItems: 'center',
+       // flex: 1,
+    //    justifyContent: 'center',
+         width: '100%',
+       // padding: 12,
+        
+      }
 })

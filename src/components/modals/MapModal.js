@@ -13,6 +13,8 @@ export default function MapModal(props) {
         <MapScreen
           onPress={props.onPress}
           setLocation={props.setLocation}
+          setLatitude={props.setLatitude}
+          setLongitude={props.setLongitude}
         />
       </View>
     </Modal>

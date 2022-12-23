@@ -29,10 +29,12 @@ export default function ProfileScreen({navigation}) {
   const dispatch = useDispatch();
 
   const user = useSelector(state => state.user);
+  console.log('user?.userid=',user?.userid);
   const _sheetRef = React.useRef(null);
   const [profileData, setProfileData] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [editLoading, setEditLoading] = React.useState(false);
+  
 
   const fetchProfileInfo = async () => {
     setLoading(true);
@@ -40,7 +42,8 @@ export default function ProfileScreen({navigation}) {
     console.log(`dolo/profile/${user?.userid}`, JSON.stringify(res));
     if (res.status) {
       // console.log(res);
-      setProfileData(res.data);
+      setProfileData(res?.data);
+      
     }
     setLoading(false);
   };
@@ -138,9 +141,27 @@ export default function ProfileScreen({navigation}) {
             <Text style={{...styles.imageText, color: Color.primary}}>
               {profileData?.name}
             </Text>
-            <Text style={{color: '#000', fontFamily: Fonts.primaryRegular}}>
-              {profileData?.specialization}
+            <View style={{flexDirection:'row',alignItems:"center"}}>
+            {/* {profileData?.specialization &&
+            profileData?.specialization.map((item,index) => {
+
+            return ( 
+              <Text style={{color: '#000', fontFamily: Fonts.primaryRegular}}>
+              
+              {index<(profileData?.specialization?.length-1) ? (item+','):(item)}
+           
             </Text>
+            );
+
+            } )} */}
+
+         <Text style={{color: '#000', fontFamily: Fonts.primaryRegular}}>
+              {profileData?.specialization}
+          
+           
+            </Text>
+          
+            </View>
             <Text
               style={{
                 fontFamily: Fonts.primaryBold,

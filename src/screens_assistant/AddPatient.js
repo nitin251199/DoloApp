@@ -174,41 +174,7 @@ export default function AddPatient({navigation, route}) {
   const printHTML = async () => {
     await RNPrint.print({
       html:
-        //   '  <div style="height:320px; border: 2px solid black; width: 225px; background-color: #fdf8db;  padding-top: 10px;padding-right: 10px;padding-left: 10px;padding-bottom:10px; border-radius: 20px; "><div style="border:2px solid black;border-radius: 20px; margin-left: 50px; width: 132px; "><h1 style="text-align: center;">' +
-        //   modalData.token_no +
-        //   '</h1><p style="text-align: center;  font-weight: 600;margin-bottom: 4px;">  TOKEN NO.</p></div><div style="display:flex; font-weight: 600;margin-top:10px"><p>Category&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-        //   modalData.category +
-        //   '</p></div><div style="display:flex; font-weight: 600;"><p>Name&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-        //   modalData.patient_name +
-        //   '</p></div><div style="display:flex; font-weight: 600;"><p>Age&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-        //   currentAge +
-        //  'Years' +
-        //   '</p></div><div style="display:flex; font-weight: 600;"><p>Weight&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-        //   modalData.weight +
-        //   modalData.weighttype +
-        //   '</p></div><div style="display:flex; font-weight: 600;"><p>Gender&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-        //   modalData.gender +
-        //   '</p></div><div style="display:flex; font-weight: 600; "><p>Time&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' +
-        //   `${new Date(modalData.created_at).getDate()}/${new Date(modalData.created_at).getMonth()}/${new Date(modalData.created_at).getFullYear()}` +
-        //   '</p></div>',
-
-        // '<div class="container" style="text-align: center; font-size: 5px; border: 1px solid black; border-radius: 15px;  background-color: rgb(236, 245, 245);  width: fit-content;"><br><table style="margin: auto;"><div style="border: 1px solid black; width: 120px; margin: auto; border-radius: 15px;"> <h1 class="token_no">' +
-        // modalData.token_no +
-        // '</h1><h4>TOKEN NO.</h4></div><br> <tr> <th style="width: 45%; font-size: 12px;">CATEGORY &nbsp;&nbsp;<label>:</label>&nbsp;&nbsp;</th><td style="width: 45%;font-size: 12px;">' +
-        // modalData.category +
-        // '</td> </tr><tr><th style="width: 45%;font-size: 12px;">NAME &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label style="text-align: center;">&nbsp;&nbsp;:</label>&nbsp;&nbsp;</th> <td style="width: 45%;font-size: 12px;">' +
-        // modalData.patient_name +
-        // '</td></tr> <tr> <th style="width: 45%;font-size: 12px;">AGE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>:</label>&nbsp;&nbsp;</th><td style="width: 45%;font-size: 12px;">' +
-        // currentAge +
-        // 'Years' +
-        // '</td></tr><tr><th style="width: 45%;font-size: 12px;">WEIGHT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>:</label>&nbsp;&nbsp;</th><td style="width: 45%;font-size: 12px;">' +
-        // modalData.weight +
-        //   modalData.weighttype +
-        // '</td></tr><tr><th style="width: 45%;font-size: 12px;">GENDER &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>:</label>&nbsp;&nbsp;</th><td style="width: 45%;font-size: 12px;">' +
-        // modalData.gender +
-        // '</td></tr><tr><th style="width: 45%;font-size: 12px;">TIME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label style="text-align: center;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>&nbsp;&nbsp;</th><td style="width: 45%;font-size: 12px;">' +
-        // `${new Date(modalData.created_at).getDate()}/${new Date( modalData.created_at).getMonth()}/${new Date(modalData.created_at).getFullYear()}` +
-        // '</td></tr></table><br></div>',
+      
 
         '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"></head><style>tr {line-height:8px; }</style><body style="font-size:8px;"><div class="container" style="width: fit-content; width: min-content; height:min-content; border: 1px solid black; border-radius: 17px; background-color: aliceblue;"><p> Dr.' +
         docorName +

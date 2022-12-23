@@ -309,7 +309,7 @@ contentContainerStyle={{
     
     {/* } */}
 
-</ScrollView>
+    </ScrollView>
       <Button
         onPress={() => sendPrescriptions()}
         mode="contained"
