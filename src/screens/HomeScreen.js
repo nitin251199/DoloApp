@@ -18,6 +18,8 @@ import DoctorPlaceholder from '../placeholders/DoctorPlaceholder';
 export default function HomeScreen({navigation}) {
   const user = useSelector(state => state.user);
 
+  console.log('user==', user);
+
   const [doctorData, setDoctorData] = React.useState([]);
   const [profileData, setProfileData] = React.useState();
   const [pending, setPending] = React.useState([]);
@@ -26,7 +28,7 @@ export default function HomeScreen({navigation}) {
 
   const fetchProfileInfo = async () => {
     let res = await getData(`agent/${user?.userid}`);
-    console.log('agent', res);
+    console.log('agent==', res.agent);
     if (res.status) {
       setProfileData(res.agent);
     }
@@ -41,6 +43,7 @@ export default function HomeScreen({navigation}) {
       setApproved(approved);
       setPending(pending);
       setDoctorData(res.data);
+      console.log('DoctorData==',res.data);
     }
     setLoading(false);
   };

@@ -6,8 +6,10 @@ import {
   ToastAndroid,
   TouchableOpacity,
   View,
+  FlatList,
+  Dimensions
 } from 'react-native';
-import React from 'react';
+import React,{useEffect} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Color, Fonts} from '../theme';
 import {
@@ -21,7 +23,7 @@ import {
 } from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
-import {postData, postDataAndImage} from '../API';
+import {postData, postDataAndImage,getData} from '../API';
 import {Picker} from '@react-native-picker/picker';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import SuccessModal from '../components/modals/SuccessModal';
@@ -177,7 +179,7 @@ export default function AddDoctor({navigation}) {
   const [doctorContact, setDoctorContact] = React.useState('');
   const [clinicContact, setClinicContact] = React.useState('');
   const [registration_number, setRegistration_number] = React.useState('');
-  const [specialization, setSpecialization] = React.useState('');
+  const [specialization, setSpecialization] = React.useState([]);
   const [Degree, setDegree] = React.useState('');
   const [collegename, setCollegename] = React.useState('');
   const [year_of_passout, setYear_of_passout] = React.useState('');
@@ -204,11 +206,19 @@ export default function AddDoctor({navigation}) {
   const [doctor_fees, setDoctor_fees] = React.useState('');
   const [dolo_id, setDolo_id] = React.useState('');
   const [doctorPic, setDoctorPic] = React.useState('');
-
+  const [specialities,setSpecialities] = React.useState([]);
+  const [selectedId,setSelectedId] = React.useState([]);
+  const [cloading, setCloading] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [showModal, setShowModal] = React.useState(false);
   const [showMap, setShowMap] = React.useState(false);
+  const [latitude, setLatitude] = React.useState('');
+  const [docSpecialization, setDocSpecialization] = React.useState('');
+  const [longitude, setLongitude] = React.useState('');
+  const [categoryList,setCategoryList] = React.useState([]);
+  const [isChecked,setIschecked] = React.useState(false);
   const _scrollRef = React.useRef(null);
+  
 
   const addDoctor = async () => {
     if (doctorPic === '' || name === '' || email === '' || dolo_id === '') {
@@ -230,6 +240,8 @@ export default function AddDoctor({navigation}) {
         doctorContact,
         clinic_contact: clinicContact,
         location,
+        latitude:latitude,
+        longitude:longitude,
         pincode: pinCode,
         adhar,
         registration_number,
@@ -253,7 +265,7 @@ export default function AddDoctor({navigation}) {
         clinicLocations:
           clinicLocations.length > 0 ? clinicLocations : [clinicLocationText],
         facilities,
-        specialization,
+        specialization:specialization,
         Degree,
         collegename,
         year_of_passout,
@@ -331,6 +343,44 @@ export default function AddDoctor({navigation}) {
       setMorningSchedule(temp);
     }
   };
+
+  // const setDoctorCategory = index => {
+   
+  //   let temp = [...specialization];
+    
+  //   if (temp[index]['checked']) {
+  //     temp[index]['checked'] = false;
+  //     setSpecialization(temp);
+  //   } else {
+  //     temp[index]['checked'] = true;
+  //     setSpecialization(temp);
+  //   }
+   // let data = selectedId;
+    // let data2 = specialities;
+
+    // if (selectedId.includes(id)) {
+    //   var index = data.indexOf(id);
+    //   if (index !== -1) {
+    //     data.splice(index, 1);
+    //     data2.splice(index, 1);
+
+    //    setSelectedId(data)
+    //    setSpecialities(data2)
+      
+    //   }
+    // } else {
+    //   data.push(id);
+    //   data2.push(specialist);
+    //   setSelectedId(data)
+    //   setSpecialities(data2)
+      
+    // }
+   
+  // };
+
+  const setDoctorCategory = async (specialist,index) => {
+    setSpecialization(specialist);
+    };
 
   const setEveningSchedules = index => {
     let temp = [...eveningschedule];
@@ -530,6 +580,8 @@ export default function AddDoctor({navigation}) {
     setDoctorContact('');
     setClinicContact('');
     setLocation('');
+    setLatitude('')
+    setLongitude('')
     setAdhar('');
     setRegistration_number('');
     setSchedule(defaultSchedule);
@@ -544,6 +596,8 @@ export default function AddDoctor({navigation}) {
     setCollege_location('');
     setChecked(false);
     setLanguages('');
+    setSpecialities([])
+    setSelectedId([]);
     setAwardList([]);
     setAward_name('');
     setAward_giving_authority_name('');
@@ -556,6 +610,22 @@ export default function AddDoctor({navigation}) {
     _scrollRef.current.scrollTo({x: 0, y: 0, animated: true});
     setShowModal(false);
   };
+
+   const fetchCategoryList = async () => {
+    setCloading(true)
+    let result = await getData('doctorspeacialist');
+        if (result?.success) {
+         
+        setCategoryList(result.data)
+        console.log('clist==',result.data)
+        setCloading(false) 
+        }
+  };
+
+  useEffect(() => {
+   
+    fetchCategoryList();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -573,6 +643,9 @@ export default function AddDoctor({navigation}) {
       />
       <MapModal
         setLocation={setLocation}
+        setLatitude={setLatitude}
+        setLongitude={setLongitude}
+
         onRequestClose={() => setShowMap(false)}
         onPress={() => {
           setShowMap(false);
@@ -802,6 +875,7 @@ export default function AddDoctor({navigation}) {
           <TextInput
             theme={theme}
             dense
+            keyboardType='email-address'
             onChangeText={text => setEmail(text)}
             value={email}
             mode="flat"
@@ -850,7 +924,7 @@ export default function AddDoctor({navigation}) {
                 fontFamily: Fonts.primarySemiBold,
                 color: Color.black,
               }}>
-              {location}
+              {location}  
             </Text>
           )}
           {/* <TextInput
@@ -873,6 +947,39 @@ export default function AddDoctor({navigation}) {
             Locate on Map
           </Button>
         </View>
+        {/* <View
+          style={{
+            flexDirection: 'row',
+            marginTop: 15,
+          }}>
+          <View style={{marginRight: 10, flex: 1}}>
+            <Text style={styles.label}>Latitude</Text>
+            <TextInput
+              theme={theme}
+              dense
+             // keyboardType="numeric"
+             // onChangeText={text => setAdhar(text)}
+              value={{latitude}}
+              mode="flat"
+              editable={false}
+              underlineColor="#000"
+              activeUnderlineColor={Color.primary}
+            />
+          </View>
+          <View style={{flex: 1}}>
+            <Text style={styles.label}>Longitude</Text>
+            <TextInput
+              theme={theme}
+              dense
+             // onChangeText={text => setRegistration_number(text)}
+              value={longitude}
+              editable={false}
+              mode="flat"
+              underlineColor="#000"
+              activeUnderlineColor={Color.primary}
+            />
+          </View>
+        </View> */}
         <View style={{marginTop: 15}}>
           <Text style={styles.label}>Pin Code</Text>
           <TextInput
@@ -1262,7 +1369,7 @@ export default function AddDoctor({navigation}) {
             Enter different facilities seperated by commas.
           </HelperText>
         </View>
-        <View style={{marginTop: 15}}>
+        <View style={{marginTop: 15,}}>
           <Text
             style={{
               ...styles.sectionTitle,
@@ -1273,14 +1380,69 @@ export default function AddDoctor({navigation}) {
           </Text>
           <Text style={styles.label}>Specialization</Text>
           <TextInput
+           placeholderTextColor={Color.black}
             theme={theme}
             dense
-            onChangeText={text => setSpecialization(text)}
-            value={specialization}
+           // onChangeText={text => setDegree(text)}
+            value={specialization == '' ? 'Heart' : specialization}
             mode="flat"
+           // disabled={true}
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
           />
+          {categoryList && 
+            <FlatList
+            data={categoryList}
+           
+            numColumns={2}
+           // keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
+             <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:10}}>
+             <View style={styles.specialization_container}>
+                {/* <Checkbox
+                  uncheckedColor={Color.grey}
+                  color={Color.primary}
+                 // onPress={() => setDoctorCategory(item.id,item.specialist,index)}
+                 onPress={() => setDoctorCategory(item.specialist,index)}
+                  //status={selectedId.includes(item.id) ? 'checked' : 'unchecked'}
+                  status={item.checked ? 'checked' : 'unchecked'}
+                 
+                /> */}
+                 <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => setDoctorCategory(item.specialist)}>
+                  <Text
+                    style={{
+                      color: '#000',
+                      fontFamily: Fonts.primaryRegular,
+                     // marginHorizontal: 5,
+                     width:'100%'
+                    }}>
+                    {item.specialist}
+                  </Text>
+                </TouchableOpacity>
+
+           </View>
+
+           </View>
+
+
+          )}
+
+          />
+          
+          
+          
+          
+          
+          }
+        
+       
+
+
+
+
+         
         </View>
         <View style={{marginTop: 15}}>
           <Text style={styles.label}>Degree</Text>
@@ -1746,4 +1908,13 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 5,
   },
+  specialization_container:{
+    flexDirection: 'row',
+   // alignItems: 'center',
+   // flex: 1,
+//    justifyContent: 'center',
+     width: '50%',
+   // padding: 12,
+    
+  }
 });

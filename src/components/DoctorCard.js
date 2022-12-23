@@ -9,6 +9,7 @@ export default function DoctorCard({item, onPress}) {
       <View
         style={{
           flexDirection: 'row',
+          width:'80%'
         }}>
         <Image
           style={styles.listImage}
@@ -24,20 +25,20 @@ export default function DoctorCard({item, onPress}) {
           <View
             style={{
               flexDirection: 'row',
-              alignItems: 'center',
+             // alignItems: 'center',
             }}>
             <MaterialCommunityIcons
               name="map-marker"
               size={20}
               color={Color.primary}
             />
-            <Text style={{fontFamily: Fonts.primaryRegular, color: '#000'}}>
+            <Text style={{fontFamily: Fonts.primaryRegular, color: '#000',}}>
               {item.location}
             </Text>
           </View>
         </View>
       </View>
-      <View>
+      <View style={{width:'20%'}}>
         {item.status == '0' && (
           <Text
             style={{
@@ -78,6 +79,7 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     justifyContent: 'space-evenly',
+    width:'80%'
   },
   listItemTitle: {
     fontSize: 16,
