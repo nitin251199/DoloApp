@@ -14,7 +14,7 @@ import {useTranslation} from 'react-i18next';
 import { ScrollView } from 'react-native-gesture-handler';
 export default function EngagementScreen({navigation}) {
   const user = useSelector(state => state.user);
-  //console.log('did--',user?.doctor_id)
+  console.log('did2--',user?.doctor_id)
   const [engagementData, setEngagementData] = React.useState([]);
   const [engagements, setEngagements] = React.useState([]);
   const [selectedEngagement, setSelectedEngagement] = React.useState(null);

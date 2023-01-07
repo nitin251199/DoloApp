@@ -28,10 +28,11 @@ export default function HomeScreen({navigation}) {
   const [annoucements,setAnnouncements] = React.useState([]);
 
   const user = useSelector(state => state.user);
-
+  console.log('docid-->',user?.userid);
   const fetchAppointments = async () => {
     setLoading(true);
     const list = await getData(`appointment/${user?.userid}`);
+    console.log('appntmnts-->',list?.data);
     setAppointments(
       list?.data
         // .filter(
@@ -114,9 +115,10 @@ export default function HomeScreen({navigation}) {
 
   const handleAvailable = async () => {
     let body = {
-      id: user?.userid,
+      doctor_id: user?.userid,
       available: available == 1 ? 0 : 1,
     };
+    console.log('body==',body)
     let res = await postData('doctoravilableupdate', body);
     if (res?.success) {
       setAvailable(prev => !prev);

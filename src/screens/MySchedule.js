@@ -52,6 +52,21 @@ console.log('parrraaamm---',route?.params)
     t('scheduleScreen.dec'),
   ];
 
+  // const months = [
+  //   {month:t('scheduleScreen.jan'),id:'1'},
+  //   {month:t('scheduleScreen.feb'),id:'2'},
+  //   t('scheduleScreen.mar'),
+  //   t('scheduleScreen.apr'),
+  //   t('scheduleScreen.may'),
+  //   t('scheduleScreen.jun'),
+  //   t('scheduleScreen.jul'),
+  //   t('scheduleScreen.aug'),
+  //   t('scheduleScreen.sep'),
+  //   t('scheduleScreen.oct'),
+  //   t('scheduleScreen.nov'),
+  //   t('scheduleScreen.dec'),
+  // ];
+
   const days = [
     t('scheduleScreen.sun'),
     t('scheduleScreen.mon'),
@@ -73,9 +88,14 @@ console.log('parrraaamm---',route?.params)
   useEffect(() => {
     let filteredAppointments = allAppointments.filter(
       item =>
-        new Date(item.created_at).getDate() === selectedDate.date &&
-        months[new Date(item.created_at).getMonth()] === selectedDate.month,
+         
+       new Date((item.create_date).split('/').reverse().join("-")).getDate() === selectedDate.date &&
+        months[new Date ((item.create_date).split('/').reverse().join("-")).getMonth()] === selectedDate.month,
+      
     );
+
+   
+  
     if (time === 'Morning') {
       // setAppointments(
       //   filteredAppointments.filter(
@@ -122,6 +142,53 @@ console.log('parrraaamm---',route?.params)
   useEffect(() => {
     getDates();
   }, []);
+
+ const filterAppointments = (selectedDate) =>{
+  var dates = selectedDate.split("/");
+ 
+
+  var userday = dates[0];
+  var usermonth = dates[1];
+  var useryear = dates[2];
+console.log('usermonth==',usermonth)
+  let filteredAppointments = allAppointments.filter(
+    item =>
+       
+    userday === selectedDate.date &&
+      months[usermonth] === selectedDate.month,
+    
+  );
+
+  if (time === 'Morning') {
+    // setAppointments(
+    //   filteredAppointments.filter(
+    //     item => new Date(item.created_at).getHours() < 12,
+    //   ),
+    // );
+
+     setAppointments(
+      filteredAppointments.filter(
+        item => item.shift_name == 'Morning',
+      ),
+    );
+
+  } else {
+    // setAppointments(
+    //   filteredAppointments.filter(
+    //     item => new Date(item.created_at).getHours() >= 12,
+    //   ),
+    // );
+
+    setAppointments(
+      filteredAppointments.filter(
+        item => item.shift_name == 'Evening',
+      ),
+    );
+    
+  }
+
+
+ }
 
   const slots = [
     '06:00',
