@@ -34,9 +34,8 @@ const SearchPatient = ({navigation}) => {
     const result = await postData('patientsearchfilter', body);
      console.log('result==', result);
     if (result.success) {
-      //successToast('Feedback Send SuccessFullly');
-      // navigation.navigate('Home1');
-    // navigation.goBack();
+      
+    console.log('patient data==',result?.data)
     setPatientData(result?.data);
  
     } else {
@@ -50,7 +49,7 @@ const SearchPatient = ({navigation}) => {
 
   useEffect(() => {
  
-   searchPatient();
+  // searchPatient();
    
   }, []);
   return (

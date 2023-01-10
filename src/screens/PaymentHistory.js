@@ -18,6 +18,7 @@ export default function PaymentHistory() {
     const res = await getData(`paymenthistory/${user?.userid}`);
     if (res.success) {
       setPayments(res?.data);
+      console.log('payments==',res?.data);
     }
     setLoading(false);
   };
@@ -77,7 +78,7 @@ export default function PaymentHistory() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Payment History. 💵</Text>
+      <Text style={styles.heading}>Payment Histcurr 💵</Text>
       {payments.length === 0 && !loading && (
         <View>
           <Text style={{...styles.label, marginTop: 25}}>No payments yet.</Text>

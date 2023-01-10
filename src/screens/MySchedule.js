@@ -143,52 +143,7 @@ console.log('parrraaamm---',route?.params)
     getDates();
   }, []);
 
- const filterAppointments = (selectedDate) =>{
-  var dates = selectedDate.split("/");
- 
 
-  var userday = dates[0];
-  var usermonth = dates[1];
-  var useryear = dates[2];
-console.log('usermonth==',usermonth)
-  let filteredAppointments = allAppointments.filter(
-    item =>
-       
-    userday === selectedDate.date &&
-      months[usermonth] === selectedDate.month,
-    
-  );
-
-  if (time === 'Morning') {
-    // setAppointments(
-    //   filteredAppointments.filter(
-    //     item => new Date(item.created_at).getHours() < 12,
-    //   ),
-    // );
-
-     setAppointments(
-      filteredAppointments.filter(
-        item => item.shift_name == 'Morning',
-      ),
-    );
-
-  } else {
-    // setAppointments(
-    //   filteredAppointments.filter(
-    //     item => new Date(item.created_at).getHours() >= 12,
-    //   ),
-    // );
-
-    setAppointments(
-      filteredAppointments.filter(
-        item => item.shift_name == 'Evening',
-      ),
-    );
-    
-  }
-
-
- }
 
   const slots = [
     '06:00',

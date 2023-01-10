@@ -27,7 +27,7 @@ const UpdateProfile = ({navigation}) => {
       let res = await getData(`dolo/profile/${user?.userid}`);
       console.log(`prodata==`, res.data);
       if (res.status) {
-        // console.log(res);
+         console.log('prodata==>',res.data?.specialization);
         setProfileData(res.data);
       }
       setLoading(false);
@@ -720,8 +720,10 @@ const setDoctorCategory = async (specialist,index) => {
             style={{
               flexDirection: 'row',
               marginTop: 15,
+              justifyContent:'space-between',
+              flex:1
             }}>
-            <View style={{flex:1}}>
+            <View style={{width:"49%"}}>
           <Text style={styles.label}>Date of Birth</Text>
           <TextInput
             theme={theme}
@@ -742,7 +744,7 @@ const setDoctorCategory = async (specialist,index) => {
             activeUnderlineColor={Color.primary}
           />
         </View>
-            <View style={{flex: 1}}>
+            <View style={{width:'49%'}}>
               <Text style={styles.label}>Fees</Text>
               <TextInput
                 theme={theme}
@@ -1195,7 +1197,7 @@ const setDoctorCategory = async (specialist,index) => {
             Enter different facilities seperated by commas.
           </HelperText>
         </View>
-        <View style={{marginTop: 15}}>
+        <View style={{marginTop: 15,}}>
           <Text
             style={{
               ...styles.sectionTitle,
@@ -1216,20 +1218,20 @@ const setDoctorCategory = async (specialist,index) => {
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
           />
-
-        {categoryList && 
+          {categoryList && 
             <FlatList
             data={categoryList}
            
             numColumns={2}
            // keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => (
-             <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+             <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:10}}>
              <View style={styles.specialization_container}>
                 {/* <Checkbox
                   uncheckedColor={Color.grey}
                   color={Color.primary}
-                  onPress={() => setDoctorCategory(item.id,item.specialist,index)}
+                 // onPress={() => setDoctorCategory(item.id,item.specialist,index)}
+                 onPress={() => setDoctorCategory(item.specialist,index)}
                   //status={selectedId.includes(item.id) ? 'checked' : 'unchecked'}
                   status={item.checked ? 'checked' : 'unchecked'}
                  
@@ -1241,7 +1243,8 @@ const setDoctorCategory = async (specialist,index) => {
                     style={{
                       color: '#000',
                       fontFamily: Fonts.primaryRegular,
-                      marginHorizontal: 5,
+                     // marginHorizontal: 5,
+                     width:'100%'
                     }}>
                     {item.specialist}
                   </Text>
@@ -1261,6 +1264,13 @@ const setDoctorCategory = async (specialist,index) => {
           
           
           }
+        
+       
+
+
+
+
+         
         </View>
         <View style={{marginTop: 15}}>
           <Text style={styles.label}>Degree</Text>
@@ -1720,7 +1730,7 @@ const styles = StyleSheet.create({
        // alignItems: 'center',
        // flex: 1,
     //    justifyContent: 'center',
-         width: '100%',
+         width: '50%',
        // padding: 12,
         
       }
