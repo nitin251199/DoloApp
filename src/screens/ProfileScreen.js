@@ -34,10 +34,11 @@ export default function ProfileScreen({navigation}) {
     setLoading(true);
     let res = await getData(`agent/${user?.userid}`);
     console.log(`agent/${user?.userid}`);
-    console.log(res);
+    console.log('agentProfile==',res);
     if (res.status) {
-      console.log(res);
+    
       setProfileData(res.agent);
+      console.log('agentProfile1==',res.agent);
     }
     setLoading(false);
   };

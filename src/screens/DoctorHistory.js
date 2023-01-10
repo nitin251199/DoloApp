@@ -22,6 +22,7 @@ export default function HistoryScreen({navigation}) {
     setLoading(true);
     let res = await getData(`agent/doctorview/${user?.userid}`);
     if (res.success) {
+      
       setDoctorData(res?.data?.filter(item => item?.status === '1'));
     }
     setLoading(false);

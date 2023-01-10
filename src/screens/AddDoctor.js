@@ -28,7 +28,7 @@ import {Picker} from '@react-native-picker/picker';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import SuccessModal from '../components/modals/SuccessModal';
 import MapModal from '../components/modals/MapModal';
-
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 export default function AddDoctor({navigation}) {
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
   let morningSchedule = [
@@ -171,9 +171,11 @@ export default function AddDoctor({navigation}) {
   const [name, setName] = React.useState('');
   const [gender, setGender] = React.useState('Male');
   const [dob, setDob] = React.useState(new Date());
+  
   const [maritalStatus, setMaritalStatus] = React.useState('Married');
   const [pinCode, setPinCode] = React.useState('');
   const [email, setEmail] = React.useState('');
+  const [experience, setExperience] = React.useState(new Date());
   const [location, setLocation] = React.useState('');
   const [adhar, setAdhar] = React.useState('');
   const [doctorContact, setDoctorContact] = React.useState('');
@@ -217,14 +219,38 @@ export default function AddDoctor({navigation}) {
   const [longitude, setLongitude] = React.useState('');
   const [categoryList,setCategoryList] = React.useState([]);
   const [isChecked,setIschecked] = React.useState(false);
+  const [showDobDatePicker,setShowDobDatePicker] = React.useState(false);
+  const [showExperienceDatePicker,setShowExperienceDatePicker] = React.useState(false);
+  const [accountNumber,setAccountNumber] = React.useState('');
+  const [confirmAccountNumber,setConfirmAccountNumber] = React.useState('');
+  const [accountHolderName,setAccountHolderName] = React.useState('');
+  const [ifscCode,setIfscCode] = React.useState('');
+  const [bankName,setBankName] = React.useState('');
+
   const _scrollRef = React.useRef(null);
   
-
+ validateEmail = email => {
+    var re =
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  };
   const addDoctor = async () => {
-    if (doctorPic === '' || name === '' || email === '' || dolo_id === '') {
+    if (doctorPic === '' || name === '' || email === '' || adhar === '' || dob === '' || doctor_fees === '',experience === '' || doctorContact === '' || clinicContact === '' || location === '' || pinCode === '' || registration_number === '' || accountNumber === '' || accountHolderName === '' || ifscCode === '' || bankName === '' || avgTime === '' || clinicLocationText === '' ||  Degree === '' || collegename === '' || year_of_passout === '' || college_location === '' || languages === '' || specialization === '') {
       Alert.alert('Error', 'Please fill the required fields');
       return;
     }
+
+    if((!this.validateEmail(email))){
+      Alert.alert('Error', 'Please enter valid email');
+      return; 
+    }
+
+    if (accountNumber !== confirmAccountNumber || confirmAccountNumber === '') {
+      Alert.alert('Error', 'Please Confirm Account Number');
+      return;
+    }
+
+   
     setLoading(true);
 
     let body1 = 
@@ -235,8 +261,12 @@ export default function AddDoctor({navigation}) {
         marital_status: maritalStatus,
         gender,
         email,
+        account_holdername:accountHolderName,
+        ifsc_code:ifscCode,
+        account_no:accountNumber,
         fees: doctor_fees,
-        do_lo_id: dolo_id,
+        experience: experience,
+        bank_name:bankName,
         doctorContact,
         clinic_contact: clinicContact,
         location,
@@ -290,10 +320,10 @@ export default function AddDoctor({navigation}) {
       };
     
     const body = JSON.stringify(body1)
-    console.log('body-->',body)
+    console.log('body-->',body1)
     // let result = await postDataAndImage('agent/doctorcreate', formData);
     let result = await postData('agent/doctorcreate', body1);
-     console.log('add doc',result);
+    // console.log('add doc==>',result);
     if (!result.success) {
       if (result.msg === 'Validation Error.') {
         Alert.alert('Error', 'Doctor already exists');
@@ -472,11 +502,27 @@ export default function AddDoctor({navigation}) {
     });
   };
 
+  
+  const showDobDatePicker1 = () =>{
+    setShowDobDatePicker(true)
+  }
+
   const openDobCalender = () => {
     DateTimePickerAndroid.open({
       value: dob,
       onChange: (event, date) => {
-        setDob(date);
+      //  setDob(date);
+      },
+      mode: 'date',
+      is24Hour: false,
+    });
+  };
+
+  const openExperienceCalender = () => {
+    DateTimePickerAndroid.open({
+      value: experience,
+      onChange: (event, date) => {
+       // setExperience(date);
       },
       mode: 'date',
       is24Hour: false,
@@ -560,11 +606,36 @@ export default function AddDoctor({navigation}) {
     );
   };
 
+  const hideDobDatePicker = () =>{
+    setShowDobDatePicker(false)
+  }
+
+  const showExperienceDatePicker1 = () =>{
+    setShowExperienceDatePicker(true)
+  }
+
+  const hideExperienceDatePicker = () =>{
+    setShowExperienceDatePicker(false)
+  }
+
   const getDateValue = date => {
     let d = new Date(date);
     let day = d.getDate();
     let month = d.getMonth() + 1;
     let year = d.getFullYear();
+    setDob(`${day}-${month}-${year}`);
+    setShowDobDatePicker(false)
+    return `${day}-${month}-${year}`;
+   
+  };
+
+  const getExperienceDateValue = date => {
+    let d = new Date(date);
+    let day = d.getDate();
+    let month = d.getMonth() + 1;
+    let year = d.getFullYear();
+    setExperience(`${day}-${month}-${year}`);
+    setShowExperienceDatePicker(false)
     return `${day}-${month}-${year}`;
   };
 
@@ -572,10 +643,15 @@ export default function AddDoctor({navigation}) {
     setName('');
     setGender('Male');
     setDob(new Date());
+    setExperience(new Date());
     setMaritalStatus('Married');
     setPinCode('');
     setDoctor_fees('');
-    setDolo_id('');
+    setConfirmAccountNumber('');
+   setAccountNumber('')
+   setAccountHolderName('')
+   setIfscCode('')
+   setBankName('')
     setEmail('');
     setDoctorContact('');
     setClinicContact('');
@@ -617,7 +693,7 @@ export default function AddDoctor({navigation}) {
         if (result?.success) {
          
         setCategoryList(result.data)
-        console.log('clist==',result.data)
+       // console.log('clist==',result.data)
         setCloading(false) 
         }
   };
@@ -772,8 +848,8 @@ export default function AddDoctor({navigation}) {
           </View>
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Date of Birth</Text>
-          <TextInput
+          <Text style={styles.label}>Date of Birth*</Text>
+          {/* <TextInput
             theme={theme}
             dense
             editable={false}
@@ -790,6 +866,31 @@ export default function AddDoctor({navigation}) {
             mode="flat"
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
+          /> */}
+          <TextInput
+            // ref={_inputRef}
+            theme={theme}
+            //keyboardType="numeric"
+            dense
+            onChangeText={val => setDob(val)}
+            value={dob}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+            editable={false}
+            right={
+              <TextInput.Icon
+                icon="calendar"
+                color={Color.black}
+                onPress={() => showDobDatePicker1()}
+              />
+            }
+          />
+          <DateTimePickerModal
+            isVisible={showDobDatePicker}
+            mode="date"
+            onConfirm={e => getDateValue(e)}
+            onCancel={hideDobDatePicker}
           />
         </View>
         <View style={{marginTop: 15}}>
@@ -845,7 +946,7 @@ export default function AddDoctor({navigation}) {
             marginTop: 15,
           }}>
           <View style={{marginRight: 10, flex: 1}}>
-            <Text style={styles.label}>Doctor Fees</Text>
+            <Text style={styles.label}>Doctor Fees*</Text>
             <TextInput
               theme={theme}
               dense
@@ -858,7 +959,7 @@ export default function AddDoctor({navigation}) {
             />
           </View>
           <View style={{flex: 1}}>
-            <Text style={styles.label}>DOLO ID</Text>
+            {/* <Text style={styles.label}>DOLO ID</Text>
             <TextInput
               theme={theme}
               dense
@@ -867,7 +968,53 @@ export default function AddDoctor({navigation}) {
               mode="flat"
               underlineColor="#000"
               activeUnderlineColor={Color.primary}
-            />
+            /> */}
+
+<Text style={styles.label}>Experience*</Text>
+          {/* <TextInput
+            theme={theme}
+            dense
+            editable={false}
+            onChangeText={text => setExperience(text)}
+            forceTextInputFocus={false}
+            right={
+              <TextInput.Icon
+                icon="calendar"
+                color={Color.primary}
+                onPress={openExperienceCalender}
+              />
+            }
+            value={getExperienceDateValue(experience)}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          /> */}
+
+          <TextInput
+            // ref={_inputRef}
+            theme={theme}
+            //keyboardType="numeric"
+            dense
+            onChangeText={val => setExperience(val)}
+            value={experience}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+            editable={false}
+            right={
+              <TextInput.Icon
+                icon="calendar"
+                color={Color.black}
+                onPress={() => showExperienceDatePicker1()}
+              />
+            }
+          />
+          <DateTimePickerModal
+            isVisible={showExperienceDatePicker}
+            mode="date"
+            onConfirm={e => getExperienceDateValue(e)}
+            onCancel={hideExperienceDatePicker}
+          />
           </View>
         </View>
         <View style={{marginTop: 15}}>
@@ -889,7 +1036,7 @@ export default function AddDoctor({navigation}) {
             marginTop: 15,
           }}>
           <View style={{marginRight: 10, flex: 1}}>
-            <Text style={styles.label}>Doctor Contact</Text>
+            <Text style={styles.label}>Doctor Contact*</Text>
             <TextInput
               theme={theme}
               dense
@@ -902,7 +1049,7 @@ export default function AddDoctor({navigation}) {
             />
           </View>
           <View style={{flex: 1}}>
-            <Text style={styles.label}>Clinic Contact</Text>
+            <Text style={styles.label}>Clinic Contact*</Text>
             <TextInput
               theme={theme}
               dense
@@ -916,7 +1063,7 @@ export default function AddDoctor({navigation}) {
           </View>
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Location</Text>
+          <Text style={styles.label}>Location*</Text>
           {location.length > 0 && (
             <Text
               style={{
@@ -981,13 +1128,15 @@ export default function AddDoctor({navigation}) {
           </View>
         </View> */}
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Pin Code</Text>
+          <Text style={styles.label}>Pin Code*</Text>
           <TextInput
             theme={theme}
             dense
             onChangeText={text => setPinCode(text)}
             value={pinCode}
             mode="flat"
+            maxLength={6}
+            keyboardType='numeric'
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
           />
@@ -998,20 +1147,22 @@ export default function AddDoctor({navigation}) {
             marginTop: 15,
           }}>
           <View style={{marginRight: 10, flex: 1}}>
-            <Text style={styles.label}>Aadhar Number</Text>
+            <Text style={styles.label}>Aadhar Number*</Text>
             <TextInput
               theme={theme}
               dense
               keyboardType="numeric"
+              maxLength={12}
               onChangeText={text => setAdhar(text)}
               value={adhar}
               mode="flat"
+             
               underlineColor="#000"
               activeUnderlineColor={Color.primary}
             />
           </View>
           <View style={{flex: 1}}>
-            <Text style={styles.label}>Registration Number</Text>
+            <Text style={styles.label}>Registration Number*</Text>
             <TextInput
               theme={theme}
               dense
@@ -1023,6 +1174,76 @@ export default function AddDoctor({navigation}) {
             />
           </View>
         </View>
+        <View style={{marginTop: 15}}>
+          <Text
+            style={{
+              ...styles.sectionTitle,
+              paddingVertical: 15,
+              marginTop: 10,
+            }}>
+            Bank Details
+          </Text>
+          <Text style={styles.label}>Account Number*</Text>
+          <TextInput
+            theme={theme}
+            dense
+            onChangeText={text => setAccountNumber(text)}
+            value={accountNumber}
+            mode="flat"
+            keyboardType='numeric'
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          />
+          <View style={{marginTop:15}}>
+           <Text style={styles.label}>Confirm Account Number*</Text>
+          <TextInput
+            theme={theme}
+            dense
+            onChangeText={text => setConfirmAccountNumber(text)}
+            value={confirmAccountNumber}
+            mode="flat"
+            keyboardType='numeric'
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          />
+          </View> 
+          <View style={{marginTop:15}}>
+          <Text style={styles.label}>Account Holder's Name*</Text>
+          <TextInput
+            theme={theme}
+            dense
+            onChangeText={text => setAccountHolderName(text)}
+            value={accountHolderName}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          />
+          </View>
+          <View style={{marginTop:15}}>
+          <Text style={styles.label}>IFSC Code*</Text>
+          <TextInput
+            theme={theme}
+            dense
+            onChangeText={text => setIfscCode(text)}
+            value={ifscCode}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          />
+          </View>
+          <View style={{marginTop:15}}>
+          <Text style={styles.label}>Bank Name*</Text>
+          <TextInput
+            theme={theme}
+            dense
+            onChangeText={text => setBankName(text)}
+            value={bankName}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          />
+          </View>
+          </View>
         <View style={{marginTop: 15}}>
           <Text
             style={{
@@ -1279,19 +1500,20 @@ export default function AddDoctor({navigation}) {
           ))}
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Avg. Time per patient (in mins.)</Text>
+          <Text style={styles.label}>Avg. Time per patient (in mins.)*</Text>
           <TextInput
             theme={theme}
             dense
             onChangeText={text => setAvgTime(text)}
             value={avgTime}
             mode="flat"
+            keyboardType='numeric'
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
           />
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Clinic Address</Text>
+          <Text style={styles.label}>Clinic Address*</Text>
           {clinicLocations.length > 0 &&
             clinicLocations.map((item, index) => (
               <View
@@ -1347,7 +1569,7 @@ export default function AddDoctor({navigation}) {
           </Button>
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Facilities</Text>
+          <Text style={styles.label}>Facilities*</Text>
           <TextInput
             theme={theme}
             dense
@@ -1378,7 +1600,7 @@ export default function AddDoctor({navigation}) {
             }}>
             Education Details
           </Text>
-          <Text style={styles.label}>Specialization</Text>
+          <Text style={styles.label}>Specialization*</Text>
           <TextInput
            placeholderTextColor={Color.black}
             theme={theme}
@@ -1445,7 +1667,7 @@ export default function AddDoctor({navigation}) {
          
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Degree</Text>
+          <Text style={styles.label}>Degree*</Text>
           <TextInput
             theme={theme}
             dense
@@ -1457,7 +1679,7 @@ export default function AddDoctor({navigation}) {
           />
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>College Name</Text>
+          <Text style={styles.label}>College Name*</Text>
           <TextInput
             theme={theme}
             dense
@@ -1474,7 +1696,7 @@ export default function AddDoctor({navigation}) {
             marginTop: 15,
           }}>
           <View style={{marginRight: 10, flex: 1}}>
-            <Text style={styles.label}>Year of Passout</Text>
+            <Text style={styles.label}>Year of Passout*</Text>
             <TextInput
               theme={theme}
               dense
@@ -1487,7 +1709,7 @@ export default function AddDoctor({navigation}) {
             />
           </View>
           <View style={{flex: 1}}>
-            <Text style={styles.label}>College Location</Text>
+            <Text style={styles.label}>College Location*</Text>
             <TextInput
               theme={theme}
               dense
@@ -1584,7 +1806,7 @@ export default function AddDoctor({navigation}) {
         </View>
 
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Languages</Text>
+          <Text style={styles.label}>Languages*</Text>
           <TextInput
             theme={theme}
             dense
