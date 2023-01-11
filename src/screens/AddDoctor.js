@@ -170,12 +170,12 @@ export default function AddDoctor({navigation}) {
 
   const [name, setName] = React.useState('');
   const [gender, setGender] = React.useState('Male');
-  const [dob, setDob] = React.useState(new Date());
+  const [dob, setDob] = React.useState('');
   
   const [maritalStatus, setMaritalStatus] = React.useState('Married');
   const [pinCode, setPinCode] = React.useState('');
   const [email, setEmail] = React.useState('');
-  const [experience, setExperience] = React.useState(new Date());
+  const [experience, setExperience] = React.useState('');
   const [location, setLocation] = React.useState('');
   const [adhar, setAdhar] = React.useState('');
   const [doctorContact, setDoctorContact] = React.useState('');
@@ -234,22 +234,154 @@ export default function AddDoctor({navigation}) {
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
   };
-  const addDoctor = async () => {
-    if (doctorPic === '' || name === '' || email === '' || adhar === '' || dob === '' || doctor_fees === '',experience === '' || doctorContact === '' || clinicContact === '' || location === '' || pinCode === '' || registration_number === '' || accountNumber === '' || accountHolderName === '' || ifscCode === '' || bankName === '' || avgTime === '' || clinicLocationText === '' ||  Degree === '' || collegename === '' || year_of_passout === '' || college_location === '' || languages === '' || specialization === '') {
-      Alert.alert('Error', 'Please fill the required fields');
-      return;
-    }
 
-    if((!this.validateEmail(email))){
+  const checkValidations = async() =>{
+    if(doctorPic === ''){
+      Alert.alert('Error', 'Please select profile pic');
+      
+    }
+    else if(name === ''){
+      Alert.alert('Error', 'Please enter name');
+      
+    }
+    else if(dob === ''){
+      Alert.alert('Error', 'Please enter Date of Birth');
+      
+    }
+  else if(email === ''){
+    Alert.alert('Error', 'Please enter email');
+   }
+
+    else if((!this.validateEmail(email))){
       Alert.alert('Error', 'Please enter valid email');
-      return; 
+      
     }
 
-    if (accountNumber !== confirmAccountNumber || confirmAccountNumber === '') {
+   
+    
+
+    else if(adhar === ''){
+      Alert.alert('Error', 'Please enter adhar');
+      
+    }
+   
+
+    else if(doctor_fees === ''){
+      Alert.alert('Error', 'Please enter Fees');
+      
+    }
+
+    else if(experience === ''){
+      Alert.alert('Error', 'Please enter Experience');
+      
+    }
+
+    else if(doctorContact === ''){
+      Alert.alert('Error', 'Please enter Doctor Contact Number');
+      
+    }
+
+    else if(clinicContact === ''){
+      Alert.alert('Error', 'Please enter Clinic Contact Number');
+      
+    }
+
+    else if(location === ''){
+      Alert.alert('Error', 'Please select Location');
+      
+    }
+
+    else if(pinCode === ''){
+      Alert.alert('Error', 'Please select Pin Code');
+      
+    }
+
+    else if(registration_number === ''){
+      Alert.alert('Error', 'Please enter registration number');
+      
+    }
+   
+   
+   
+
+
+
+    else if(accountNumber === ''){
+      Alert.alert('Error', 'Please enter account number');
+      
+    }
+
+
+   else if (accountNumber !== confirmAccountNumber || confirmAccountNumber === '') {
       Alert.alert('Error', 'Please Confirm Account Number');
-      return;
+      
     }
 
+    else if(accountHolderName === ''){
+      Alert.alert('Error', 'Please enter account holder name');
+      
+    }
+
+    else if(ifscCode === ''){
+      Alert.alert('Error', 'Please enter IFSC code');
+      
+    }
+
+    else if(bankName === ''){
+      Alert.alert('Error', 'Please enter bank name');
+      
+    }
+
+    else if(avgTime === ''){
+      Alert.alert('Error', 'Please enter avg time');
+      
+    }
+
+
+    else if(clinicLocationText === ''){
+      Alert.alert('Error', 'Please enter clinic location');
+      
+    }
+
+    else if(Degree === ''){
+      Alert.alert('Error', 'Please enter Degree');
+      
+    }
+
+    else if(collegename === ''){
+      Alert.alert('Error', 'Please enter College Name');
+      
+    }
+
+    else if(year_of_passout === ''){
+      Alert.alert('Error', 'Please enter passout year');
+      
+    }
+
+    else if(college_location === ''){
+      Alert.alert('Error', 'Please enter college location');
+      
+    }
+
+    else if(languages === ''){
+      Alert.alert('Error', 'Please enter languages');
+      
+    }
+
+    else if(specialization  === ''){
+      Alert.alert('Error', 'Please select specialization ');
+      
+    }
+
+    else{
+    await  addDoctor(); 
+    }
+
+  }
+
+  const addDoctor = async () => {
+
+    
    
     setLoading(true);
 
@@ -348,6 +480,7 @@ export default function AddDoctor({navigation}) {
       .catch(e => {
         console.log(e);
       });
+   
   };
 
   const setScheduleDay = index => {
@@ -642,8 +775,8 @@ export default function AddDoctor({navigation}) {
   const onPrimaryPress = () => {
     setName('');
     setGender('Male');
-    setDob(new Date());
-    setExperience(new Date());
+     setDob('');
+     setExperience('');
     setMaritalStatus('Married');
     setPinCode('');
     setDoctor_fees('');
@@ -774,7 +907,7 @@ export default function AddDoctor({navigation}) {
               fontFamily: Fonts.primaryRegular,
               marginVertical: 10,
             }}>
-            All fields markrd with * is required to fill.
+            All fields marked with * is required to fill.
           </Text>
           <Text style={styles.label}>Name*</Text>
           <TextInput
@@ -1040,6 +1173,7 @@ export default function AddDoctor({navigation}) {
             <TextInput
               theme={theme}
               dense
+              maxLength={10}
               keyboardType="numeric"
               onChangeText={text => setDoctorContact(text)}
               value={doctorContact}
@@ -1053,6 +1187,7 @@ export default function AddDoctor({navigation}) {
             <TextInput
               theme={theme}
               dense
+              maxLength={10}
               keyboardType="numeric"
               onChangeText={text => setClinicContact(text)}
               value={clinicContact}
@@ -1225,6 +1360,7 @@ export default function AddDoctor({navigation}) {
             theme={theme}
             dense
             onChangeText={text => setIfscCode(text)}
+            autoCapitalize='characters'
             value={ifscCode}
             mode="flat"
             underlineColor="#000"
@@ -2074,7 +2210,7 @@ export default function AddDoctor({navigation}) {
           dark
           loading={loading}
           mode="contained"
-          onPress={() => addDoctor()}>
+          onPress={() => checkValidations()}>
           Submit Profile
         </Button>
       </ScrollView>

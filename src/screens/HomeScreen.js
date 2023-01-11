@@ -217,7 +217,7 @@ export default function HomeScreen({navigation}) {
                 <DoctorCard
                   item={item}
                   key={index}
-                  onPress={() => navigation.navigate('Doctor', {id: item.id})}
+                 // onPress={() => navigation.navigate('Doctor', {id: item.id})}
                 />
               );
             })
