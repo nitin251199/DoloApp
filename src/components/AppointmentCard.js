@@ -15,12 +15,12 @@ export default function AppointmentCard({item, onPress, onDoublePress,bgColor}) 
         return styles.resolved;
       case 3:
         return styles.absent;
-      case 1:
-        return styles.current;
+      case 5:
+        return styles.due_payment;
       case 0:
         return styles.pending;
       default:
-        return styles.resolved;
+        return styles.pending;
     }
   };
 
@@ -94,23 +94,19 @@ const styles = StyleSheet.create({
     color: Color.white,
     
   },
-  resolved: {
+   resolved: {
     backgroundColor: '#006400',
- },
- absent: {
-   // borderWidth: 5,
-   // borderColor: Color.red,
-  backgroundColor:Color.red,
-
- },
- current: {
-   backgroundColor: '#ff8c00',
-   //borderWidth: 5,
-  // borderColor: Color.blue,
- },
- pending: {
-   backgroundColor: Color.graylight,
-   // borderWidth: 2,
-   // borderStyle: 'dashed',
- },
+  },
+  absent: {
+   backgroundColor: Color.red,
+  },
+  current: {
+    backgroundColor: '#ff8c00',
+   },
+   due_payment:{
+   backgroundColor:'#ff7f50',
+   },
+  pending: {
+    backgroundColor: Color.graylight,
+    },
 });

@@ -43,15 +43,19 @@ export default EngagementSheet = React.forwardRef((props, ref) => {
           style={{
             flexDirection: 'row',
             marginTop: 30,
-            justifyContent: 'space-between',
+            justifyContent: 'space-around',
           }}>
-          {/* <View style={{alignItems: 'center', flex: 1}}>
+{ item?.status === 5 ?
+          <View style={{alignItems: 'center', flex: 1}}>
+           
             <TouchableRipple
-              onPress={() => handleChange(item?.id, 1)}
-              style={styles.button}>
-              <Text style={styles.buttonLabel}>Set Active</Text>
+              onPress={() => handleChange(item?.id, 0)}
+              style={{...styles.button,width:'50%'}}>
+              <Text style={styles.buttonLabel}>Set Verified</Text>
             </TouchableRipple>
-          </View> */}
+          </View> :
+          <>
+
           <View style={{alignItems: 'center', flex: 1}}>
             <TouchableRipple
               onPress={() => handleChange(item?.id, 2)}
@@ -66,6 +70,8 @@ export default EngagementSheet = React.forwardRef((props, ref) => {
               <Text style={styles.buttonLabel}>Set Absent</Text>
             </TouchableRipple>
           </View>
+          </>
+}
         </View>
         {/* <View
           style={{

@@ -29,6 +29,7 @@ export default function HomeScreen({navigation}) {
 
   const user = useSelector(state => state.user);
   console.log('docid-->',user?.userid);
+  
   const fetchAppointments = async () => {
     setLoading(true);
     const list = await getData(`appointment/${user?.userid}`);

@@ -11,23 +11,39 @@ import MapModal from '../components/modals/MapModal'
 import {useDispatch, useSelector} from 'react-redux';
 import DocProfilePlaceholder from '../placeholders/DocProfilePlaceholder';
 import { errorToast, successToast } from '../components/toasts';
-
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 
 const UpdateProfile = ({navigation}) => {
   const dispatch = useDispatch();
 
   const user = useSelector(state => state.user);
+
+  console.log('uid===',user?.userid)
     const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
 
     const [profileData, setProfileData] = React.useState('');
     const [categoryList,setCatagoryList] = React.useState([]);
+    const [showDobDatePicker,setShowDobDatePicker] = React.useState(false);
+
+    const showDobDatePicker1 = () =>{
+      setShowDobDatePicker(true)
+    }
+
+    const hideDobDatePicker = () =>{
+      setShowDobDatePicker(false)
+    }
+  
+   
+  
+  
 
     const fetchProfileInfo = async () => {
       setLoading(true);
       let res = await getData(`dolo/profile/${user?.userid}`);
       console.log(`prodata==`, res.data);
       if (res.status) {
-         console.log('prodata==>',res.data?.specialization);
+      //   console.log('prodata==>',res.data?.specialization);
         setProfileData(res.data);
       }
       setLoading(false);
@@ -40,7 +56,7 @@ const UpdateProfile = ({navigation}) => {
           if (result?.success) {
            
             setCatagoryList(result.data)
-          console.log('clist==',result.data)
+        //  console.log('clist==',result.data)
           setCloading(false) 
           }
     };
@@ -226,6 +242,7 @@ const setDoctorCategory = async (specialist,index) => {
         
         const [maritalStatus, setMaritalStatus] = React.useState('Married');
         const [clinicContact, setClinicContact] = React.useState('');
+        const [doctorContact, setDoctorContact] = React.useState('');
         const [pinCode, setPinCode] = React.useState('');
        
         const [location, setLocation] = React.useState('');
@@ -262,7 +279,9 @@ const setDoctorCategory = async (specialist,index) => {
         setAwardList(profileData?.award_list || '')
         setCertList(profileData?.certList || '')
         setAchievementList(profileData?.achievementList || '')
+        setDoctorContact(profileData?.doctorContact || '')
         setClinicContact(profileData?.clinic_contact || '')
+        
         setPinCode(profileData?.pincode || '')
         setLocation(profileData?.location || '')
         setLanguages(profileData?.location || '')
@@ -439,6 +458,8 @@ const setDoctorCategory = async (specialist,index) => {
         let day = d.getDate();
         let month = d.getMonth() + 1;
         let year = d.getFullYear();
+        setDob(`${day}-${month}-${year}`);
+        setShowDobDatePicker(false)
         return `${day}-${month}-${year}`;
       };
     
@@ -452,11 +473,10 @@ const setDoctorCategory = async (specialist,index) => {
             date_of_birth: dob,
             marital_status: maritalStatus,
             gender,
-          
+            password:password,
             fees: fees,
-            
-        
             clinic_contact: clinicContact,
+            doctorContact: doctorContact,
             location,
             latitude:latitude,
             longitude:longitude,
@@ -508,8 +528,8 @@ const setDoctorCategory = async (specialist,index) => {
           };
         
         const body = JSON.stringify(body1)
-        console.log('body==',body);
-        const result = await postData(`doctorprofile/update/${profileData?.id}`, body1);
+        console.log('bodyup==',body);
+        const result = await postData(`doctorprofile/update/${profileData?.doctor_id}`, body1);
         if (result.success) {
        
           successToast('Successfully Updated');
@@ -726,22 +746,29 @@ const setDoctorCategory = async (specialist,index) => {
             <View style={{width:"49%"}}>
           <Text style={styles.label}>Date of Birth</Text>
           <TextInput
+            // ref={_inputRef}
             theme={theme}
+            //keyboardType="numeric"
             dense
-            editable={false}
-            onChangeText={text => setDob(text)}
-            forceTextInputFocus={false}
-            right={
-              <TextInput.Icon
-                icon="calendar"
-                color={Color.primary}
-                onPress={openDobCalender}
-              />
-            }
-            value={getDateValue(dob)}
+            onChangeText={val => setDob(val)}
+            value={dob}
             mode="flat"
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
+            editable={false}
+            right={
+              <TextInput.Icon
+                icon="calendar"
+                color={Color.black}
+                onPress={() => showDobDatePicker1()}
+              />
+            }
+          />
+          <DateTimePickerModal
+            isVisible={showDobDatePicker}
+            mode="date"
+            onConfirm={e => getDateValue(e)}
+            onCancel={hideDobDatePicker}
           />
         </View>
             <View style={{width:'49%'}}>
@@ -779,12 +806,29 @@ const setDoctorCategory = async (specialist,index) => {
             style={{
               flexDirection: 'row',
               marginTop: 15,
+              justifyContent:'space-between',
+              flex:1
             }}>
-            <View style={{flex: 1}}>
+              <View style={{width:'49%'}}>
+              <Text style={styles.label}>Doctor Contact*</Text>
+            <TextInput
+              theme={theme}
+              dense
+              maxLength={10}
+              keyboardType="numeric"
+              onChangeText={text => setDoctorContact(text)}
+              value={doctorContact}
+              mode="flat"
+              underlineColor="#000"
+              activeUnderlineColor={Color.primary}
+            />
+            </View>
+            <View style={{width:'49%'}}>
               <Text style={styles.label}>Clinic Contact</Text>
               <TextInput
               theme={theme}
               dense
+              maxLength={10}
               keyboardType="numeric"
               onChangeText={text => setClinicContact(text)}
               value={clinicContact}
@@ -818,6 +862,7 @@ const setDoctorCategory = async (specialist,index) => {
             theme={theme}
             keyboardType="numeric"
             dense
+            maxLength={6}
             onChangeText={text => setPinCode(text)}
             value={pinCode}
             mode="flat"
@@ -1211,6 +1256,7 @@ const setDoctorCategory = async (specialist,index) => {
            placeholderTextColor={Color.black}
             theme={theme}
             dense
+            
            // onChangeText={text => setDegree(text)}
             value={specialization == '' ? 'Heart' : specialization}
             mode="flat"
@@ -1238,6 +1284,7 @@ const setDoctorCategory = async (specialist,index) => {
                 /> */}
                  <TouchableOpacity
                   activeOpacity={1}
+                  style={{backgroundColor:item.specialist == specialization ? '#aaaaaa80' : null,padding:10,borderRadius:2}}
                   onPress={() => setDoctorCategory(item.specialist)}>
                   <Text
                     style={{

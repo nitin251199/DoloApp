@@ -81,9 +81,9 @@ export default function RegisterScreen({navigation, route}) {
     let body = {
       username: name,
       email: email,
-      password: pass,
+     // password: pass,
       mobile: phone,
-      refer_code: referCode,
+     // refer_code: referCode,
     };
     const response = await postData('api/getRegistration', body);
     if (response.success) {
@@ -216,7 +216,7 @@ export default function RegisterScreen({navigation, route}) {
           }
         />
 
-        <InputField
+        {/* <InputField
           label={t('register.referral')}
           value={referCode}
           onChangeText={setReferCode}
@@ -228,7 +228,7 @@ export default function RegisterScreen({navigation, route}) {
               style={{marginRight: 5}}
             />
           }
-        />
+        /> */}
 
         <CustomButton
           loading={loading}

@@ -329,7 +329,7 @@ export default function ProfileScreen({navigation}) {
             </Text>
             <View style={styles.cardContent}>
               <Text style={{...styles.cardText}}>
-                {profileData?.feeConsultation == 'true' ? 'Yes' : 'No'}
+                {profileData?.feeconsultation == '1' ? 'Yes' : 'No'}
               </Text>
             </View>
           </View>
@@ -341,7 +341,7 @@ export default function ProfileScreen({navigation}) {
               style={{
                 ...styles.card,
                 backgroundColor: Color.white,
-                width: '48.5%',
+                
               }}>
               <Text style={{...styles.cardTitle}}>Location</Text>
               <View style={styles.cardContent}>
@@ -350,7 +350,7 @@ export default function ProfileScreen({navigation}) {
                 </Text>
               </View>
             </View>
-            <View
+            {/* <View
               style={{
                 ...styles.card,
                 backgroundColor: Color.white,
@@ -362,7 +362,7 @@ export default function ProfileScreen({navigation}) {
                   {profileData?.languages}
                 </Text>
               </View>
-            </View>
+            </View> */}
           </View>
           <View style={{...styles.card, backgroundColor: Color.white}}>
             <Text style={{...styles.cardTitle}}>Facilities</Text>
@@ -375,14 +375,14 @@ export default function ProfileScreen({navigation}) {
           <View style={{...styles.card, backgroundColor: Color.white}}>
             <Text style={{...styles.cardTitle}}>Clinic Locations</Text>
             <View style={styles.cardContent}>
-              {profileData?.clinicLocations &&
-                profileData?.clinicLocations.map((item, index) => {
+              {profileData?.clinic_location &&
+                profileData?.clinic_location.map((item, index) => {
                   return (
                     <>
                       <Text style={{...styles.cardText}} key={index}>
                         {item}
                       </Text>
-                      {index != clinicLocations.length - 1 ? (
+                      {index != profileData?.clinic_location.length - 1 ? (
                         <Text style={{...styles.cardText}}>,</Text>
                       ) : null}
                     </>
@@ -390,7 +390,7 @@ export default function ProfileScreen({navigation}) {
                 })}
             </View>
           </View>
-          <View style={{...styles.card, backgroundColor: Color.white}}>
+          {/* <View style={{...styles.card, backgroundColor: Color.white}}>
             <Text style={{...styles.cardTitle}}>Clinic Schedule</Text>
             <View>
               {profileData?.schedule &&
@@ -462,7 +462,7 @@ export default function ProfileScreen({navigation}) {
                     ),
                 )}
             </View>
-          </View>
+          </View> */}
           <View style={{...styles.card, backgroundColor: Color.white}}>
             <Text style={{...styles.cardTitle}}>Academic Information</Text>
             <View style={styles.cardContent}>

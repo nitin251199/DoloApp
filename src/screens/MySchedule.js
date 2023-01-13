@@ -24,7 +24,7 @@ export default function MySchedule({navigation, route}) {
 
   const fetchAppointments = async () => {
     const list = await getData(`allappointment/${user?.userid}`);
-    console.log('appointmentlistdata--',list);
+    console.log('appointmentlistdata--',list?.data);
     setAllAppointments(list?.data);
     setLoading(false);
   };
@@ -52,20 +52,7 @@ console.log('parrraaamm---',route?.params)
     t('scheduleScreen.dec'),
   ];
 
-  // const months = [
-  //   {month:t('scheduleScreen.jan'),id:'1'},
-  //   {month:t('scheduleScreen.feb'),id:'2'},
-  //   t('scheduleScreen.mar'),
-  //   t('scheduleScreen.apr'),
-  //   t('scheduleScreen.may'),
-  //   t('scheduleScreen.jun'),
-  //   t('scheduleScreen.jul'),
-  //   t('scheduleScreen.aug'),
-  //   t('scheduleScreen.sep'),
-  //   t('scheduleScreen.oct'),
-  //   t('scheduleScreen.nov'),
-  //   t('scheduleScreen.dec'),
-  // ];
+ 
 
   const days = [
     t('scheduleScreen.sun'),

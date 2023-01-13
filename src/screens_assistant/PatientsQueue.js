@@ -55,12 +55,12 @@ export default function PatientsQueue({navigation}) {
         return styles.resolved;
       case 3:
         return styles.absent;
-      case 1:
-        return styles.current;
+      case 5:
+        return styles.due_payment;
       case 0:
         return styles.pending;
       default:
-        return styles.resolved;
+        return styles.pending;
     }
   };
 
@@ -282,6 +282,9 @@ const styles = StyleSheet.create({
   resolved: {
     backgroundColor: '#006400',
   },
+  due_payment:{
+    backgroundColor:'#ff7f50',
+    },
   absent: {
     // borderWidth: 5,
     // borderColor: Color.red,

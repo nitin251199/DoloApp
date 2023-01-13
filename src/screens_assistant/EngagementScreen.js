@@ -86,7 +86,7 @@ export default function EngagementScreen({navigation}) {
       // );
      
       setEngagements(
-        engagementData.filter(item => item.shift_name == 'Morning'),
+        engagementData && engagementData.filter(item => item.shift_name == 'Morning'),
       );
       getCurrentPatient()
      
@@ -98,7 +98,7 @@ export default function EngagementScreen({navigation}) {
       // );
 
       setEngagements(
-        engagementData.filter(item => item.shift_name == 'Evening'),
+        engagementData &&  engagementData.filter(item => item.shift_name == 'Evening'),
       );
       getCurrentPatient()
     }
@@ -112,8 +112,8 @@ export default function EngagementScreen({navigation}) {
         return styles.resolved;
       case 3:
         return styles.absent;
-      // case 1:
-      //   return styles.current;
+      case 5:
+        return styles.due_payment;
       case 0:
         return styles.pending;
       default:
@@ -337,6 +337,9 @@ const styles = StyleSheet.create({
   },
   current: {
     backgroundColor: '#ff8c00',
+   },
+   due_payment:{
+   backgroundColor:'#ff7f50',
    },
   pending: {
     backgroundColor: Color.graylight,

@@ -121,6 +121,9 @@ export default function AddPatient({navigation, route}) {
       getAge(result.data?.age);
       setDoctorName(result?.doctorname);
     }
+    else{
+      errorToast(result.message)
+    }
     setLoading(false);
   };
 
@@ -421,7 +424,7 @@ export default function AddPatient({navigation, route}) {
             </View>
         </View> */}
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Age</Text>
+          <Text style={styles.label}>D.O.B</Text>
 
           {/* <TouchableOpacity > */}
           <TextInput
@@ -452,7 +455,7 @@ export default function AddPatient({navigation, route}) {
           />
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Weight (kg)</Text>
+          <Text style={styles.label}>Weight</Text>
           <View
             style={{
               flexDirection: 'row',

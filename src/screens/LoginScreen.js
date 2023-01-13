@@ -108,7 +108,7 @@ export default function LoginScreen({navigation, route}) {
       'keyboardDidShow',
       () => {
         // or some other action
-        setContentPadding(30);
+        setContentPadding(5);
       },
     );
     const keyboardDidHideListener = Keyboard.addListener(
