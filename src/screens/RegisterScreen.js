@@ -85,7 +85,7 @@ export default function RegisterScreen({navigation, route}) {
       mobile: phone,
      // refer_code: referCode,
     };
-    const response = await postData('api/getRegistration', body);
+    const response = await postData('doctor_enquiry', body);
     if (response.success) {
       successToast(t('register.registerSuccess'));
       navigation.goBack();
@@ -233,7 +233,7 @@ export default function RegisterScreen({navigation, route}) {
         <CustomButton
           loading={loading}
           label={t('register.proceed')}
-          onPress={() => handleOTP()}
+          onPress={() => handleRegister()}
         />
       </Animated.View>
     </View>

@@ -195,8 +195,8 @@ export default function EngagementScreen({navigation}) {
           borderRadius: 20,
           marginVertical: 10,
           marginHorizontal: 5,
-          //  width:10,
-          height: 80,
+         
+          height: 60,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -217,7 +217,7 @@ export default function EngagementScreen({navigation}) {
         </Text>
         {/* </LinearGradient> */}
       </TouchableOpacity>
-       
+      
        
     );
   };
@@ -297,6 +297,7 @@ export default function EngagementScreen({navigation}) {
         />
       ) : (
         <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
+          <View style={{paddingHorizontal:80,marginTop:20}}>
         <FlatList
           data={engagements}
           renderItem={renderItem}
@@ -305,6 +306,7 @@ export default function EngagementScreen({navigation}) {
           showsVerticalScrollIndicator={false}
          // contentContainerStyle={{paddingBottom: 20, margin: 10}}
         />
+        </View>
         </ScrollView>
       )}
     </View>

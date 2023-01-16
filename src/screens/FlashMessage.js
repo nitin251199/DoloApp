@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View,Alert} from 'react-native';
 import React,{useEffect} from 'react';
 import {Color, Fonts} from '../theme';
 import {Button, TextInput} from 'react-native-paper';
@@ -7,16 +7,19 @@ import {postData,getData} from '../API';
 import {useTranslation} from 'react-i18next';
 import {successToast, errorToast} from '../components/toasts';
 import { ScrollView } from 'react-native-gesture-handler';
-
+import EngagementSheet from '../components/bottomsheets/EngagementSheet';
+import AnnouncementSheet from '../components/bottomsheets/AnnouncementSheet';
 export default function FlashMessage({navigation, route}) {
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input\
-
+  const _sheetRef = React.useRef(null);
   const {t} = useTranslation();
 
   const [msg, setMsg] = React.useState('');
   const user = useSelector(state => state.user); 
   const [loading, setLoading] = React.useState(false);
+  const [announcementLoading, setAnnouncementLoading] = React.useState(false);
   const [annoucements,setAnnouncements] = React.useState([]);
+  const [selectedAnnouncement, setSelectedAnnouncement] = React.useState(null);
  
 
   const onSubmit = async () => {
@@ -49,9 +52,92 @@ export default function FlashMessage({navigation, route}) {
       setAnnouncements(res.data);
     }
     setLoading(false);
+    setMsg('')
 
   }
 
+  const conditionalStyles = status => {
+    switch (status) {
+    
+      case 0:
+        return styles.active;
+        case 1:
+          return styles.hide;
+      default:
+        return styles.active;
+    }
+  };
+
+
+  const handleChange = async (id, status) => {
+    
+    setAnnouncementLoading(true);
+    let currentA = null;
+    //let previousA = null;
+    const newData = annoucements.map(item => {
+   
+
+      if (item.id === id ) {
+       
+      
+          currentA = item;
+          item.status = status;
+   
+         }
+
+       
+
+      return item;
+    });
+    let currentBody = {
+      status: currentA?.status,
+      id: currentA?.id,
+      doctor_id: user?.userid,
+    };
+  
+    if (currentA) {
+      var result1 = await postData('doctorannoucementstatus', currentBody);
+    }
+      console.log('currentA?.status==',currentA?.status);
+    setAnnouncementLoading(false);
+    if (result1?.success) {
+      successToast('Announcetment status updated successfully');
+      setAnnouncements(newData);
+      getAnnouncementList();
+      _sheetRef.current.close();
+    } else {
+      errorToast('Something went wrong');
+    }
+  };
+
+  const selectOptions = (id, status) => {
+    Alert.alert(
+      'Are you sure you want to Delete?',
+      '',
+      [
+        {
+          text: 'Yes',
+          onPress: () => handleChange(id, status),
+        },
+        {
+          text: 'No',
+          onPress: () =>  _sheetRef.current.close(),
+        },
+        // {
+        //   text: 'Camera',
+        //   onPress: () => takePhotoFromCamera(),
+        // },
+        // {
+        //   text: 'Gallery',
+        //   onPress: () => choosePhotoFromLibrary(),
+        // },
+      ],
+      {
+        cancelable: true,
+      },
+    );
+  };
+  
   
 
   useEffect(() => {
@@ -62,6 +148,12 @@ export default function FlashMessage({navigation, route}) {
 
   return (
     <View style={styles.container}>
+      <AnnouncementSheet
+        ref={_sheetRef}
+        item={selectedAnnouncement}
+        handleChange={(id, status) => handleChange(id, status)}
+        handleDelete={(id, status) => selectOptions(id, status)}
+      />
       <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
       <Text style={styles.heading}>{t('flashScreen.screenTitle')}. 🔊</Text>
       <View style={{marginTop: 15}}>
@@ -94,9 +186,12 @@ export default function FlashMessage({navigation, route}) {
       <Text style={styles.annoucement_heading}> {t('flashScreen.List')} 🧾</Text>
       {annoucements.map((item, index) => {
       return (
-        <View style={styles.card}>
+        <TouchableOpacity style={{...styles.card, ...conditionalStyles(item.status)} }   onLongPress=  {() => {
+          setSelectedAnnouncement(item);
+         _sheetRef.current.open();
+        }}>
       <Text style={{color:Color.white,fontFamily:Fonts.primaryRegular}}>{item.annoucement_message}</Text>
-      </View>
+      </TouchableOpacity>
       )
         
       }
@@ -148,5 +243,12 @@ const styles = StyleSheet.create({
     paddingLeft:10,
     paddingTop:20,
     fontSize: 22,
-  }
+  },
+  active:{
+  backgroundColor:'#006400'
+  },
+  hide:{
+    backgroundColor:Color.red
+  },
+
 });

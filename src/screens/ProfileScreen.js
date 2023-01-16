@@ -22,7 +22,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getData} from '../API';
 import ProfilePlaceholder from '../placeholders/ProfilePlaceholder';
 import EditDoctorProfile from '../components/bottomsheets/EditDoctorProfile';
-
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {dummyProfile} from './test';
 
 export default function ProfileScreen({navigation}) {
@@ -34,6 +34,7 @@ export default function ProfileScreen({navigation}) {
   const [profileData, setProfileData] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [editLoading, setEditLoading] = React.useState(false);
+  const [experience, setExperience] = React.useState('');
   
 
   const fetchProfileInfo = async () => {
@@ -43,15 +44,56 @@ export default function ProfileScreen({navigation}) {
     if (res.status) {
       // console.log(res);
       setProfileData(res?.data);
-      
+      calculateExperience(res?.data?.experience)
+     
     }
     setLoading(false);
   };
+
+   const calculateExperience = async (experience) => {
+    
+  
+
+      var d = new Date();
+  
+      var userday = new Date(experience.split('-').reverse().join("-")).getDate();
+      var usermonth = new Date(experience.split('-').reverse().join("-")).getMonth();
+      var useryear = new Date(experience.split('-').reverse().join("-")).getFullYear();
+  
+      var curday = d.getDate();
+      var curmonth = d.getMonth() + 1;
+      var curyear = d.getFullYear();
+  
+      var exp = curyear - useryear;
+  
+      if (curmonth < usermonth || (curmonth == usermonth && curday < userday)) {
+        exp--;
+      }
+     console.log('expppp==',exp)
+      return setExperience(exp);
+
+
+   }
+
+
+
 
  
   useEffect(() => {
     fetchProfileInfo();
   }, []);
+
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // The screen is focused
+      // Call any action
+      fetchProfileInfo();
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
 
   const logOut = () => {
     dispatch({type: 'LOGOUT'});
@@ -139,7 +181,7 @@ export default function ProfileScreen({navigation}) {
             </Button>
             </View>
             <Text style={{...styles.imageText, color: Color.primary}}>
-              {profileData?.name}
+             Dr. {profileData?.name}
             </Text>
             <View style={{flexDirection:'row',alignItems:"center"}}>
             {/* {profileData?.specialization &&
@@ -317,10 +359,36 @@ export default function ProfileScreen({navigation}) {
               </View>
             </View>
           </View>
-          <View style={{...styles.card, backgroundColor: Color.white}}>
-            <Text style={{...styles.cardTitle}}>Average Time per patient</Text>
-            <View style={styles.cardContent}>
-              <Text style={{...styles.cardText}}>{profileData?.avgTime}</Text>
+         
+          <View
+            style={{
+              flexDirection: 'row',
+            }}>
+            <View
+              style={{
+                ...styles.card,
+                backgroundColor: Color.white,
+                width: '48.5%',
+              }}>
+              <Text style={{...styles.cardTitle}}>Average Time per patient</Text>
+              <View style={styles.cardContent}>
+                <Text style={{...styles.cardText}}>
+                  {profileData?.avgTime}
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                ...styles.card,
+                backgroundColor: Color.white,
+                width: '48.5%',
+              }}>
+              <Text style={{...styles.cardTitle}}>Experience</Text>
+              <View style={styles.cardContent}>
+                <Text style={{...styles.cardText}}>
+                 {experience} Year
+                </Text>
+              </View>
             </View>
           </View>
           <View style={{...styles.card, backgroundColor: Color.white}}>

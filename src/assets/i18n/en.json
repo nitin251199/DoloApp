@@ -57,7 +57,7 @@
       "proceed": "Send Inquiry",
       "enterValidNo": "Please enter a valid phone number",
       "otpSent": "OTP sent successfully",
-      "registerSuccess": "Registration successful",
+      "registerSuccess": "Inquiry Send Successfully",
       "somethingWentWrong": "Something went wrong",
       "verifyMob": "Verify Mobile Number"
     },

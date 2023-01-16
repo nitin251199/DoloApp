@@ -26,7 +26,7 @@ export default function AddPatient({navigation, route}) {
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
 
   const user = useSelector(state => state.user);
-
+    console.log('seleapp==>',route.params);
   const itemData = route.params?.item;
 
   const [category, setCategory] = React.useState(itemData?.category || '');
@@ -196,7 +196,9 @@ export default function AddPatient({navigation, route}) {
         '</td></tr><tr><th scope="col">Gender</th><th>:</th><td>' +
         modalData.gender +
         '</td></tr><tr><th scope="col">Time</th><th>:</th><td>' +
-        `${new Date(modalData.created_at).getDate()}/${new Date(modalData.created_at).getMonth()+1}/${new Date(modalData.created_at).getFullYear()}` +
+        
+        `${new Date(modalData.created_at).toLocaleTimeString().replace(new Date(modalData.created_at).toLocaleTimeString().slice(-6, -3),
+          '',)},${new Date(modalData.created_at).getDate()}/${new Date(modalData.created_at).getMonth()+1}/${new Date(modalData.created_at).getFullYear()}` +
         '</td></tr></tbody></table></div></div></body></html>',
     });
   };
@@ -244,7 +246,8 @@ export default function AddPatient({navigation, route}) {
         //   new Date(modalData.created_at).getMonth() /
         //   new Date(modalData.created_at).getFullYear()
         // }
-        time={`${new Date(modalData.created_at).getDate()}/${new Date(
+        time={`${new Date(modalData.created_at).toLocaleTimeString().replace(new Date(modalData.created_at).toLocaleTimeString().slice(-6, -3),
+          '',)},${new Date(modalData.created_at).getDate()}/${new Date(
           modalData.created_at,
         ).getMonth()+1}/${new Date(modalData.created_at).getFullYear()}`}
         //  weight_type={modalData.weighttype}

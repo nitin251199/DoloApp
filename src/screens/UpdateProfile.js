@@ -20,6 +20,8 @@ const UpdateProfile = ({navigation}) => {
   const user = useSelector(state => state.user);
 
   console.log('uid===',user?.userid)
+
+  console.log('time--->',new Date('Sat Jan 14 2023 19:00:00 GMT+0530').toLocaleTimeString())
     const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
 
     const [profileData, setProfileData] = React.useState('');
@@ -206,7 +208,7 @@ const setDoctorCategory = async (specialist,index) => {
       const [dob, setDob] = React.useState('');
       const [fees, setFees] = React.useState('');
       const [registration_number, setRegNumber] = React.useState('');
-      const [specialization, setSpecialization] = React.useState([]);
+      const [specialization, setSpecialization] = React.useState('');
       const [yearOfPassout, setYearOfPassout] = React.useState('');
       const [facilities, setFacilities] = React.useState('');
       const [loading, setLoading] = React.useState(false);
@@ -214,7 +216,7 @@ const setDoctorCategory = async (specialist,index) => {
       const [Degree, setDegree] = React.useState('');
       const [adhar, setAdhar] = React.useState('');
       const [awardList, setAwardList] = React.useState('');
-     
+   
       const [morningschedule, setMorningSchedule] = React.useState(morningSchedule);
       const [eveningschedule, setEveningSchedule] = React.useState(eveningSchedule);
       const [achievementList, setAchievementList] = React.useState([]);
@@ -244,16 +246,35 @@ const setDoctorCategory = async (specialist,index) => {
         const [clinicContact, setClinicContact] = React.useState('');
         const [doctorContact, setDoctorContact] = React.useState('');
         const [pinCode, setPinCode] = React.useState('');
-       
+        const [experience, setExperience] = React.useState('');
         const [location, setLocation] = React.useState('');
         const [latitude, setLatitude] = React.useState('');
         const [longitude, setLongitude] = React.useState('');
         const [specialities, setSpecialities] = React.useState([]);
         const [selectedId, setSelectedId] = React.useState([]);
-
+        const [showExperienceDatePicker,setShowExperienceDatePicker] = React.useState(false);
      
       const _scrollRef = React.useRef(null);
 
+
+      const showExperienceDatePicker1 = () =>{
+        setShowExperienceDatePicker(true)
+      }
+    
+      const hideExperienceDatePicker = () =>{
+        setShowExperienceDatePicker(false)
+      }
+     
+      const getExperienceDateValue = date => {
+        let d = new Date(date);
+        let day = d.getDate();
+        let month = d.getMonth() + 1;
+        let year = d.getFullYear();
+        setExperience(`${day}-${month}-${year}`);
+        setShowExperienceDatePicker(false)
+        return `${day}-${month}-${year}`;
+      };
+    
     
     
       useEffect(() => {
@@ -263,6 +284,7 @@ const setDoctorCategory = async (specialist,index) => {
         setProfilePic(profileData?.profileimage || '');
         setClinicLocations(profileData?.clinic_location || '');
         setFees(profileData?.fees || '');
+        setExperience(profileData?.experience || '')
         setRegNumber(profileData?.registration_number || '');
         setSpecialization(profileData?.specialization || '');
         setYear_of_passout(profileData?.year_of_passout || '');
@@ -272,7 +294,7 @@ const setDoctorCategory = async (specialist,index) => {
         setAdhar(profileData?.adhar || '');
         setAwardList(profileData?.award_list || '');
        setDob(profileData?.date_of_birth || '')
-        
+       setChecked(profileData?.feeconsultation == '1' ? true : false)
         setMaritalStatus(profileData?.marital_status || '');
         setCollege_location(profileData?.college_location || '')
         setAvgTime(profileData?.avgTime || '')
@@ -482,20 +504,41 @@ const setDoctorCategory = async (specialist,index) => {
             longitude:longitude,
             pincode: pinCode,
             adhar,
+            experience:experience,
             registration_number:registration_number,
             schedule_morning: morningschedule.map(item => {
               return {
                 day: item.day,
-                start_time: item.start_time.toString(),
-                end_time: item.end_time.toString(),
+                start_time: item.start_time
+                .toLocaleTimeString()
+                .replace(
+                  item.start_time.toLocaleTimeString().slice(-6, -3),
+                  '',
+                ),
+                end_time: item.end_time
+                .toLocaleTimeString()
+                .replace(
+                  item.end_time.toLocaleTimeString().slice(-6, -3),
+                  '',
+                ),
                 checked: item.checked,
               };
             }),
             schedule_evening: eveningschedule.map(item => {
               return {
                 day: item.day,
-                start_time: item.start_time.toString(),
-                end_time: item.end_time.toString(),
+                start_time: item.start_time
+                .toLocaleTimeString()
+                .replace(
+                  item.start_time.toLocaleTimeString().slice(-6, -3),
+                  '',
+                ),
+                end_time: item.end_time
+                .toLocaleTimeString()
+                .replace(
+                  item.end_time.toLocaleTimeString().slice(-6, -3),
+                  '',
+                ),
                 checked: item.checked,
               };
             }),
@@ -856,7 +899,15 @@ const setDoctorCategory = async (specialist,index) => {
               />
             </View>
           </View>
-          <View style={{marginTop: 15}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: 15,
+              justifyContent:'space-between',
+              flex:1
+            }}>
+              <View style={{width:'49%'}}>
+         
           <Text style={styles.label}>Pin Code</Text>
           <TextInput
             theme={theme}
@@ -869,6 +920,37 @@ const setDoctorCategory = async (specialist,index) => {
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
           />
+          </View>
+          <View style={{width:'49%'}}>
+         
+         <Text style={styles.label}>Experience</Text>
+         <TextInput
+            // ref={_inputRef}
+            theme={theme}
+            //keyboardType="numeric"
+            dense
+            onChangeText={val => setExperience(val)}
+            value={experience}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+            editable={false}
+            right={
+              <TextInput.Icon
+                icon="calendar"
+                color={Color.black}
+                onPress={() => showExperienceDatePicker1()}
+              />
+            }
+          />
+          <DateTimePickerModal
+            isVisible={showExperienceDatePicker}
+            mode="date"
+            onConfirm={e => getExperienceDateValue(e)}
+            onCancel={hideExperienceDatePicker}
+          />
+        </View>
+        
         </View>
         <View style={{marginTop: 15}}>
           <Text style={styles.label}>Location</Text>

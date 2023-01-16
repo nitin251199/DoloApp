@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert
 } from 'react-native';
 import React from 'react';
 import {Color, Fonts} from '../theme';
@@ -17,16 +18,19 @@ import {useEffect} from 'react';
 import AppointmentCard from '../components/AppointmentCard';
 import {useFocusEffect} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
+import AppointmentSheet from '../components/bottomsheets/AppointmentSheet';
+import { errorToast, successToast } from '../components/toasts';
 
 export default function PatientsQueue({navigation}) {
   const user = useSelector(state => state.user);
   const [appointmentData, setAppointmentData] = React.useState([]);
-
+  const [selectedAppointment, setSelectedAppointment] = React.useState(null);
   const [appointments, setAppointments] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [refresh, setRefresh] = React.useState(false);
   const [time, setTime] = React.useState('Morning');
-
+  
+  const _sheetRef = React.useRef(null);
   const _scrollRef = React.useRef(null);
   const {t} = useTranslation();
   const fetchAppointments = async () => {
@@ -42,6 +46,7 @@ export default function PatientsQueue({navigation}) {
       'focus',
       async () => {
         await fetchAppointments();
+        _sheetRef.current.close();
       },
       [],
     );
@@ -99,7 +104,7 @@ export default function PatientsQueue({navigation}) {
 
   useEffect(() => {
     // let filteredAppointments = appointmentData;
-
+    _sheetRef.current.close();
     if (time === 'Morning') {
       // setAppointments(
       //   filteredAppointments.filter(
@@ -123,8 +128,65 @@ export default function PatientsQueue({navigation}) {
     }
   }, [time, appointmentData]);
 
+const deleteAppointment = async(item) => {
+  console.log('atmmm==>',item);
+let body = {
+doctor_id:user?.doctor_id,
+assistant_id:item?.assistant_id,
+patient_id: item?.patient_id,
+id:item?.id,
+}
+console.log('Body==>',body)
+var result = await postData('doctor_assitant_appointment_delete',body)
+if(result.success){
+successToast('Appointment Deleted Successfully');
+fetchAppointments();
+_sheetRef.current.close();
+}
+else{
+errorToast('Something went wrong');
+
+}
+
+}
+
+const selectOptions = (item) => {
+  Alert.alert(
+    'Are you sure you want to Delete?',
+    '',
+    [
+      {
+        text: 'Yes',
+        onPress: () => deleteAppointment(item),
+      },
+      {
+        text: 'No',
+        onPress: () =>  _sheetRef.current.close(),
+      },
+      // {
+      //   text: 'Camera',
+      //   onPress: () => takePhotoFromCamera(),
+      // },
+      // {
+      //   text: 'Gallery',
+      //   onPress: () => choosePhotoFromLibrary(),
+      // },
+    ],
+    {
+      cancelable: true,
+    },
+  );
+};
+
+
   return (
     <View style={styles.container}>
+      <AppointmentSheet
+        ref={_sheetRef}
+        item={selectedAppointment}
+        deleteAppointment={(item) => selectOptions(item)}
+        editAppointment={(item) => navigation.navigate('AddPatient', {item, type: 'edit'})}
+      />
       <View style={{flexDirection: 'row', padding: 20}}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <MaterialCommunityIcons
@@ -223,9 +285,10 @@ export default function PatientsQueue({navigation}) {
                   // onDoublePress={() =>
                   //   navigation.navigate('AddPatient', {item, type: 'edit'})
                   // }
-                  onPress={() =>
-                    navigation.navigate('AddPatient', {item, type: 'edit'})
-                  }
+                  onPress={() =>{
+                    setSelectedAppointment(item);
+                    _sheetRef.current.open();
+                  }}
                 />
               )}
               keyExtractor={item => item.id}

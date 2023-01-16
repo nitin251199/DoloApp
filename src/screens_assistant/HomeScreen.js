@@ -27,7 +27,7 @@ import {useTranslation} from 'react-i18next';
 export default function HomeScreen({navigation}) {
   const user = useSelector(state => state.user);
    
-  console.log('user==',user?.username)
+  console.log('docId==',user?.doctor_id)
   const {t, i18n} = useTranslation();
 
   const [available, setAvailable] = React.useState(1);
@@ -76,10 +76,11 @@ export default function HomeScreen({navigation}) {
 
   const handleAvailable = async () => {
     let body = {
-      id: user?.doctor_id,
+      doctor_id: user?.doctor_id,
       available: available == 1 ? 0 : 1,
     };
     let res = await postData('doctoravilableupdate', body);
+    console.log('Result==>',res)
     if (res?.success) {
       setAvailable(prev => !prev);
       successToast(t('assistantHome.statusUpdated'));
