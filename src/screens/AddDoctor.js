@@ -29,6 +29,8 @@ import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import SuccessModal from '../components/modals/SuccessModal';
 import MapModal from '../components/modals/MapModal';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import messaging from '@react-native-firebase/messaging';
+import { getSyncData, storeDatasync } from '../storage/AsyncStorage';
 export default function AddDoctor({navigation}) {
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
   let morningSchedule = [
@@ -70,8 +72,8 @@ export default function AddDoctor({navigation}) {
     },
     {
       day: 'Saturday',
-      start_time: new Date(new Date().setHours(17, 0, 0)),
-      end_time: new Date(new Date().setHours(19, 0, 0)),
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
       checked: true,
     },
   ];
@@ -181,7 +183,7 @@ export default function AddDoctor({navigation}) {
   const [doctorContact, setDoctorContact] = React.useState('');
   const [clinicContact, setClinicContact] = React.useState('');
   const [registration_number, setRegistration_number] = React.useState('');
-  const [specialization, setSpecialization] = React.useState([]);
+  const [specialization, setSpecialization] = React.useState('');
   const [Degree, setDegree] = React.useState('');
   const [collegename, setCollegename] = React.useState('');
   const [year_of_passout, setYear_of_passout] = React.useState('');
@@ -379,14 +381,34 @@ export default function AddDoctor({navigation}) {
 
   }
 
-  const addDoctor = async () => {
 
+  const getFcmToken = async () => {
+    let fcmToken = await getSyncData('fcmToken');
+    // console.log('the old token', fcmToken);
+    if (!fcmToken) {
+      try {
+        const fcmToken = await messaging().getToken();
+        if (fcmToken) {
+          // user has a device token
+          console.log('the new token', fcmToken);
+          await storeDatasync('fcmToken', fcmToken);
+        }
+      } catch (error) {
+        console.log('error getting token', error);
+      }
+    }
+  };
+
+  const addDoctor = async () => {
+    var fcmToken = await getSyncData('fcmToken');
+    console.log('fcmToken==',fcmToken);
     
    
     setLoading(true);
 
     let body1 = 
       {
+        device_token: fcmToken,
         user_id: user?.userid,
         name,
         date_of_birth: dob,
@@ -410,16 +432,36 @@ export default function AddDoctor({navigation}) {
         schedule_morning: morningschedule.map(item => {
           return {
             day: item.day,
-            start_time: item.start_time.toString(),
-            end_time: item.end_time.toString(),
+            start_time: item.start_time
+            .toLocaleTimeString()
+            .replace(
+              item.start_time.toLocaleTimeString().slice(-6, -3),
+              '',
+            ),
+            end_time: item.end_time
+            .toLocaleTimeString()
+            .replace(
+              item.end_time.toLocaleTimeString().slice(-6, -3),
+              '',
+            ),
             checked: item.checked,
           };
         }),
         schedule_evening: eveningschedule.map(item => {
           return {
             day: item.day,
-            start_time: item.start_time.toString(),
-            end_time: item.end_time.toString(),
+            start_time: item.start_time
+            .toLocaleTimeString()
+            .replace(
+              item.start_time.toLocaleTimeString().slice(-6, -3),
+              '',
+            ),
+            end_time: item.end_time
+            .toLocaleTimeString()
+            .replace(
+              item.end_time.toLocaleTimeString().slice(-6, -3),
+              '',
+            ),
             checked: item.checked,
           };
         }),
@@ -834,6 +876,7 @@ export default function AddDoctor({navigation}) {
   useEffect(() => {
    
     fetchCategoryList();
+    getFcmToken();
   }, []);
 
   return (

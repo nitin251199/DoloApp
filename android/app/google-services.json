@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "20323462890",
+    "project_id": "doloagentapp",
+    "storage_bucket": "doloagentapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20323462890:android:64c03c84cafcb28126b193",
+        "android_client_info": {
+          "package_name": "com.doloagentapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "20323462890-ibpsv85o2a1tp5s6k9672uuli03crvr1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaQEIUz-qKM6WBmIT2Rmvms8cYkkEPQEk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "20323462890-ibpsv85o2a1tp5s6k9672uuli03crvr1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
