@@ -16,18 +16,21 @@ import {useTranslation} from 'react-i18next';
 import PatientCard from '../components/Patientcard';
 import { postData } from '../API';
 import { errorToast } from '../components/toasts';
+import { useSelector } from 'react-redux';
 
 const SearchPatient = ({navigation}) => {
   const [loading,setLoading] = React.useState(false);
   const [mobile,setMobile] = React.useState('');
   const [patientData,setPatientData] = React.useState('');
   const {t} = useTranslation();
+  const user = useSelector(state => state.user); 
   const [searchQuery, setSearchQuery] = React.useState('');
 
   const searchPatient = async (txt) => {
     // console.log('dt==',appointment?.patient_id,appointment?.doctor_id,feedBack,prescriptions)
     setLoading(true);
     var body = {
+      doctor_id: user?.userid,
       mobile: txt,
       
     };

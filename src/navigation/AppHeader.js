@@ -18,6 +18,7 @@ import {
 } from 'react-native-popup-menu';
 import {useTranslation} from 'react-i18next';
 import { CommonActions } from '@react-navigation/native';
+import Fontisto from 'react-native-vector-icons/Fontisto'
 
 export default function AppHeader(props) {
   const user = useSelector(state => state.user);
@@ -65,7 +66,7 @@ export default function AppHeader(props) {
         color={Color.black}
         style={styles.menuIcon}
       />
-      <View style={{flex: 1}}>
+      <View style={{flex: 1,width:'75%'}}>
         <Text style={styles.topText}>
           Dr.{' '}
           {user?.username &&
@@ -81,6 +82,7 @@ export default function AppHeader(props) {
           {profileData?.do_lo_id}
         </Text>
       </View>
+      <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',width:'25%'}}>
       <Menu>
         <MenuTrigger>
           <Avatar.Image
@@ -158,6 +160,11 @@ export default function AppHeader(props) {
           />
         </MenuOptions>
       </Menu>
+      <TouchableOpacity onPress={() =>navigation.navigate('Notification')}>
+      <Fontisto name="bell" size={25} color={Color.black} />
+     
+      </TouchableOpacity>
+      </View>
     </View>
   );
 }

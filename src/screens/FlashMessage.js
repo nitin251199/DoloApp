@@ -42,8 +42,7 @@ export default function FlashMessage({navigation, route}) {
     setLoading(true);
     let body = {
       id:user?.userid,
-     
-    };
+     };
 
     let res = await postData(`doctorannoucementlist`,body);
     

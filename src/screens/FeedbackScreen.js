@@ -1,4 +1,4 @@
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View, Image} from 'react-native';
 import React, {useEffect} from 'react';
 import {Color, Fonts} from '../theme';
 import {dummyRating} from './test';
@@ -13,19 +13,40 @@ export default function FeedbackScreen() {
   };
 
   const user = useSelector(state => state.user);
+  console.log('rating-->',user)
 
   const [feedbacks, setFeedbacks] = React.useState([]);
   const [overAllRating, setOverAllRating] = React.useState(finalRating([]));
   const [color, setColor] = React.useState('green');
   const [loading, setLoading] = React.useState(true);
 
-  const fetchAllFeedbacks = async () => {
-    const res = await getData(`doctorfeedback/${user?.userid}`);
-    if (res.success) {
-      setFeedbacks(res?.data);
-      setOverAllRating(finalRating(res?.data));
+  const fetchProfileInfo = async () => {
+    setLoading(true);
+    let res = await getData(`dolo/profile/${user?.userid}`);
+ 
+    if (res.status) {
+      // console.log(res);
+      setOverAllRating(res?.data?.rating);
+      
+     
     }
     setLoading(false);
+  };
+
+  const fetchAllFeedbacks = async () => {
+    // const res = await getData(`doctorfeedback/${user?.userid}`);
+    // if (res.success) {
+    //   setFeedbacks(res?.data);
+    //   setOverAllRating(finalRating(res?.data));
+    // }
+    // setLoading(false);
+
+    let result = await getData(`patientfeedbacklistdoctor/${user?.userid}`);
+
+    if (result.status) {
+      setFeedbacks(result.data);
+      
+    }
   };
 
   useEffect(() => {
@@ -40,6 +61,7 @@ export default function FeedbackScreen() {
 
   useEffect(() => {
     fetchAllFeedbacks();
+    fetchProfileInfo();
   }, []);
 
   const getProgress = rating => {
@@ -62,11 +84,28 @@ export default function FeedbackScreen() {
   return (
     <ScrollView
       style={styles.container}
+      showsVerticalScrollIndicator={false}
       contentContainerStyle={{
         paddingBottom: 30,
       }}>
       <Text style={styles.title}>Your Overall Rating</Text>
-      <Text style={{...styles.rating, color: color}}>
+      <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop:5
+            }}>
+             {[1, 2, 3, 4, 5].map(count => {
+                      return (
+                        <MaterialCommunityIcons
+                          name="star"
+                          size={20}
+                          color={count <= overAllRating ? 'orange' : 'grey'}
+                        />
+                      );
+                    })}
+          </View>
+      {/* <Text style={{...styles.rating, color: color}}>
         {loading ? (
           <ActivityIndicator
             animating={loading}
@@ -98,10 +137,10 @@ export default function FeedbackScreen() {
             </View>
           );
         })}
-      </View>
+      </View> */}
       <View style={{marginTop: 20}}>
         <Text style={styles.title}>Your Feedbacks</Text>
-        {feedbacks.map((item, index) => {
+        {/* {feedbacks.map((item, index) => {
           return (
             <View style={styles.feedback}>
               <View
@@ -138,7 +177,28 @@ export default function FeedbackScreen() {
               </View>
             </View>
           );
-        })}
+        })} */}
+          {feedbacks !== null &&
+              feedbacks.map((item, index) => {
+                return (
+                  <View style={styles.all_comment_section_style}>
+                    <View>
+                    <Image
+                      style={{width: 50, height: 50, borderRadius: 25}}
+                      source={{
+                        uri: item?.Patientprofile
+                          ? `data:image/png;base64,${item?.Patientprofile}`
+                          : 'https://www.w3schools.com/w3images/avatar6.png',
+                      }}
+                    />
+                    </View>
+                    <View style={{marginLeft:12,flex:1}}>
+                    <Text style={{...styles.comment_style,color:Color.primary,fontSize:20}}>{item?.Patientname}</Text>
+                    <Text style={styles.comment_style}>{item?.comment}</Text>
+                    </View>
+                  </View>
+                );
+              })}
       </View>
     </ScrollView>
   );
@@ -199,4 +259,20 @@ const styles = StyleSheet.create({
     color: Color.grey,
     textAlign: 'right',
   },
+  all_comment_section_style: {
+    marginTop: 10,
+    flexDirection: 'row',
+    
+
+   // justifyContent: 'space-between',
+  },
+  comment_style: {
+    fontFamily: Fonts.primaryRegular,
+    color: Color.black,
+
+    fontSize: 15,
+   
+   
+  },
+  
 });

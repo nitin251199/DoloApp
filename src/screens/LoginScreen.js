@@ -58,6 +58,8 @@ export default function LoginScreen({navigation, route}) {
 
     let fcmToken = await getSyncData('fcmToken');
 
+    console.log('tokkk--',fcmToken)
+
     let body = {
       email,
       password,
@@ -67,6 +69,7 @@ export default function LoginScreen({navigation, route}) {
     let apiUrl = type === 'doctor' ? 'doctor/login' : 'doctorassistantlogin';
     const response = await postData(apiUrl, body);
     if (response.success) {
+      console.log('rolll-->',response)
       successToast(t('login.loginSuccess'));
       setLoading(false);
       dispatch({

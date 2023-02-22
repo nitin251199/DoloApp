@@ -146,8 +146,8 @@ const setDoctorCategory = async (specialist,index) => {
         },
         {
           day: 'Saturday',
-          start_time: new Date(new Date().setHours(17, 0, 0)),
-          end_time: new Date(new Date().setHours(19, 0, 0)),
+          start_time: new Date(new Date().setHours(10, 0, 0)),
+          end_time: new Date(new Date().setHours(13, 0, 0)),
           checked: true,
         },
       ];
@@ -284,6 +284,8 @@ const setDoctorCategory = async (specialist,index) => {
         setProfilePic(profileData?.profileimage || '');
         setClinicLocations(profileData?.clinic_location || '');
         setFees(profileData?.fees || '');
+        setLongitude(profileData?.longitude || '')
+        setLatitude(profileData?.latsitude || '')
         setExperience(profileData?.experience || '')
         setRegNumber(profileData?.registration_number || '');
         setSpecialization(profileData?.specialization || '');

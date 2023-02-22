@@ -54,7 +54,7 @@ export default function AddpatientSuccessModal(props) {
           <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>
           <Text style={styles.title}>Age</Text>
           <Text style={styles.title2}>:</Text>
-          <Text style={styles.descr}>{props.age} Years</Text>
+          <Text style={styles.descr}>{props.age}</Text>
           
           </View>
           <View style={{flexDirection:'row',alignItems:'center',marginTop:8,justifyContent:'space-between',}}>

@@ -110,8 +110,8 @@ export default function UploadPrescription({navigation}) {
   useEffect(() => {
     let filteredAppointments = appointmentData.filter(
       item =>
-        new Date(item.created_at).getDate() === selectedDate.date &&
-        months[new Date(item.created_at).getMonth()] === selectedDate.month,
+      new Date((item.create_date).split('/').reverse().join("-")).getDate() === selectedDate.date &&
+      months[new Date ((item.create_date).split('/').reverse().join("-")).getMonth()] === selectedDate.month,
     );
     if (time === 'Morning') {
       // setAppointments(

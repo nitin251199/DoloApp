@@ -15,6 +15,7 @@ import {useEffect} from 'react';
 import PaymentHistoryPlaceholder from '../placeholders/PaymentHistoryPlaceholder';
 import {useTranslation} from 'react-i18next';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 export default function PaymentHistory() {
   const [payments, setPayments] = React.useState([]);
   const [allPayments, setAllPayments] = React.useState([]);

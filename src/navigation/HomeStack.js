@@ -17,6 +17,7 @@ import SearchPatient from '../screens/SearchPatient';
 import UpdateProfile from '../screens/UpdateProfile';
 import AllAppointments from '../screens/AllAppointments';
 import DisableAppointments from '../screens/DisableAppointments';
+import NotificationScreen from '../screens/NotificationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +45,7 @@ export const HomeStack = () => {
       <Stack.Screen name="UpdateProfile" component={UpdateProfile} />
       <Stack.Screen name="AllAppointments" component={AllAppointments} />
       <Stack.Screen name="DisableAppointments" component={DisableAppointments} />
+      <Stack.Screen name="Notification" component={NotificationScreen} />
     </Stack.Navigator>
   );
 };

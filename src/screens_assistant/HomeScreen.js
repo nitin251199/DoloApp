@@ -13,6 +13,7 @@ import {ActivityIndicator, Avatar} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {errorToast, successToast} from '../components/toasts';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 import {
   Menu,
   MenuOption,
@@ -93,7 +94,7 @@ export default function HomeScreen({navigation}) {
     <View style={styles.container}>
       <StatusBar backgroundColor={Color.white} barStyle="dark-content" />
       <View style={styles.topContainer}>
-        <View style={{flex: 1}}>
+        <View style={{flex: 1,width:'75%'}}>
           <Text style={styles.topText}>
             {user?.username &&
               user?.username.charAt(0).toUpperCase() + user?.username.slice(1)}
@@ -108,10 +109,11 @@ export default function HomeScreen({navigation}) {
             Under: {user?.dolo_id}
           </Text>
         </View>
+        <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',width:'25%'}}>
         <Menu>
           <MenuTrigger>
             <Avatar.Image
-              size={45}
+              size={40}
               source={{
                 uri: profileData?.profileimage
                   ? profileData?.profileimage.length > 20
@@ -185,6 +187,11 @@ export default function HomeScreen({navigation}) {
             />
           </MenuOptions>
         </Menu>
+        <TouchableOpacity onPress={() =>navigation.navigate('Notification')}>
+      <Fontisto name="bell" size={25} color={Color.black} />
+     
+      </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.mainContainer}>
         <ScrollView style={styles.cardContainer} showsVerticalScrollIndicator={false}>

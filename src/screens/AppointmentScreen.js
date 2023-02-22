@@ -152,7 +152,7 @@ export default function DoctorScreen({navigation, route}) {
       prescription: prescriptions.map(item => item?.data),
     };
     const result = await postData('doctor_send_prescrition_patient', body);
-     console.log('result', result);
+     console.log('body-->', body);
     if (result.success) {
       successToast('Feedback Send SuccessFullly');
       setShowModal(true)

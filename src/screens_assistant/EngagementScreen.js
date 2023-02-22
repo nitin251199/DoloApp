@@ -195,13 +195,12 @@ export default function EngagementScreen({navigation}) {
           borderRadius: 20,
           marginVertical: 10,
           marginHorizontal: 5,
-         
           height: 60,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-
-          ...conditionalStyles(item.status),
+    //  ...conditionalStyles(item.status),
+       backgroundColor:item.online_offline === 'offline' ? conditionalStyles(item.status) : Color.yellow,
         }}>
         {/* <LinearGradient
           start={{x: 0, y: 0}}
@@ -297,11 +296,11 @@ export default function EngagementScreen({navigation}) {
         />
       ) : (
         <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
-          <View style={{paddingHorizontal:80,marginTop:20}}>
+          <View style={{paddingHorizontal:30,marginTop:20}}>
         <FlatList
           data={engagements}
           renderItem={renderItem}
-          numColumns={2}
+          numColumns={3}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
          // contentContainerStyle={{paddingBottom: 20, margin: 10}}
