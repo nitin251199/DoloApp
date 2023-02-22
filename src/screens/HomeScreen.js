@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  StatusBar
 } from 'react-native';
 import React, {useEffect} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -14,6 +15,7 @@ import DoctorCard from '../components/DoctorCard';
 import {getData} from '../API';
 import {useSelector} from 'react-redux';
 import DoctorPlaceholder from '../placeholders/DoctorPlaceholder';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 
 export default function HomeScreen({navigation}) {
   const user = useSelector(state => state.user);
@@ -61,7 +63,14 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={styles.container}>
+      <StatusBar
+        barStyle="dark-content"
+        hidden={false}
+        backgroundColor={Color.primary}
+        style="dark"
+      />
       <View style={styles.topContainer}>
+      <View style={{width:'75%'}}>
         <Text style={styles.topText}>
           Hi,{' '}
           {user?.username &&
@@ -69,9 +78,12 @@ export default function HomeScreen({navigation}) {
               user?.username.slice(1)}{' '}
           👋
         </Text>
+        </View>
+        <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',width:'25%'}}>
+      
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
           <Avatar.Image
-            size={45}
+            size={40}
             source={{
               uri: profileData?.profileimage
                 ? profileData?.profileimage
@@ -79,6 +91,13 @@ export default function HomeScreen({navigation}) {
             }}
           />
         </TouchableOpacity>
+
+        <TouchableOpacity onPress={() =>navigation.navigate('Notification')}>
+      <Fontisto name="bell" size={25} color={Color.black} />
+     
+      </TouchableOpacity>
+        
+        </View>
       </View>
       <ScrollView
         style={{

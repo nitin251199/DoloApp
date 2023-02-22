@@ -4,6 +4,7 @@ import AddDoctor from '../screens/AddDoctor';
 import DoctorScreen from '../screens/DoctorScreen';
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
+import NotificationScreen from '../screens/NotificationScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -19,6 +20,7 @@ export const HomeStack = () => {
       <Stack.Screen name="Doctor" component={DoctorScreen} />
       <Stack.Screen name="AddDoctor" component={AddDoctor} />
       <Stack.Screen name="DoctorList" component={DoctorList} />
+      <Stack.Screen name="Notification" component={NotificationScreen} />
     </Stack.Navigator>
   );
 };

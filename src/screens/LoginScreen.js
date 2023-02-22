@@ -57,6 +57,7 @@ export default function LoginScreen({navigation, route}) {
     if (response.success) {
       ToastAndroid.show('Login Successful !', ToastAndroid.SHORT);
       setLoading(false);
+      console.log('agentroll-->',response.data);
       dispatch({
         type: 'SET_USER',
         payload: response.data,
