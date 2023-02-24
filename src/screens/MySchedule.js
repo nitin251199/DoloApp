@@ -90,11 +90,17 @@ console.log('parrraaamm---',route?.params)
       //   ),
       // );
 
-       setAppointments(
-        filteredAppointments.filter(
-          item => item.shift_name == 'Morning',
-        ),
-      );
+      //  setAppointments(
+      //   filteredAppointments.filter(
+      //     item => item.shift_name == 'Morning',
+      //   ),
+      // );
+
+      var filterData =  filteredAppointments.filter(
+        item => item.shift_name == 'Morning',
+       );
+
+       setAppointments(filterData.sort((a, b) => a.token_no - b.token_no))
 
     } else {
       // setAppointments(
@@ -103,11 +109,17 @@ console.log('parrraaamm---',route?.params)
       //   ),
       // );
 
-      setAppointments(
-        filteredAppointments.filter(
-          item => item.shift_name == 'Evening',
-        ),
-      );
+      // setAppointments(
+      //   filteredAppointments.filter(
+      //     item => item.shift_name == 'Evening',
+      //   ),
+      // );
+
+      var filterData =  filteredAppointments.filter(
+        item => item.shift_name == 'Morning',
+       );
+
+       setAppointments(filterData.sort((a, b) => a.token_no - b.token_no))
       
     }
   }, [selectedDate.date, selectedDate.month, time, allAppointments]);
@@ -293,12 +305,15 @@ console.log('parrraaamm---',route?.params)
                     ...styles.dayContainer,
                     backgroundColor:
                       item.date === selectedDate.date &&
-                      item.day === selectedDate.day
+                      item.day === selectedDate.day &&
+                      item.month === selectedDate.month
                         ? `${Color.primary}80`
                         : null,
                     borderWidth:
                       item.date == new Date().getDate() &&
-                      item.day == days[new Date().getDay()]
+                      item.day == days[new Date().getDay()] &&
+                      item.month == months[new Date().getMonth()]
+                      
                         ? 0.5
                         : 0,
                     borderColor: '#999',

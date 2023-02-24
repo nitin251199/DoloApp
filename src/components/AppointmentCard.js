@@ -9,7 +9,11 @@ import LinearGradient from 'react-native-linear-gradient';
 export default function AppointmentCard({item, onPress, onDoublePress,bgColor}) {
   const [status, setStatus] = React.useState(item?.status);
 
-  const conditionalStyles = status => {
+  const conditionalStyles = (status,online_offline) => {
+    if (online_offline === 'online' && status === 0){
+      backgroundColor:Color.yellow
+    }
+    else{
     switch (status) {
       case 2:
         return styles.resolved;
@@ -17,11 +21,17 @@ export default function AppointmentCard({item, onPress, onDoublePress,bgColor}) 
         return styles.absent;
       case 5:
         return styles.due_payment;
+        // case 'online':
+        // if (online_offline === 'online' && status === 0) {
+        //   return styles.online;
+        // }
+      
       case 0:
         return styles.pending;
       default:
         return styles.pending;
     }
+  }
   };
 
   return (

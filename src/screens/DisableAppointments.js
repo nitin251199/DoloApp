@@ -116,7 +116,7 @@ import {
         let result = await postData('doctor_disable_list', body);
         if (result?.success) {
          setHolidayList(result?.data);
-         console.log('hlist==',result?.data)
+         console.log('holidaylist==',result?.data)
          
         }
         // else {
@@ -129,36 +129,51 @@ import {
       
       };
 
+      const deleteHolidays = async(id) =>{
+
+        let body={
+          id:id,
+        }
+        const res = await postData('doctor_disable_list_delete',body);
+        if(res.success){
+          successToast(res?.message);
+          getHolidayList();
+        }
+        else{
+          errorToast('Something went wrong please try again');
+        }
+       
+      }
+
       useEffect(() => {
         getHolidayList();
       },[])
 
 
-      const deleteListItem = () => {
+      const deleteListItem = (id) => {
         Alert.alert(
-          'Are you sure you want to Delete ?',
-         // 'Upload prescription from',
+          'Are you sure you want to delete?',
+          '',
           [
             {
-              text: 'Cancel',
-              onPress: () => console.log('Cancel'),
-              style: 'cancel',
+              text: 'No',
+              onPress: () => {},
             },
-            // {
-            //   text: 'Camera',
-            //  // onPress: () => takePhotoFromCamera(),
-            // },
             {
               text: 'Yes',
-             // onPress: () => choosePhotoFromLibrary(),
+              onPress: () => deleteHolidays(id),
             },
+          
           ],
-          {cancelable: true},
+          {
+            cancelable: true,
+          },
         );
       };
      
   return (
     <View style={styles.container}>
+        <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
     <View style={{flexDirection: 'row', padding: 20}}>
       {/* <TouchableOpacity onPress={() => navigation.goBack()}>
         <MaterialCommunityIcons
@@ -232,7 +247,7 @@ import {
       </Button>
 
       <Text style={styles.secondary_heading_style}>{t('disableAppointments.holidaysList')}   📃</Text>
-      <ScrollView contentContainerStyle={{paddingBottom:30}}>
+    
 
       <View style={{marginTop: 10, paddingHorizontal: 15}}>
         {holidaysList &&
@@ -250,7 +265,7 @@ import {
                   backgroundColor:Color.graylight
                 }} 
                  
-              // onPress={()=>deleteListItem()} 
+               onPress={()=>deleteListItem(item.id)} 
               >
                 <Text style={styles.list_item_style}>
                  {item.start_date} To {item.End_date}
@@ -260,12 +275,12 @@ import {
           })}
       </View>
       
-      </ScrollView>
+  
 
         </View>
 
 
-
+        </ScrollView>
 
     </View>
   )

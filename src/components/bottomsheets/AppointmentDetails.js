@@ -18,7 +18,7 @@ export default AppointmentDetails = React.forwardRef((props, ref) => {
   
 
 
-  console.log('item.age==',item.age)
+ 
 
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
 
@@ -28,6 +28,8 @@ export default AppointmentDetails = React.forwardRef((props, ref) => {
 
   const getAge = () => {
     const {item,loading} = props;
+
+    console.log('item-->',item)
  
     var d = new Date();
     var dates = item?.age.split('/');
@@ -63,8 +65,10 @@ const getStatus = (status) => {
 }
 
 useEffect(() => {
- getAge();
-  getStatus(item.status)
+//getAge();
+const {item,loading} = props;
+  getStatus(item.status);
+
 }, [item]);
 
    return (
@@ -236,8 +240,8 @@ useEffect(() => {
               <Text style={{...styles.cardTitle}}>Age</Text>
               <View style={styles.cardContent}>
                 <Text style={{...styles.cardText}}>
-                  {currentAge} Years
-                
+                  {/* {currentAge} Years */}
+               { item?.agevalue}
                 </Text>
               </View>
             </View>

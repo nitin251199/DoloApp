@@ -45,7 +45,7 @@ const AllAppointments = ({navigation, route}) => {
     setLoading(true);
 
     const result = await getData(`patient_appointement_detail/${txt}`);
-    console.log('detail==', result);
+    console.log('detailll==', result?.data[0]);
 
     setDetail(result?.data[0]);
    
@@ -114,6 +114,7 @@ const AllAppointments = ({navigation, route}) => {
                 }} 
                  
                  onPress={() =>getAppointmentDetail(item.id) &&(item.status == 2 && _sheetRef.current.open()) }
+             // onPress={() =>getAppointmentDetail(item.id)}
               >
                 <Text style={styles.name_style}>
                   {new Date(item.date).getDate()}/

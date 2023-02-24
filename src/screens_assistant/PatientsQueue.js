@@ -280,7 +280,7 @@ const selectOptions = (item) => {
                 <AppointmentCard
                   key={index}
                   item={item}
-                  bgColor={item.online_offline === 'offline' ? conditionalStyles(item.status) : Color.yellow}
+                  bgColor={item.online_offline === 'online' && item.status === 0 ? Color.yellow : conditionalStyles(item.status)}
                   //   onPress={() => navigation.navigate('Appointment', {item})}
                   // onDoublePress={() =>
                   //   navigation.navigate('AddPatient', {item, type: 'edit'})

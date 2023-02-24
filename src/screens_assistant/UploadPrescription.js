@@ -9,7 +9,7 @@ import {
 import React, {useEffect} from 'react';
 import {Color, Fonts} from '../theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {getData} from '../API';
+import {getData, postData} from '../API';
 import DoctorPlaceholder from '../placeholders/DoctorPlaceholder';
 import AppointmentCard from '../components/AppointmentCard';
 import {useSelector} from 'react-redux';
@@ -20,7 +20,6 @@ export default function UploadPrescription({navigation}) {
   const [appointmentData, setAppointmentData] = React.useState([]);
   const [appointments, setAppointments] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
- 
 
   const _scrollRef = React.useRef(null);
 
@@ -63,30 +62,23 @@ export default function UploadPrescription({navigation}) {
   const fetchAppointments = async () => {
     console.log('api', `allappointment/${user?.doctor_id}`);
     const list = await getData(`allappointment/${user?.doctor_id}`);
-    console.log('listdata-->',  list?.data)
+    console.log('listdata-->', list?.data);
     setAppointmentData(
-      list?.data
-        // .filter(
-        //   item =>
-        //   `${item?.create_date}` ===
-        //     `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
-        // )
-        // .sort((a, b) => new Date(a.create_date) - new Date(b.create_date)),
+      list?.data,
+      // .filter(
+      //   item =>
+      //   `${item?.create_date}` ===
+      //     `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
+      // )
+      // .sort((a, b) => new Date(a.create_date) - new Date(b.create_date)),
     );
-   // console.log('dddtt==',list?.data);
+    // console.log('dddtt==',list?.data);
     setLoading(false);
   };
-
-
-
-
-
 
   useEffect(() => {
     fetchAppointments();
   }, []);
-
-
 
   const getDates = () => {
     let dates = [];
@@ -106,44 +98,55 @@ export default function UploadPrescription({navigation}) {
     getDates();
   }, []);
 
-
   useEffect(() => {
+    console.log('selectedDate-->', selectedDate);
     let filteredAppointments = appointmentData.filter(
       item =>
-      new Date((item.create_date).split('/').reverse().join("-")).getDate() === selectedDate.date &&
-      months[new Date ((item.create_date).split('/').reverse().join("-")).getMonth()] === selectedDate.month,
+        new Date(item.create_date.split('/').reverse().join('-')).getDate() ===
+          selectedDate.date &&
+        months[
+          new Date(item.create_date.split('/').reverse().join('-')).getMonth()
+        ] === selectedDate.month,
     );
     if (time === 'Morning') {
-      // setAppointments(
-      //   filteredAppointments.filter(
-      //     item => new Date(item.created_at).getHours() < 12,
-      //   ),
-      // );
-
-       setAppointments(
-        filteredAppointments.filter(
-          item => item.shift_name == 'Morning',
-        ),
+      var filterData = filteredAppointments.filter(
+        item => item.shift_name == 'Morning',
       );
 
+      setAppointments(filterData.sort((a, b) => a.token_no - b.token_no));
     } else {
-      // setAppointments(
-      //   filteredAppointments.filter(
-      //     item => new Date(item.created_at).getHours() >= 12,
-      //   ),
-      // );
-
-      setAppointments(
-        filteredAppointments.filter(
-          item => item.shift_name == 'Evening',
-        ),
+      var filterData = filteredAppointments.filter(
+        item => item.shift_name == 'Evening',
       );
-      
+
+      setAppointments(filterData.sort((a, b) => a.token_no - b.token_no));
     }
-  }, [selectedDate.date, selectedDate.month, time, appointmentData]);
+  }, [
+    selectedDate,
+    selectedDate.date,
+    selectedDate.month,
+    time,
+    appointmentData,
+  ]);
 
-
-
+  const conditionalStyles = (status, online_offline) => {
+    if (online_offline === 'online' && status === 0) {
+      return styles.online;
+    } else {
+      switch (status) {
+        case 2:
+          return styles.resolved;
+        case 3:
+          return styles.absent;
+        case 5:
+          return styles.due_payment;
+        case 0:
+          return styles.pending;
+        default:
+          return styles.pending;
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -157,7 +160,7 @@ export default function UploadPrescription({navigation}) {
         </TouchableOpacity>
         <Text style={styles.title}>{t('uploadPrescription.screenTitle')}</Text>
       </View>
-     
+
       <View
         style={{
           width: '100%',
@@ -226,37 +229,37 @@ export default function UploadPrescription({navigation}) {
         </View>
       </View>
       <View style={styles.btnContainer}>
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => setTime('Morning')}
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setTime('Morning')}
+          style={{
+            ...styles.btn,
+            backgroundColor: time === 'Morning' ? Color.primary : Color.white,
+          }}>
+          <Text
             style={{
-              ...styles.btn,
-              backgroundColor: time === 'Morning' ? Color.primary : Color.white,
+              ...styles.btnText,
+              color: time === 'Morning' ? '#fff' : '#000',
             }}>
-            <Text
-              style={{
-                ...styles.btnText,
-                color: time === 'Morning' ? '#fff' : '#000',
-              }}>
-              {t('scheduleScreen.morning')}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => setTime('Evening')}
+            {t('scheduleScreen.morning')}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setTime('Evening')}
+          style={{
+            ...styles.btn,
+            backgroundColor: time === 'Evening' ? Color.primary : Color.white,
+          }}>
+          <Text
             style={{
-              ...styles.btn,
-              backgroundColor: time === 'Evening' ? Color.primary : Color.white,
+              ...styles.btnText,
+              color: time === 'Evening' ? '#fff' : '#000',
             }}>
-            <Text
-              style={{
-                ...styles.btnText,
-                color: time === 'Evening' ? '#fff' : '#000',
-              }}>
-              {t('scheduleScreen.evening')}
-            </Text>
-          </TouchableOpacity>
-        </View>
+            {t('scheduleScreen.evening')}
+          </Text>
+        </TouchableOpacity>
+      </View>
       {loading ? (
         <View
           style={{
@@ -270,51 +273,58 @@ export default function UploadPrescription({navigation}) {
           <DoctorPlaceholder />
         </View>
       ) : (
-        <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
-        <View>
-          <FlatList
-            ref={_scrollRef}
-            // onScrollToIndexFailed={() => {}}
-            // onLayout={() => {
-            //   _scrollRef.current.scrollToIndex({
-            //     animated: true,
-            //     index: appointmentData.findIndex(item => item.status === 1),
-            //     viewPosition: 0.5,
-            //   });
-            // }}
-            showsVerticalScrollIndicator={false}
-            style={{
-              width: '100%',
-            }}
-           // contentContainerStyle={{paddingHorizontal: 20,paddingBottom:70}}
-            data={appointments}
-            renderItem={({item, index}) => (
-              <AppointmentCard
-                key={index}
-                item={item}
-                onPress={() => navigation.navigate('Upload', {item})}
-              />
-            )}
-            keyExtractor={item => item.id}
-          />
-          {appointmentData.length === 0 && (
-            <View
+        <ScrollView
+          contentContainerStyle={{paddingBottom: 30}}
+          showsVerticalScrollIndicator={false}>
+          <View style={{paddingHorizontal: 15, marginTop: 5}}>
+            <FlatList
+              ref={_scrollRef}
+              // onScrollToIndexFailed={() => {}}
+              // onLayout={() => {
+              //   _scrollRef.current.scrollToIndex({
+              //     animated: true,
+              //     index: appointmentData.findIndex(item => item.status === 1),
+              //     viewPosition: 0.5,
+              //   });
+              // }}
+              showsVerticalScrollIndicator={false}
               style={{
-                flex: 1,
-                alignItems: 'center',
-                marginTop: 60,
-              }}>
-              <Text
+                width: '100%',
+              }}
+              // contentContainerStyle={{paddingHorizontal: 20,paddingBottom:70}}
+              data={appointments}
+              renderItem={({item, index}) => (
+                <AppointmentCard
+                  key={index}
+                  item={item}
+                  onPress={() => navigation.navigate('Upload', {item})}
+                  bgColor={
+                    item.online_offline === 'online' && item.status === 0
+                      ? Color.yellow
+                      : conditionalStyles(item.status)
+                  }
+                />
+              )}
+              keyExtractor={item => item.id}
+            />
+            {appointmentData.length === 0 && (
+              <View
                 style={{
-                  color: Color.grey,
-                  fontSize: 16,
-                  fontFamily: Fonts.primarySemiBold,
+                  flex: 1,
+                  alignItems: 'center',
+                  marginTop: 60,
                 }}>
-                No appointments here
-              </Text>
-            </View>
-          )}
-        </View>
+                <Text
+                  style={{
+                    color: Color.grey,
+                    fontSize: 16,
+                    fontFamily: Fonts.primarySemiBold,
+                  }}>
+                  No appointments here
+                </Text>
+              </View>
+            )}
+          </View>
         </ScrollView>
       )}
     </View>
@@ -324,7 +334,7 @@ export default function UploadPrescription({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-   // backgroundColor: Color.white,
+    // backgroundColor: Color.white,
   },
   title: {
     fontSize: 20,
@@ -361,7 +371,6 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     flexDirection: 'row',
-    
   },
   btn: {
     flex: 1,

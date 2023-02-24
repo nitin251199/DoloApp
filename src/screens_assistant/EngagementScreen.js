@@ -11,10 +11,10 @@ import EngagementPlaceholder from '../placeholders/EngagementPlaceholder';
 import {errorToast, successToast} from '../components/toasts';
 import {ActivityIndicator} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
-import { ScrollView } from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
 export default function EngagementScreen({navigation}) {
   const user = useSelector(state => state.user);
-  console.log('did2--',user?.doctor_id)
+  console.log('docId--', user?.doctor_id);
   const [engagementData, setEngagementData] = React.useState([]);
   const [engagements, setEngagements] = React.useState([]);
   const [selectedEngagement, setSelectedEngagement] = React.useState(null);
@@ -25,7 +25,7 @@ export default function EngagementScreen({navigation}) {
   const {t} = useTranslation();
   const fetchAppointments = async () => {
     const list = await getData(`appointment/${user?.doctor_id}`);
-    console.log('app ls--', list?.data)
+    console.log('app ls--', list?.data);
     // .filter(
     //   item =>
     //     new Date(item.created_at).setHours(0, 0, 0, 0) ==
@@ -47,82 +47,70 @@ export default function EngagementScreen({navigation}) {
   //   fetchAppointments();
   // }, []);
 
-  const getCurrentPatient = async() =>{
+  const getCurrentPatient = async () => {
     setLoading(true);
     let body = {
-     shift_name:time,
-     doctor_id:user?.doctor_id
-  
-    }
-  var result = await postData('patinemaximumtokenno',body);
-  console.log('result--',result)
-  setLoading(false);
-  
-    setCurrentPatient(result.token_no);
+      shift_name: time,
+      doctor_id: user?.doctor_id,
+    };
+    var result = await postData('patinemaximumtokenno', body);
+    console.log('CurrentPatient-->', result);
+    setLoading(false);
 
-    }
+    setCurrentPatient(result.token_no);
+  };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async() => {
-     
-   
-     await fetchAppointments();
-     await getCurrentPatient();
-    },[]);
+    const unsubscribe = navigation.addListener(
+      'focus',
+      async () => {
+        await fetchAppointments();
+        await getCurrentPatient();
+      },
+      [],
+    );
 
-   
     return unsubscribe;
-    
   }, []);
 
   useEffect(() => {
-    // let filteredAppointments = appointmentData;
-    
     if (time === 'Morning') {
-      // setAppointments(
-      //   filteredAppointments.filter(
-      //     item => new Date(item.created_at).getHours() < 12,
-      //   ),
-      // );
-     
       setEngagements(
-        engagementData && engagementData.filter(item => item.shift_name == 'Morning'),
+        engagementData &&
+          engagementData.filter(item => item.shift_name == 'Morning'),
       );
-      getCurrentPatient()
-     
+      getCurrentPatient();
     } else {
-      // setAppointments(
-      //   filteredAppointments.filter(
-      //     item => new Date(item.created_at).getHours() >= 12,
-      //   ),
-      // );
-
       setEngagements(
-        engagementData &&  engagementData.filter(item => item.shift_name == 'Evening'),
+        engagementData &&
+          engagementData.filter(item => item.shift_name == 'Evening'),
       );
-      getCurrentPatient()
+      getCurrentPatient();
     }
   }, [time, engagementData, currentPatient]);
 
   const _sheetRef = React.useRef(null);
 
-  const conditionalStyles = status => {
-    switch (status) {
-      case 2:
-        return styles.resolved;
-      case 3:
-        return styles.absent;
-      case 5:
-        return styles.due_payment;
-      case 0:
-        return styles.pending;
-      default:
-        return styles.pending;
+  const conditionalStyles = (status, online_offline) => {
+    if (online_offline === 'online' && status === 0) {
+      return styles.online;
+    } else {
+      switch (status) {
+        case 2:
+          return styles.resolved;
+        case 3:
+          return styles.absent;
+        case 5:
+          return styles.due_payment;
+        case 0:
+          return styles.pending;
+        default:
+          return styles.pending;
+      }
     }
   };
 
   const handleChange = async (id, status) => {
-    
     setStatusLoading(true);
     let currentA = null;
     //let previousA = null;
@@ -134,25 +122,20 @@ export default function EngagementScreen({navigation}) {
 
       // if (item.status === 4){
       //   errorToast('cannot active previous token')
-  
+
       //   }
 
-      if (item.id === id ) {
-       
-      
-          currentA = item;
-          item.status = status;
-   
-         }
-
-       
+      if (item.id === id) {
+        currentA = item;
+        item.status = status;
+      }
 
       return item;
     });
     let currentBody = {
       status: currentA?.status,
       id: currentA?.id,
-      shift_name:currentA?.shift_name
+      shift_name: currentA?.shift_name,
     };
     // let previousBody = {
     //   status: previousA?.status,
@@ -176,18 +159,14 @@ export default function EngagementScreen({navigation}) {
     }
   };
 
-
-
   const renderItem = ({item, index}) => {
     return (
-    
-     
       <TouchableOpacity
-      onLongPress=  {() => {
+        onLongPress={() => {
           setSelectedEngagement(item);
-          {item.status !=2 &&
-          _sheetRef.current.open();
-        } 
+          {
+            item.status != 2 && _sheetRef.current.open();
+          }
         }}
         style={{
           flex: 1,
@@ -199,8 +178,8 @@ export default function EngagementScreen({navigation}) {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-    //  ...conditionalStyles(item.status),
-       backgroundColor:item.online_offline === 'offline' ? conditionalStyles(item.status) : Color.yellow,
+          ...conditionalStyles(item.status, item.online_offline),
+          //   backgroundColor:item.online_offline === 'online' ? Color.yellow : conditionalStyles(item.status),
         }}>
         {/* <LinearGradient
           start={{x: 0, y: 0}}
@@ -216,8 +195,6 @@ export default function EngagementScreen({navigation}) {
         </Text>
         {/* </LinearGradient> */}
       </TouchableOpacity>
-      
-       
     );
   };
 
@@ -250,13 +227,23 @@ export default function EngagementScreen({navigation}) {
         </TouchableOpacity>
         <Text style={styles.title}>Engagement Status</Text>
       </View>
-      <Text style={{color:Color.black,paddingLeft:20,fontSize: 16,fontFamily: 'Poppins-Bold',}}>
-        Current Consulting Patient  <Text style={{fontSize:30,color:Color.green}}>   {currentPatient}  </Text> 
+      <Text
+        style={{
+          color: Color.black,
+          paddingLeft: 20,
+          fontSize: 16,
+          fontFamily: 'Poppins-Bold',
+        }}>
+        Current Consulting Patient{' '}
+        <Text style={{fontSize: 30, color: Color.green}}>
+          {' '}
+          {currentPatient}{' '}
         </Text>
+      </Text>
       <View style={styles.btnContainer}>
         <TouchableOpacity
           activeOpacity={1}
-          onPress={() => setTime('Morning') }
+          onPress={() => setTime('Morning')}
           style={{
             ...styles.btn,
             backgroundColor: time === 'Morning' ? Color.primary : Color.white,
@@ -295,17 +282,19 @@ export default function EngagementScreen({navigation}) {
           contentContainerStyle={{paddingBottom: 20, margin: 10}}
         />
       ) : (
-        <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
-          <View style={{paddingHorizontal:30,marginTop:20}}>
-        <FlatList
-          data={engagements}
-          renderItem={renderItem}
-          numColumns={3}
-          keyExtractor={item => item.id}
-          showsVerticalScrollIndicator={false}
-         // contentContainerStyle={{paddingBottom: 20, margin: 10}}
-        />
-        </View>
+        <ScrollView
+          contentContainerStyle={{paddingBottom: 30}}
+          showsVerticalScrollIndicator={false}>
+          <View style={{paddingHorizontal: 30, marginTop: 20}}>
+            <FlatList
+              data={engagements}
+              renderItem={renderItem}
+              numColumns={3}
+              keyExtractor={item => item.id}
+              showsVerticalScrollIndicator={false}
+              // contentContainerStyle={{paddingBottom: 20, margin: 10}}
+            />
+          </View>
         </ScrollView>
       )}
     </View>
@@ -334,17 +323,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#006400',
   },
   absent: {
-   backgroundColor: Color.red,
+    backgroundColor: Color.red,
   },
   current: {
     backgroundColor: '#ff8c00',
-   },
-   due_payment:{
-   backgroundColor:'#ff7f50',
-   },
+  },
+  due_payment: {
+    backgroundColor: '#ff7f50',
+  },
+  online: {
+    backgroundColor: Color.yellow,
+  },
   pending: {
     backgroundColor: Color.graylight,
-    },
+  },
   itemText: {
     fontSize: 30,
     fontFamily: Fonts.primarySemiBold,
@@ -356,7 +348,7 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     flexDirection: 'row',
-    marginTop:15
+    marginTop: 15,
   },
   btn: {
     flex: 1,
