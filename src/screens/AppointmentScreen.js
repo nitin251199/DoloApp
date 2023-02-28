@@ -335,6 +335,40 @@ console.log('fid==',id);
               </View>
             </View>
           </View>
+          <View
+            style={{
+              flexDirection: 'row',
+            }}>
+            <View
+              style={{
+                ...styles.card,
+                backgroundColor: Color.white,
+                flex: 1,
+              }}>
+              <Text style={{...styles.cardTitle}}>Payment Type</Text>
+              <View style={styles.cardContent}>
+                <Text style={{...styles.cardText}}>
+                {appointmentData.payment_status == '1' && appointmentData.consulation_charge !== '0'
+            ? 'Paid'
+            : appointmentData.payment_status == '1' && appointmentData.consulation_charge == '0'
+            ? 'Free'
+            : Pending}
+                </Text>
+              </View>
+             
+            </View>
+            <View
+              style={{
+                ...styles.card,
+                backgroundColor: Color.white,
+                flex: 1,
+              }}>
+              <Text style={{...styles.cardTitle}}>Amount Paid</Text>
+              <View style={styles.cardContent}>
+                <Text style={{...styles.cardText}}>{appointmentData?.consulation_charge !== null ? appointmentData?.consulation_charge : 'Pending'}</Text>
+              </View>
+            </View>
+          </View>
           <View style={{...styles.card, backgroundColor: Color.white}}>
             <Text style={{...styles.cardTitle}}>Patient Problem</Text>
             <View style={styles.cardContent}>

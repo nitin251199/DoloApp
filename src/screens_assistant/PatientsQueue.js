@@ -20,6 +20,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import AppointmentSheet from '../components/bottomsheets/AppointmentSheet';
 import { errorToast, successToast } from '../components/toasts';
+import InputModal from '../components/modals/InputModal';
 
 export default function PatientsQueue({navigation}) {
   const user = useSelector(state => state.user);
@@ -29,6 +30,9 @@ export default function PatientsQueue({navigation}) {
   const [loading, setLoading] = React.useState(true);
   const [refresh, setRefresh] = React.useState(false);
   const [time, setTime] = React.useState('Morning');
+  const [modalVisible,setModalVisible] = React.useState(false);
+  const [consultCharge,setConsultCharge] = React.useState('');
+
   
   const _sheetRef = React.useRef(null);
   const _scrollRef = React.useRef(null);
@@ -178,6 +182,30 @@ const selectOptions = (item) => {
   );
 };
 
+const updatePaymentStatus = async(item) =>{
+  let body={
+    doctor_id:user?.doctor_id,
+    patient_id: item?.patient_id,
+
+    appointment_id:item?.id,
+    payment:consultCharge,
+    payment_status:1,
+
+
+  }
+  console.log('body',body)
+  const res = await postData('paymentupdate',body);
+  if (res.success){
+    successToast('status marked successfully');
+    setModalVisible(false);
+    fetchAppointments();
+    _sheetRef.current.close();
+  }
+  else{
+    errorToast('something went wrong');
+  }
+}
+
 
   return (
     <View style={styles.container}>
@@ -185,7 +213,19 @@ const selectOptions = (item) => {
         ref={_sheetRef}
         item={selectedAppointment}
         deleteAppointment={(item) => selectOptions(item)}
+        showModal={() => setModalVisible(true)}
+      //  onChangeText={(txt) =>setConsultCharge(txt)}
         editAppointment={(item) => navigation.navigate('AddPatient', {item, type: 'edit'})}
+      />
+      <InputModal
+      item={selectedAppointment}
+      visible={modalVisible}
+      primaryBtnText='Close'
+      secondaryBtnText='Submit'
+      setAmount={(txt)=>setConsultCharge(txt)}
+      onPrimaryPress={()=>setModalVisible(false)}
+      onSecondaryPress={(item)=>updatePaymentStatus(item)}
+
       />
       <View style={{flexDirection: 'row', padding: 20}}>
         <TouchableOpacity onPress={() => navigation.goBack()}>

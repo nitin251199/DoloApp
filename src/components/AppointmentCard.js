@@ -6,45 +6,51 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DoubleClick from 'react-native-double-tap';
 import LinearGradient from 'react-native-linear-gradient';
 
-export default function AppointmentCard({item, onPress, onDoublePress,bgColor}) {
+export default function AppointmentCard({
+  item,
+  onPress,
+  onDoublePress,
+  bgColor,
+}) {
   const [status, setStatus] = React.useState(item?.status);
 
-  const conditionalStyles = (status,online_offline) => {
-    if (online_offline === 'online' && status === 0){
-      backgroundColor:Color.yellow
-    }
-    else{
-    switch (status) {
-      case 2:
-        return styles.resolved;
-      case 3:
-        return styles.absent;
-      case 5:
-        return styles.due_payment;
+  const conditionalStyles = (status, online_offline) => {
+    if (online_offline === 'online' && status === 0) {
+      backgroundColor: Color.yellow;
+    } else {
+      switch (status) {
+        case 2:
+          return styles.resolved;
+        case 3:
+          return styles.absent;
+        case 5:
+          return styles.due_payment;
         // case 'online':
         // if (online_offline === 'online' && status === 0) {
         //   return styles.online;
         // }
-      
-      case 0:
-        return styles.pending;
-      default:
-        return styles.pending;
+
+        case 0:
+          return styles.pending;
+        default:
+          return styles.pending;
+      }
     }
-  }
   };
 
   return (
     <View style={{...styles.listItem, ...conditionalStyles(status)}}>
       {/* <DoubleClick singleTap={onPress} doubleTap={onDoublePress} delay={300}> */}
-      <TouchableOpacity onPress={onPress} style={{
-            flex: 1,
-            flexDirection: 'row',
-            padding: 15,
-            alignItems: 'center',
-            //justifyContent: 'center',
-            backgroundColor:bgColor
-          }}>
+      <TouchableOpacity
+        onPress={onPress}
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          padding: 15,
+          alignItems: 'center',
+          //justifyContent: 'center',
+          backgroundColor: bgColor,
+        }}>
         {/* <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
@@ -60,10 +66,18 @@ export default function AppointmentCard({item, onPress, onDoublePress,bgColor}) 
             alignItems: 'center',
             //justifyContent: 'center',
           }}> */}
-          <Text style={styles.listItemTitle}>{item.token_no}.</Text>
-          <Text style={styles.listItemTitle}>{item.patient_name}</Text>
+        <Text style={styles.listItemTitle}>{item.token_no}.</Text>
+        <Text style={styles.listItemTitle}>
+          {item.patient_name}{' '}
+          {item.payment_status == '1' && item.consulation_charge !== '0'
+            ? '(P)'
+            : item.payment_status == '1' && item.consulation_charge == '0'
+            ? '(F)'
+            : null}
+        </Text>
+
         {/* </LinearGradient> */}
-        </TouchableOpacity>
+      </TouchableOpacity>
       {/* </DoubleClick> */}
     </View>
   );
@@ -95,28 +109,26 @@ const styles = StyleSheet.create({
     color: Color.white,
     marginHorizontal: 5,
     fontFamily: Fonts.primarySemiBold,
-   
   },
   listItemSubTitle: {
     fontSize: 16,
     lineHeight: 16 * 1.4,
     fontFamily: Fonts.primaryRegular,
     color: Color.white,
-    
   },
-   resolved: {
+  resolved: {
     backgroundColor: '#006400',
   },
   absent: {
-   backgroundColor: Color.red,
+    backgroundColor: Color.red,
   },
   current: {
     backgroundColor: '#ff8c00',
-   },
-   due_payment:{
-   backgroundColor:'#ff7f50',
-   },
+  },
+  due_payment: {
+    backgroundColor: '#ff7f50',
+  },
   pending: {
     backgroundColor: Color.graylight,
-    },
+  },
 });

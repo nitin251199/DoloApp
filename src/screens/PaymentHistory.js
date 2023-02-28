@@ -25,10 +25,11 @@ export default function PaymentHistory() {
 
   const fetchPayments = async () => {
     const res = await getData(`paymenthistory/${user?.userid}`);
+    console.log('payments==', res);
+  //  console.log('paymentDAte==', (res?.data[0]?.date).split(' ')[0]);
     if (res.success) {
       setAllPayments(res?.data);
-      console.log('payments==', res?.data);
-      console.log('paymentDAte==', (res?.data[0]?.date).split(' ')[0]);
+   
     }
     setLoading(false);
   };
@@ -90,13 +91,18 @@ export default function PaymentHistory() {
   }, []);
 
   useEffect(() => {
+    // let filteredPayments = allPayments.filter(
+    //   item =>
+    //     new Date(item.date.split(' ')[0]).getDate() === selectedDate.date &&
+    //     months[new Date(item.date.split(' ')[0]).getMonth()] ===
+    //       selectedDate.month,
+    // );
     let filteredPayments = allPayments.filter(
       item =>
-        new Date(item.date.split(' ')[0]).getDate() === selectedDate.date &&
-        months[new Date(item.date.split(' ')[0]).getMonth()] ===
-          selectedDate.month,
+      new Date((item.date).split('/').reverse().join("-")).getDate() === selectedDate.date &&
+      months[new Date ((item.date).split('/').reverse().join("-")).getMonth()] === selectedDate.month,
     );
-
+    console.log('filteredPayments-->',filteredPayments)
     setPayments(filteredPayments);
   }, [selectedDate.date, selectedDate.month, allPayments]);
 
@@ -131,20 +137,20 @@ export default function PaymentHistory() {
               }}>
               <Text style={styles.listItemTitle}>{item?.patient_name}</Text>
               <Text style={styles.listItemSubTitle}>
-                {new Date(item.date).toLocaleTimeString()}
+                 {item.date}
               </Text>
             </View>
           </View>
           <Text style={styles.listItemText}>₹ {item.Amount}</Text>
         </View>
-        <Text
+        {/* <Text
           style={{
             fontSize: 12,
             color: Color.gray,
             marginTop: 10,
           }}>
-          {item.date.split(' ')[0]}
-        </Text>
+          {item.date}
+        </Text> */}
       </View>
     );
   };

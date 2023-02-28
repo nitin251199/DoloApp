@@ -137,6 +137,7 @@ export default function TodayAppointments({navigation}) {
               <AppointmentCard
                 key={index}
                 item={item}
+                bgColor={item.online_offline === 'online' && item.status === 0 ? Color.yellow : conditionalStyles(item.status)}
                 onPress={() => navigation.navigate('Appointment', {item})}
               />
             );

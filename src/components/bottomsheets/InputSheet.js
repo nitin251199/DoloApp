@@ -4,8 +4,8 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import {Avatar, Button, TextInput, TouchableRipple} from 'react-native-paper';
 import {Color, Dimension, Fonts} from '../../theme';
 
-export default AppointmentSheet = React.forwardRef((props, ref) => {
-  const {item, deleteAppointment, editAppointment, showModal} = props;
+export default InputSheet = React.forwardRef((props, ref) => {
+  const {item, handleChange, handleDelete} = props;
 
   return (
     <RBSheet
@@ -36,7 +36,7 @@ export default AppointmentSheet = React.forwardRef((props, ref) => {
         }}>
         <View>
           <Text style={{...styles.sheetTitle, color: Color.primary}}>
-            Change the Appointment status
+            Change the Announcement status
           </Text>
         </View>
         <View
@@ -45,46 +45,36 @@ export default AppointmentSheet = React.forwardRef((props, ref) => {
             marginTop: 30,
             justifyContent: 'space-around',
           }}>
-          {/* { (item?.status === 0 || item?.status === 1) &&
+       { (item?.status === 0 || item?.status === 1) &&
           <View style={{alignItems: 'center', flex: 1}}>
            
             <TouchableRipple
-              onPress={() => handleChange(item?.id, 2)}
+              onPress={() => handleDelete(item?.id, 2)}
               style={{...styles.button}}>
               <Text style={styles.buttonLabel}>Set Delete</Text>
             </TouchableRipple>
           </View> 
-} */}
-
-          <View
-            style={{
-              alignItems: 'center',
-              flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              paddingHorizontal: 20,
-            }}>
+}
+ { item?.status === 1  &&
+          <View style={{alignItems: 'center', flex: 1, marginLeft: 10}}>
             <TouchableRipple
-              onPress={() => editAppointment(item)}
+              onPress={() => handleChange(item?.id, 0)}
               style={{...styles.button, backgroundColor: 'green'}}>
-              <Text style={styles.buttonLabel}>Edit</Text>
+              <Text style={styles.buttonLabel}>Set Active</Text>
             </TouchableRipple>
-            {item?.online_offline == 'online' && (
-              <TouchableRipple
-                onPress={item => showModal(item)}
-                style={{...styles.button, backgroundColor: Color.primary}}>
-                <Text style={styles.buttonLabel}>Mark Paid</Text>
-              </TouchableRipple>
-            )}
-
-            {item?.assistant_id !== null && (
-              <TouchableRipple
-                onPress={() => deleteAppointment(item)}
-                style={{...styles.button, backgroundColor: 'red'}}>
-                <Text style={styles.buttonLabel}>Delete</Text>
-              </TouchableRipple>
-            )}
           </View>
+}
+
+{ item?.status === 0  &&
+          <View style={{alignItems: 'center', flex: 1, marginLeft: 10}}>
+            <TouchableRipple
+              onPress={() => handleChange(item?.id, 1)}
+              style={{...styles.button, backgroundColor: 'red'}}>
+              <Text style={styles.buttonLabel}>Set Hide</Text>
+            </TouchableRipple>
+          </View>
+}
+       
         </View>
         {/* <View
           style={{
@@ -133,11 +123,10 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   button: {
-    width: '45%',
+    width: '100%',
     borderRadius: 10,
     backgroundColor: Color.primary,
-    paddingHorizontal: 2,
-    paddingVertical: 12,
+    padding: 15,
     elevation: 2,
   },
   buttonLabel: {

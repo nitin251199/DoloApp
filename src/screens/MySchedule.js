@@ -115,11 +115,11 @@ console.log('parrraaamm---',route?.params)
       //   ),
       // );
 
-      var filterData =  filteredAppointments.filter(
-        item => item.shift_name == 'Morning',
+      var filterData1 =  filteredAppointments.filter(
+        item => item.shift_name == 'Evening',
        );
 
-       setAppointments(filterData.sort((a, b) => a.token_no - b.token_no))
+       setAppointments(filterData1.sort((a, b) => a.token_no - b.token_no))
       
     }
   }, [selectedDate.date, selectedDate.month, time, allAppointments]);
