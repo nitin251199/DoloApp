@@ -5,16 +5,20 @@ import {
     Image,
     StyleSheet,
     FlatList,
-    StatusBar
+    StatusBar,
+    BackHandler
   } from 'react-native';
   import React, {useEffect} from 'react';
   import AntIcon from 'react-native-vector-icons/EvilIcons';
   import FontAwesome from 'react-native-vector-icons/FontAwesome';
  
   import { Color } from '../theme';
-  import { getData } from '../API';
+  import { getData, postData } from '../API';
+import { useSelector } from 'react-redux';
   
-  const NotificationScreen = () => {
+  const NotificationScreen = ({navigation}) => {
+    const user = useSelector(state => state.user);
+    console.log('USER==',user)
     const [notificationList, setNotificationList] = React.useState([]);
   
     const getNotificationList = async () => {
@@ -27,7 +31,31 @@ import {
   
     useEffect(() => {
       getNotificationList();
+      updateNotificationCount();
     }, []);
+
+    React.useEffect(
+      React.useCallback(() => {
+        const onBackPress = () => {
+          navigation.goBack();
+          return true;
+        };
+    
+        BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    
+        return () =>
+          BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      }, []),
+    );
+
+    const updateNotificationCount = async() =>{
+      let body={
+        user_id: user?.userid,
+        roles: user?.role
+      }
+      const res = await postData('notificationpatientupdate',body)
+      
+    }
   
     return (
       <ScrollView style={{backgroundColor: Color.white}}>

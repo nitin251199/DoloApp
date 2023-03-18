@@ -48,7 +48,7 @@ export default function FlashMessage({navigation, route}) {
     
     if (res.success) {
        console.log(res.data);
-      setAnnouncements(res.data);
+      setAnnouncements(res.data.sort((a, b) => new Date(b.id) - new Date(a.id)));
     }
     setLoading(false);
     setMsg('')

@@ -308,7 +308,7 @@ export default function HomeScreen({navigation}) {
               style={styles.mainIcon}
             />
             <Text style={styles.mainText}>{t('doctorHome.payment')}</Text>
-            <View
+            {/* <View
               style={{
                 width: 15,
                 height: 15,
@@ -317,7 +317,7 @@ export default function HomeScreen({navigation}) {
                 position: 'absolute',
                 bottom: 50,
                 right: 25,
-              }}></View>
+              }}></View> */}
           </TouchableOpacity>
         </View>
       </View>

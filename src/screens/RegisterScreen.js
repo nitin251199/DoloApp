@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+  Dimensions,
   SafeAreaView,
   View,
   Text,
@@ -10,6 +11,8 @@ import {
   ToastAndroid,
   Keyboard,
   KeyboardAvoidingView,
+  Platform,
+  PermissionsAndroid
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 
@@ -25,6 +28,12 @@ import {useEffect} from 'react';
 import {postData} from '../API';
 import OtpModal from '../components/modals/OtpModal';
 import {useTranslation} from 'react-i18next';
+import Geolocation from 'react-native-geolocation-service';
+
+const screen = Dimensions.get('window');
+const ASPECT_RATIO = screen.width / screen.height;
+const LATITUDE_DELTA = 0.04;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function RegisterScreen({navigation, route}) {
   const [name, setName] = useState('');
@@ -37,9 +46,120 @@ export default function RegisterScreen({navigation, route}) {
   const [otp, setOtp] = useState('');
 
   const [modalVisible, setModalVisible] = useState(false);
+    const [userLatitude,setUserLatitude] = useState(0);
+  const [userLongitude,setUserLongitude] = useState(0);
 
   const animated = new Animated.Value(600);
   const duration = 300;
+
+  const hasPermissionIOS = async () => {
+    const openSetting = () => {
+      Linking.openSettings().catch(() => {
+        Alert.alert('Unable to open settings');
+      });
+    };
+    const status = await Geolocation.requestAuthorization('whenInUse');
+
+    if (status === 'granted') {
+      return true;
+    }
+
+    if (status === 'denied') {
+      Alert.alert('Location permission denied');
+    }
+
+    if (status === 'disabled') {
+      Alert.alert(
+        `Turn on Location Services to allow "${appConfig.displayName}" to determine your location.`,
+        '',
+        [
+          {text: 'Go to Settings', onPress: openSetting},
+          {text: "Don't Use Location", onPress: () => {}},
+        ],
+      );
+    }
+
+    return false;
+  };
+
+  const hasLocationPermission = async () => {
+    if (Platform.OS === 'ios') {
+      const hasPermission = await hasPermissionIOS();
+      return hasPermission;
+    }
+
+    if (Platform.OS === 'android' && Platform.Version < 23) {
+      return true;
+    }
+
+    const hasPermission = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+
+    if (hasPermission) {
+      return true;
+    }
+
+    const status = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+
+    if (status === PermissionsAndroid.RESULTS.GRANTED) {
+      return true;
+    }
+
+    if (status === PermissionsAndroid.RESULTS.DENIED) {
+      ToastAndroid.show(
+        'Location permission denied by user.',
+        ToastAndroid.LONG,
+      );
+    } else if (status === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+      ToastAndroid.show(
+        'Location permission revoked by user.',
+        ToastAndroid.LONG,
+      );
+    }
+
+    return false;
+  };
+
+  const getLocation = async () => {
+    const hasPermission = await hasLocationPermission();
+
+    if (!hasPermission) {
+      return;
+    }
+    
+    Geolocation.getCurrentPosition(
+      position => {
+        const region = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          latitudeDelta: 0.001,
+          longitudeDelta: 0.001,
+        };
+        //  setRegion(region);
+        console.log('region12345=', region);
+        // searchNearestDoctor(
+        //   position.coords.latitude,
+        //   position.coords.longitude,
+        // );
+         setUserLatitude(region.latitude);
+        setUserLongitude(region.longitude);
+        //  setLoading(false);
+      },
+      error => {
+        console.log(error);
+        //  setLoading(false);
+      },
+      {enableHighAccuracy: true, timeout: 200000, maximumAge: 5000},
+    );
+  };
+  useEffect(() => {
+    getLocation();
+  
+   
+  }, [])
 
   useEffect(() => {
     Animated.timing(animated, {
@@ -79,11 +199,12 @@ export default function RegisterScreen({navigation, route}) {
 
   const handleRegister = async pass => {
     let body = {
-      username: name,
+      name: name,
       email: email,
-     // password: pass,
       mobile: phone,
-     // refer_code: referCode,
+      latitude:userLatitude,
+      longitude:userLongitude
+   
     };
     const response = await postData('doctor_enquiry', body);
     if (response.success) {
