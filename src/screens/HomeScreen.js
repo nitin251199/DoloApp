@@ -27,6 +27,7 @@ export default function HomeScreen({navigation}) {
   const [pending, setPending] = React.useState([]);
   const [approved, setApproved] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [notificationCount, setNotificationCount] = React.useState(0);
 
   const fetchProfileInfo = async () => {
     let res = await getData(`agent/${user?.userid}`);
@@ -44,7 +45,7 @@ export default function HomeScreen({navigation}) {
       let pending = res?.data?.filter(item => item?.status === '0');
       setApproved(approved);
       setPending(pending);
-      setDoctorData(res.data);
+      setDoctorData(res.data.sort((a, b) => new Date(b.id) - new Date(a.id)));
       console.log('DoctorData==',res.data);
     }
     setLoading(false);
@@ -60,6 +61,20 @@ export default function HomeScreen({navigation}) {
     fetchDoctorInfo();
     fetchProfileInfo();
   }, []);
+
+  const getNotificationCount = async() =>{
+    const res = await getData(`notificationagentcount/${user?.userid}`);
+    console.log('Count--->',res)
+    if(res?.success){
+      setNotificationCount(res?.agent);
+    }
+  }
+
+  useEffect(() => {
+    setInterval(() => {
+    getNotificationCount();
+   }, 10000);
+}, []);
 
   return (
     <View style={styles.container}>
@@ -93,6 +108,20 @@ export default function HomeScreen({navigation}) {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() =>navigation.navigate('Notification')}>
+
+       { notificationCount > 0 &&
+        <View
+            style={{
+              width: 8,
+              height: 8,
+              backgroundColor: 'red',
+              borderRadius: 15 / 2,
+              position: 'absolute',
+              bottom: 20,
+              right: 13,
+            }}></View>
+      }
+
       <Fontisto name="bell" size={25} color={Color.black} />
      
       </TouchableOpacity>

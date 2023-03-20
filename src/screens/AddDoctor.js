@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   View,
   FlatList,
-  Dimensions
+  Dimensions,
+  BackHandler
 } from 'react-native';
 import React,{useEffect} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -262,10 +263,10 @@ export default function AddDoctor({navigation}) {
    
     
 
-    else if(adhar === ''){
-      Alert.alert('Error', 'Please enter adhar');
+    // else if(adhar === ''){
+    //   Alert.alert('Error', 'Please enter adhar');
       
-    }
+    // }
    
 
     else if(doctor_fees === ''){
@@ -308,31 +309,31 @@ export default function AddDoctor({navigation}) {
 
 
 
-    else if(accountNumber === ''){
-      Alert.alert('Error', 'Please enter account number');
+  //   else if(accountNumber === ''){
+  //     Alert.alert('Error', 'Please enter account number');
       
-    }
+  //   }
 
 
-   else if (accountNumber !== confirmAccountNumber || confirmAccountNumber === '') {
-      Alert.alert('Error', 'Please Confirm Account Number');
+  //  else if (accountNumber !== confirmAccountNumber || confirmAccountNumber === '') {
+  //     Alert.alert('Error', 'Please Confirm Account Number');
       
-    }
+  //   }
 
-    else if(accountHolderName === ''){
-      Alert.alert('Error', 'Please enter account holder name');
+  //   else if(accountHolderName === ''){
+  //     Alert.alert('Error', 'Please enter account holder name');
       
-    }
+  //   }
 
-    else if(ifscCode === ''){
-      Alert.alert('Error', 'Please enter IFSC code');
+  //   else if(ifscCode === ''){
+  //     Alert.alert('Error', 'Please enter IFSC code');
       
-    }
+  //   }
 
-    else if(bankName === ''){
-      Alert.alert('Error', 'Please enter bank name');
+  //   else if(bankName === ''){
+  //     Alert.alert('Error', 'Please enter bank name');
       
-    }
+  //   }
 
     else if(avgTime === ''){
       Alert.alert('Error', 'Please enter avg time');
@@ -879,6 +880,20 @@ export default function AddDoctor({navigation}) {
     getFcmToken();
   }, []);
 
+  React.useEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.goBack();
+        return true;
+      };
+  
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+  
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, []),
+  );
+
   return (
     <View style={styles.container}>
       <SuccessModal
@@ -1325,7 +1340,7 @@ export default function AddDoctor({navigation}) {
             marginTop: 15,
           }}>
           <View style={{marginRight: 10, flex: 1}}>
-            <Text style={styles.label}>Aadhar Number*</Text>
+            <Text style={styles.label}>Aadhar Number</Text>
             <TextInput
               theme={theme}
               dense
@@ -1361,7 +1376,7 @@ export default function AddDoctor({navigation}) {
             }}>
             Bank Details
           </Text>
-          <Text style={styles.label}>Account Number*</Text>
+          <Text style={styles.label}>Account Number</Text>
           <TextInput
             theme={theme}
             dense
@@ -1373,7 +1388,7 @@ export default function AddDoctor({navigation}) {
             activeUnderlineColor={Color.primary}
           />
           <View style={{marginTop:15}}>
-           <Text style={styles.label}>Confirm Account Number*</Text>
+           <Text style={styles.label}>Confirm Account Number</Text>
           <TextInput
             theme={theme}
             dense
@@ -1386,7 +1401,7 @@ export default function AddDoctor({navigation}) {
           />
           </View> 
           <View style={{marginTop:15}}>
-          <Text style={styles.label}>Account Holder's Name*</Text>
+          <Text style={styles.label}>Account Holder's Name</Text>
           <TextInput
             theme={theme}
             dense
@@ -1398,7 +1413,7 @@ export default function AddDoctor({navigation}) {
           />
           </View>
           <View style={{marginTop:15}}>
-          <Text style={styles.label}>IFSC Code*</Text>
+          <Text style={styles.label}>IFSC Code</Text>
           <TextInput
             theme={theme}
             dense
@@ -1411,7 +1426,7 @@ export default function AddDoctor({navigation}) {
           />
           </View>
           <View style={{marginTop:15}}>
-          <Text style={styles.label}>Bank Name*</Text>
+          <Text style={styles.label}>Bank Name</Text>
           <TextInput
             theme={theme}
             dense
