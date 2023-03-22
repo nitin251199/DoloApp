@@ -150,6 +150,7 @@ export default function DoctorScreen({navigation, route}) {
       doctor_id: appointment?.doctor_id,
       description: feedBack,
       prescription: prescriptions.map(item => item?.data),
+      create_date:appointment?.create_date
     };
     const result = await postData('doctor_send_prescrition_patient', body);
      console.log('body-->', body);
@@ -352,7 +353,7 @@ console.log('fid==',id);
             ? 'Paid'
             : appointmentData.payment_status == '1' && appointmentData.consulation_charge == '0'
             ? 'Free'
-            : Pending}
+            : 'Pending'}
                 </Text>
               </View>
              

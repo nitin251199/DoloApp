@@ -77,6 +77,25 @@ export default function TodayAppointments({navigation}) {
     
    }, [time,appointmentData]);
 
+   const conditionalStyles = (status, online_offline) => {
+    if (online_offline === 'online' && status === 0) {
+      return styles.online;
+    } else {
+      switch (status) {
+        case 2:
+          return styles.resolved;
+        case 3:
+          return styles.absent;
+        case 5:
+          return styles.due_payment;
+        case 0:
+          return styles.pending;
+        default:
+          return styles.pending;
+      }
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>{t('todayAppointment.screenTitle')}  🩺</Text>

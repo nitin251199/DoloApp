@@ -24,7 +24,7 @@ export default function UploadScreen({navigation, route}) {
   const [uploading, setUploading] = React.useState(false);
  const [uploadedPerscriptions,setUploadedPerscriptions] = React.useState([]);
   const itemData = route.params?.item;
-  // console.log('itemData==',itemData);
+   console.log('itemData==',itemData);
    console.log('patent,assis,doct==',itemData.patient_id,itemData.assistant_id,itemData.doctor_id);
 
 
@@ -94,6 +94,7 @@ export default function UploadScreen({navigation, route}) {
         assitant_id: itemData.assistant_id,
         doctor_id: itemData.doctor_id,
         prescription: prescriptions.map(item => item?.data),
+        create_date: itemData.create_date
       };
       console.log('ubody==',body)
       const result = await postData('assistant_send_prescrition_patient', body);
