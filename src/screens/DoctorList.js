@@ -12,6 +12,8 @@ import DoctorCard from '../components/DoctorCard';
 export default function DoctorList({navigation, route}) {
   const [doctorData, setDoctorData] = React.useState(route.params?.doctors);
 
+  console.log('ddd==',route.params?.doctors)
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>
@@ -40,7 +42,7 @@ export default function DoctorList({navigation, route}) {
             <DoctorCard
               key={index}
               item={item}
-              onPress={() => navigation.navigate('Doctor', {id: item.id})}
+              onPress={() => navigation.navigate('Doctor', {id: item?.doctor_id})}
             />
           );
         })}

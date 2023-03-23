@@ -58,7 +58,7 @@ export default function HistoryScreen({navigation}) {
               <DoctorCard
                 key={index}
                 item={item}
-                onPress={() => navigation.navigate('Doctor', {id: item.id})}
+                onPress={() => navigation.navigate('Doctor', {id: item?.doctor_id})}
               />
             );
           })}
