@@ -129,6 +129,7 @@ export default function HomeScreen({navigation}) {
         </View>
       </View>
       <ScrollView
+      showsVerticalScrollIndicator={false}
         style={{
           elevation: 10,
           borderTopLeftRadius: 25,
@@ -265,7 +266,7 @@ export default function HomeScreen({navigation}) {
                 <DoctorCard
                   item={item}
                   key={index}
-                 // onPress={() => navigation.navigate('Doctor', {id: item.id})}
+                  onPress={() => navigation.navigate('Doctor', {id: item.doctor_id})}
                 />
               );
             })

@@ -23,10 +23,10 @@ export default function DoctorScreen({navigation, route}) {
   const [loading, setLoading] = React.useState(true);
 
   const fetchDocProfile = async () => {
-    let res = await getData(`doctor/profile/${docId}`);
-    console.log('doc profile', JSON.stringify(res));
-    if (res.success) {
-      setDoctorData(res.data);
+    let res = await getData(`dolo/profile/${docId}`);
+    console.log('doc profile', res?.data?.date_of_birth);
+    if (res.status) {
+      setDoctorData(res?.data);
     }
     setLoading(false);
   };
@@ -34,6 +34,8 @@ export default function DoctorScreen({navigation, route}) {
   useEffect(() => {
     fetchDocProfile();
   }, []);
+
+  console.log('doctorData1==',doctorData);
 
   return (
     <View style={styles.container}>
@@ -176,7 +178,8 @@ export default function DoctorScreen({navigation, route}) {
               <Text style={{...styles.cardTitle}}>Date of Birth</Text>
               <View style={styles.cardContent}>
                 <Text style={{...styles.cardText}}>
-                  {new Date(doctorData?.date_of_birth).toDateString().slice(4)}
+                  {/* {new Date(doctorData?.date_of_birth).toDateString().slice(4)} */}
+                  {doctorData?.date_of_birth}
                 </Text>
               </View>
             </View>
