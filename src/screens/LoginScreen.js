@@ -49,32 +49,32 @@ export default function LoginScreen({navigation, route}) {
 
   const dispatch = useDispatch();
 
-  // const getFcmToken = async () => {
-  //   let fcmToken = await getSyncData('fcmToken');
-  //   // console.log('the old token', fcmToken);
-  //   if (!fcmToken) {
-  //     try {
-  //       const fcmToken = await messaging().getToken();
-  //       if (fcmToken) {
-  //         // user has a device token
-  //         console.log('the new token', fcmToken);
-  //         await storeDatasync('fcmToken', fcmToken);
-  //       }
-  //     } catch (error) {
-  //       console.log('error getting token', error);
-  //     }
-  //   }
-  // };
+  const getFcmToken = async () => {
+    let fcmToken = await getSyncData('fcmToken');
+    // console.log('the old token', fcmToken);
+    if (!fcmToken) {
+      try {
+        const fcmToken = await messaging().getToken();
+        if (fcmToken) {
+          // user has a device token
+          console.log('the new token', fcmToken);
+          await storeDatasync('fcmToken', fcmToken);
+        }
+      } catch (error) {
+        console.log('error getting token', error);
+      }
+    }
+  };
 
-  // useEffect(() => {
+  useEffect(() => {
     
-  //   getFcmToken();
+    getFcmToken();
    
-  // }, [])
+  }, [])
 
   const signIn = async () => {
-   // var fcmToken = await getSyncData('fcmToken');
-   const fcmToken = await messaging().getToken();
+    var fcmToken = await getSyncData('fcmToken');
+
     console.log('fcm1==',fcmToken)
     setLoading(true);
     let body = {
