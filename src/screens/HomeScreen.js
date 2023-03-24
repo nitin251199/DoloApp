@@ -73,7 +73,7 @@ export default function HomeScreen({navigation}) {
   useEffect(() => {
     setInterval(() => {
     getNotificationCount();
-   }, 10000);
+   }, 5000);
 }, []);
 
   return (
