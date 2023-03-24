@@ -24,6 +24,8 @@ import {CommonActions, useFocusEffect} from '@react-navigation/native';
 import {postData} from '../API';
 // import RBSheet from 'react-native-raw-bottom-sheet';
 import ForgetPass from '../components/bottomsheets/ForgetPass';
+import {getSyncData,storeDatasync} from '../storage/AsyncStorage';
+import messaging from '@react-native-firebase/messaging';
 
 export default function LoginScreen({navigation, route}) {
   const [email, setEmail] = useState('');
@@ -47,11 +49,37 @@ export default function LoginScreen({navigation, route}) {
 
   const dispatch = useDispatch();
 
+  const getFcmToken = async () => {
+    let fcmToken = await getSyncData('fcmToken');
+    // console.log('the old token', fcmToken);
+    if (!fcmToken) {
+      try {
+        const fcmToken = await messaging().getToken();
+        if (fcmToken) {
+          // user has a device token
+          console.log('the new token', fcmToken);
+          await storeDatasync('fcmToken', fcmToken);
+        }
+      } catch (error) {
+        console.log('error getting token', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    
+    getFcmToken();
+   
+  }, [])
+
   const signIn = async () => {
+    var fcmToken = await getSyncData('fcmToken');
+    console.log('fcm1==',fcmToken)
     setLoading(true);
     let body = {
       email,
       password,
+      token:fcmToken
     };
     const response = await postData('agent/login', body);
     if (response.success) {
