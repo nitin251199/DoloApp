@@ -43,7 +43,7 @@ const UpdateProfile = ({navigation}) => {
     const fetchProfileInfo = async () => {
       setLoading(true);
       let res = await getData(`dolo/profile/${user?.userid}`);
-      console.log(`prodata==`, res.data);
+      console.log(`upprodata==`, res.data);
       if (res.status) {
       //   console.log('prodata==>',res.data?.specialization);
         setProfileData(res.data);
@@ -219,6 +219,9 @@ const setDoctorCategory = async (specialist,index) => {
    
       const [morningschedule, setMorningSchedule] = React.useState(morningSchedule);
       const [eveningschedule, setEveningSchedule] = React.useState(eveningSchedule);
+      const [morningS, setMorningS] = React.useState([]);
+      const [eveningS, setEveningS] = React.useState([]);
+
       const [achievementList, setAchievementList] = React.useState([]);
       const [checked, setChecked] = React.useState(false);
       const [doctorPic, setDoctorPic] = React.useState('');
@@ -258,6 +261,7 @@ const setDoctorCategory = async (specialist,index) => {
 
 
       const showExperienceDatePicker1 = () =>{
+        console.log('Show')
         setShowExperienceDatePicker(true)
       }
     
@@ -265,16 +269,50 @@ const setDoctorCategory = async (specialist,index) => {
         setShowExperienceDatePicker(false)
       }
      
-      const getExperienceDateValue = date => {
-        let d = new Date(date);
-        let day = d.getDate();
-        let month = d.getMonth() + 1;
-        let year = d.getFullYear();
-        setExperience(`${day}-${month}-${year}`);
+      const getExperienceDateValue = data => {
+        // let d = new Date(date);
+        // let day = d.getDate();
+        // let month = d.getMonth() + 1;
+        // let year = d.getFullYear();
+        // setExperience(`${day}-${month}-${year}`);
+        // setShowExperienceDatePicker(false)
+        // return `${day}-${month}-${year}`;
+
+        if (data.getDate() < 10 && data.getMonth() + 1 < 10) {
+          var dateTimeString1 =
+            '0' +
+            data.getDate() +
+            '-' +
+            '0' +
+            (data.getMonth() + 1) +
+            '-' +
+            data.getFullYear();
+        } else if (data.getDate() < 10) {
+          var dateTimeString1 =
+            '0' +
+            data.getDate() +
+            '-' +
+            (data.getMonth() + 1) +
+            '-' +
+            data.getFullYear();
+        } else if (data.getMonth() + 1 < 10) {
+          var dateTimeString1 =
+            data.getDate() +
+            '-' +
+            '0' +
+            (data.getMonth() + 1) +
+            '-' +
+            data.getFullYear();
+        } else {
+          var dateTimeString1 =
+            data.getDate() + '-' + (data.getMonth() + 1) + '-' + data.getFullYear();
+        }
+         setExperience(dateTimeString1);
         setShowExperienceDatePicker(false)
-        return `${day}-${month}-${year}`;
+        return dateTimeString1;
+
       };
-    
+
     
     
       useEffect(() => {
@@ -285,7 +323,7 @@ const setDoctorCategory = async (specialist,index) => {
         setClinicLocations(profileData?.clinic_location || '');
         setFees(profileData?.fees || '');
         setLongitude(profileData?.longitude || '')
-        setLatitude(profileData?.latsitude || '')
+        setLatitude(profileData?.latitude || '')
         setExperience(profileData?.experience || '')
         setRegNumber(profileData?.registration_number || '');
         setSpecialization(profileData?.specialization || '');
@@ -308,7 +346,11 @@ const setDoctorCategory = async (specialist,index) => {
         
         setPinCode(profileData?.pincode || '')
         setLocation(profileData?.location || '')
-        setLanguages(profileData?.location || '')
+        setLanguages(profileData?.languages || '')
+        setMorningS(profileData?.schedule_morning)
+        setEveningS(profileData?.schedule_evening)
+      
+       
     
       }, [profileData]);
     
@@ -386,11 +428,15 @@ const setDoctorCategory = async (specialist,index) => {
       };
     
       const setMorningScheduleStartTime = index => {
+        console.log('Index==',index)
         let temp = [...morningschedule];
+        console.log('value==',temp[index]['start_time'])
         DateTimePickerAndroid.open({
           value: temp[index]['start_time'],
+          
           onChange: (event, date) => {
             temp[index]['start_time'] = date;
+            console.log('DATE=',date)
             setMorningSchedule(temp);
           },
           mode: 'time',
@@ -399,6 +445,7 @@ const setDoctorCategory = async (specialist,index) => {
       };
     
       const setMorningScheduleEndTime = index => {
+        console.log('Index2==',index)
         let temp = [...morningschedule];
         DateTimePickerAndroid.open({
           value: temp[index]['end_time'],
@@ -417,7 +464,7 @@ const setDoctorCategory = async (specialist,index) => {
           value: temp[index]['start_time'],
           onChange: (event, date) => {
             temp[index]['start_time'] = date;
-            setEveningSchedule(temp);
+            setEveningS(temp);
           },
           mode: 'time',
           is24Hour: false,
@@ -430,7 +477,7 @@ const setDoctorCategory = async (specialist,index) => {
           value: temp[index]['end_time'],
           onChange: (event, date) => {
             temp[index]['end_time'] = date;
-            setEveningSchedule(temp);
+            setEveningS(temp);
           },
           mode: 'time',
           is24Hour: false,
@@ -477,14 +524,46 @@ const setDoctorCategory = async (specialist,index) => {
         });
       };
 
-      const getDateValue = date => {
-        let d = new Date(date);
-        let day = d.getDate();
-        let month = d.getMonth() + 1;
-        let year = d.getFullYear();
-        setDob(`${day}-${month}-${year}`);
+      const getDateValue = data => {
+        // let d = new Date(date);
+        // let day = d.getDate();
+        // let month = d.getMonth() + 1;
+        // let year = d.getFullYear();
+        // setDob(`${day}-${month}-${year}`);
+        // setShowDobDatePicker(false)
+        // return `${day}-${month}-${year}`;
+        if (data.getDate() < 10 && data.getMonth() + 1 < 10) {
+          var dateTimeString1 =
+            '0' +
+            data.getDate() +
+            '-' +
+            '0' +
+            (data.getMonth() + 1) +
+            '-' +
+            data.getFullYear();
+        } else if (data.getDate() < 10) {
+          var dateTimeString1 =
+            '0' +
+            data.getDate() +
+            '-' +
+            (data.getMonth() + 1) +
+            '-' +
+            data.getFullYear();
+        } else if (data.getMonth() + 1 < 10) {
+          var dateTimeString1 =
+            data.getDate() +
+            '-' +
+            '0' +
+            (data.getMonth() + 1) +
+            '-' +
+            data.getFullYear();
+        } else {
+          var dateTimeString1 =
+            data.getDate() + '-' + (data.getMonth() + 1) + '-' + data.getFullYear();
+        }
+         setDob(dateTimeString1);
         setShowDobDatePicker(false)
-        return `${day}-${month}-${year}`;
+        return dateTimeString1;
       };
     
       const handleEdit = async() => {
@@ -516,13 +595,15 @@ const setDoctorCategory = async (specialist,index) => {
                 .replace(
                   item.start_time.toLocaleTimeString().slice(-6, -3),
                   '',
-                ),
+                )
+                ,
                 end_time: item.end_time
                 .toLocaleTimeString()
                 .replace(
                   item.end_time.toLocaleTimeString().slice(-6, -3),
                   '',
-                ),
+                )
+                ,
                 checked: item.checked,
               };
             }),
@@ -534,13 +615,15 @@ const setDoctorCategory = async (specialist,index) => {
                 .replace(
                   item.start_time.toLocaleTimeString().slice(-6, -3),
                   '',
-                ),
+                )
+                ,
                 end_time: item.end_time
                 .toLocaleTimeString()
                 .replace(
                   item.end_time.toLocaleTimeString().slice(-6, -3),
                   '',
-                ),
+                )
+                ,
                 checked: item.checked,
               };
             }),
@@ -573,12 +656,13 @@ const setDoctorCategory = async (specialist,index) => {
           };
         
         const body = JSON.stringify(body1)
-        console.log('bodyup==',body);
+        console.log('bodyup23==',body1);
         const result = await postData(`doctorprofile/update/${profileData?.doctor_id}`, body1);
         if (result.success) {
        
           successToast('Successfully Updated');
-          fetchProfileInfo()
+          fetchProfileInfo();
+          navigation.navigate('Profile')
         }
         else {
         
@@ -1114,11 +1198,12 @@ const setDoctorCategory = async (specialist,index) => {
                       fontFamily: Fonts.primaryRegular,
                     }}>
                     {item.start_time
-                      .toLocaleTimeString()
-                      .replace(
-                        item.start_time.toLocaleTimeString().slice(-6, -3),
-                        '',
-                      )}
+                    .toLocaleTimeString()
+                    .replace(
+                      item.start_time.toLocaleTimeString().slice(-6, -3),
+                      '',
+                    )
+                    }
                   </Text>
                 </TouchableOpacity>
                 <Text
@@ -1140,12 +1225,13 @@ const setDoctorCategory = async (specialist,index) => {
                       fontSize: 16,
                       fontFamily: Fonts.primaryRegular,
                     }}>
-                    {item.end_time
-                      .toLocaleTimeString()
-                      .replace(
-                        item.end_time.toLocaleTimeString().slice(-6, -3),
-                        '',
-                      )}
+                    {item.end_time.toLocaleTimeString()
+                .replace(
+                  item.end_time.toLocaleTimeString().slice(-6, -3),
+                  '',
+                )
+
+                    }
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -1196,11 +1282,12 @@ const setDoctorCategory = async (specialist,index) => {
                       fontFamily: Fonts.primaryRegular,
                     }}>
                     {item.start_time
-                      .toLocaleTimeString()
-                      .replace(
-                        item.start_time.toLocaleTimeString().slice(-6, -3),
-                        '',
-                      )}
+                    .toLocaleTimeString()
+                    .replace(
+                      item.start_time.toLocaleTimeString().slice(-6, -3),
+                      '',
+                    )
+                    }
                   </Text>
                 </TouchableOpacity>
                 <Text
@@ -1223,11 +1310,12 @@ const setDoctorCategory = async (specialist,index) => {
                       fontFamily: Fonts.primaryRegular,
                     }}>
                     {item.end_time
-                      .toLocaleTimeString()
-                      .replace(
-                        item.end_time.toLocaleTimeString().slice(-6, -3),
-                        '',
-                      )}
+                    .toLocaleTimeString()
+                    .replace(
+                      item.end_time.toLocaleTimeString().slice(-6, -3),
+                      '',
+                    )
+                    }
                   </Text>
                 </TouchableOpacity>
               </View>

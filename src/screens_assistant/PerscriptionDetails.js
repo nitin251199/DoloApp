@@ -1,4 +1,11 @@
-import {StyleSheet, Text, View, Image, ScrollView,TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import React, {useEffect} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
 import ImageModal from 'react-native-image-modal';
@@ -20,8 +27,8 @@ const PerscriptionDetails = ({navigation, route}) => {
     // }
     // console.log('appointment', appointment);
     setTimeout(() => {
-        setPerscriptionImg(feedback.img);
-        setDescription(feedback.desc);
+      setPerscriptionImg(feedback.img);
+      setDescription(feedback.desc);
       setCreateDate(feedback.date);
     }, 100);
   };
@@ -32,53 +39,55 @@ const PerscriptionDetails = ({navigation, route}) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={{paddingBottom: 30}} showsVerticalScrollIndicator={false}>
-      <View style={{flexDirection: 'row', padding: 20}}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons
-            name="arrow-left"
-            size={32}
-            color={Color.black}
-          />
-        </TouchableOpacity>
-        <Text style={styles.title}>Perscription Details 🧾</Text>
-      </View>
-      <Text style={styles.desc_style}>{description}</Text>
+      <ScrollView
+        contentContainerStyle={{paddingBottom: 30}}
+        showsVerticalScrollIndicator={false}>
+        <View style={{flexDirection: 'row', padding: 20}}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <MaterialCommunityIcons
+              name="arrow-left"
+              size={32}
+              color={Color.black}
+            />
+          </TouchableOpacity>
+          <Text style={styles.title}>Perscription Details 🧾</Text>
+        </View>
+        <Text style={styles.desc_style}>{description}</Text>
 
-        {perscriptionImg.length > 0 && perscriptionImg.map((item, index) => {
-          return (
-            // <Image
-            //   style={styles.img_style}
-            //   source={{uri: `data:image/png;base64,${item}`}}
-            // />
-                          <ImageModal
-                             //resizeMode="contain"
-                             modalImageResizeMode='contain'
-                             
-                             modalImageStyle={{
-                            //   height: 182,
-                            //   width: 317,
-                            //   borderRadius: 4,
-                            height: 200,
-                             width: 317,
-                            
-                            borderRadius: 10,
-                            resizeMode: 'cover',
-                            }}
-                              style={{
-                                // height: 182,
-                                // width: 317,
-                                // borderRadius: 4,
-                                height: 200,
-                                width: 317,
-                                marginTop: 20,
-                                borderRadius: 10,
-                                resizeMode: 'cover',
-                              }}
-                              source={{uri: `data:image/png;base64,${item}`}}
-                          /> 
-          );
-        })}
+        {perscriptionImg.length > 0 &&
+          perscriptionImg.map((item, index) => {
+            return (
+              // <Image
+              //   style={styles.img_style}
+              //   source={{uri: `data:image/png;base64,${item}`}}
+              // />
+              <ImageModal
+                //resizeMode="contain"
+                modalImageResizeMode="contain"
+                modalImageStyle={{
+                  //   height: 182,
+                  //   width: 317,
+                  //   borderRadius: 4,
+                  height: 200,
+                  width: 317,
+
+                  borderRadius: 10,
+                  resizeMode: 'cover',
+                }}
+                style={{
+                  // height: 182,
+                  // width: 317,
+                  // borderRadius: 4,
+                  height: 200,
+                  width: 317,
+                  marginTop: 20,
+                  borderRadius: 10,
+                  resizeMode: 'cover',
+                }}
+                source={{uri: `data:image/png;base64,${item}`}}
+              />
+            );
+          })}
       </ScrollView>
     </View>
   );
