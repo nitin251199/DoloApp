@@ -10,7 +10,7 @@ import AssistantNavigator from './AssistantNavigator';
 import AuthStack from './AuthStack';
 import {DrawerContent} from './DrawerContent';
 import { HomeStack } from './HomeStack';
-import TabNavigator from './TabNavigator';
+
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();

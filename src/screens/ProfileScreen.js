@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions
 } from 'react-native';
 import React, {useEffect} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
@@ -29,12 +30,13 @@ export default function ProfileScreen({navigation}) {
   const dispatch = useDispatch();
 
   const user = useSelector(state => state.user);
-  console.log('user?.userid=',user?.userid);
+  console.log('user?.userid=',user);
   const _sheetRef = React.useRef(null);
   const [profileData, setProfileData] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [editLoading, setEditLoading] = React.useState(false);
   const [experience, setExperience] = React.useState('');
+  const [timeSchedule,setTimeSchedule] = React.useState();
   
 
   const fetchProfileInfo = async () => {
@@ -75,12 +77,19 @@ export default function ProfileScreen({navigation}) {
 
    }
 
-
+   const getTimeSchedule = async () => {
+    //  setLoading(true);
+    let result = await getData(`scheduleprofile/${user?.userid}`);
+    if (result.message == 'Successully') {
+      setTimeSchedule(result?.data[0]);
+    }
+  };
 
 
  
   useEffect(() => {
     fetchProfileInfo();
+    getTimeSchedule();
   }, []);
 
 
@@ -89,6 +98,7 @@ export default function ProfileScreen({navigation}) {
       // The screen is focused
       // Call any action
       fetchProfileInfo();
+      getTimeSchedule();
     });
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
@@ -370,10 +380,10 @@ export default function ProfileScreen({navigation}) {
                 backgroundColor: Color.white,
                 width: '48.5%',
               }}>
-              <Text style={{...styles.cardTitle}}>Average Time per patient</Text>
+              <Text style={{...styles.cardTitle}}>Average Time per patient(minutes)</Text>
               <View style={styles.cardContent}>
                 <Text style={{...styles.cardText}}>
-                  {profileData?.avgTime}
+                  {profileData?.avgTime} 
                 </Text>
               </View>
             </View>
@@ -531,6 +541,269 @@ export default function ProfileScreen({navigation}) {
                 )}
             </View>
           </View> */}
+
+<ScrollView horizontal={true}>
+            {timeSchedule?.Sunday?.morning?.checked &&
+              timeSchedule?.Sunday?.evening?.checked && (
+                <View style={styles.timing_card_style}>
+                  <Text style={styles.day_name_style}>
+                    {/* {t('Doctor Profile.Sunday')} */}
+                    Sunday
+                  </Text>
+                  {timeSchedule?.Sunday?.morning?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Morning :{' '}
+                      {new Date(timeSchedule?.Sunday?.morning?.start_time)
+                        .toLocaleTimeString()
+                        .slice(0, -6)}
+                      {new Date(timeSchedule?.Sunday?.morning?.start_time)
+                        .toLocaleTimeString()
+                        .slice(8)}{' '}
+                      -{' '}
+                      {new Date(timeSchedule?.Sunday?.morning?.end_time)
+                        .toLocaleTimeString()
+                        .slice(0, -6)}
+                      {new Date(timeSchedule?.Sunday?.morning?.end_time)
+                        .toLocaleTimeString()
+                        .slice(7)}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                     Morning :{' '}
+                      {/* {t('Doctor Profile.Close')} */}
+                      Close
+                    </Text>
+                  )}
+
+                  {timeSchedule?.Sunday?.evening?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Evening :{' '}
+                      {timeSchedule?.Sunday?.evening?.start_time} -{' '}
+                      {timeSchedule?.Sunday?.evening?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                      Evening :{' '}
+                      {/* {t('Doctor Profile.Close')} */}
+                      Close
+                    </Text>
+                  )}
+                </View>
+              )}
+            {/* ------------ */}
+
+            {/* --------- */}
+            {timeSchedule?.Monday?.morning?.checked &&
+              timeSchedule?.Monday?.evening?.checked && (
+                <View style={styles.timing_card_style}>
+                  <Text style={styles.day_name_style}>
+                    {/* {t('Doctor Profile.Monday')} */}
+                    Monday
+                  </Text>
+                  {timeSchedule?.Monday?.morning?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Morning :{' '}
+                      {timeSchedule?.Monday?.morning?.start_time} -{' '}
+                      {timeSchedule?.Monday?.morning?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                     Morning :{' '}
+                     Close
+                    </Text>
+                  )}
+
+                  {timeSchedule?.Monday?.evening?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Evening :{' '}
+                      {timeSchedule?.Monday?.evening?.start_time} -{' '}
+                      {timeSchedule?.Monday?.evening?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                    Evening  :{' '}
+                    Close
+                    </Text>
+                  )}
+                </View>
+              )}
+            {/* ------------ */}
+            {/* --------- */}
+            {timeSchedule?.Tuesday?.morning?.checked &&
+              timeSchedule?.Tuesday?.evening?.checked && (
+                <View style={styles.timing_card_style}>
+                  <Text style={styles.day_name_style}>
+                    Tuesday
+                  </Text>
+                  {timeSchedule?.Tuesday?.morning?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Morning :{' '}
+                      {timeSchedule?.Tuesday?.morning?.start_time} -{' '}
+                      {timeSchedule?.Tuesday?.morning?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                      Morning :{' '}
+                      Close
+                    </Text>
+                  )}
+
+                  {timeSchedule?.Tuesday?.evening?.checked ? (
+                    <Text style={styles.shift_style}>
+                     Evening :{' '}
+                      {timeSchedule?.Tuesday?.evening?.start_time} -{' '}
+                      {timeSchedule?.Tuesday?.evening?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                      Evening :{' '}
+                      Close
+                    </Text>
+                  )}
+                </View>
+              )}
+            {/* ------------ */}
+            {/* --------- */}
+            {timeSchedule?.Wednesday?.morning?.checked &&
+              timeSchedule?.Wednesday?.evening?.checked && (
+                <View style={styles.timing_card_style}>
+                  <Text style={styles.day_name_style}>
+                    Wednesday
+                  </Text>
+                  {timeSchedule?.Wednesday?.morning?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Morning :{' '}
+                      {timeSchedule?.Wednesday?.morning?.start_time} -{' '}
+                      {timeSchedule?.Wednesday?.morning?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                     Morning :{' '}
+                     Close
+                    </Text>
+                  )}
+
+                  {timeSchedule?.Wednesday?.evening?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Evening :{' '}
+                      {timeSchedule?.Wednesday?.evening?.start_time} -{' '}
+                      {timeSchedule?.Wednesday?.evening?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                      Evening :{' '}
+                      Close
+                    </Text>
+                  )}
+                </View>
+              )}
+            {/* ------------ */}
+            {/* --------- */}
+            {timeSchedule?.Thursday?.morning?.checked &&
+              timeSchedule?.Thursday?.evening?.checked && (
+                <View style={styles.timing_card_style}>
+                  <Text style={styles.day_name_style}>
+                   Thursday
+                  </Text>
+                  {timeSchedule?.Thursday?.morning?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Morning :{' '}
+                      {timeSchedule?.Thursday?.morning?.start_time} -{' '}
+                      {timeSchedule?.Thursday?.morning?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                      Morning :{' '}
+                      Close
+                    </Text>
+                  )}
+
+                  {timeSchedule?.Thursday?.evening?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Evening :{' '}
+                      {timeSchedule?.Thursday?.evening?.start_time} -{' '}
+                      {timeSchedule?.Thursday?.evening?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                      Evening :{' '}
+                      Close
+                    </Text>
+                  )}
+                </View>
+              )}
+            {/* ------------ */}
+            {/* --------- */}
+            {timeSchedule?.Friday?.morning?.checked &&
+              timeSchedule?.Friday?.evening?.checked && (
+                <View style={styles.timing_card_style}>
+                  <Text style={styles.day_name_style}>
+                    Friday
+                  </Text>
+                  {timeSchedule?.Friday?.morning?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Morning :{' '}
+                      {timeSchedule?.Friday?.morning?.start_time} -{' '}
+                      {timeSchedule?.Friday?.morning?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                      Morning :{' '}
+                      Close
+                    </Text>
+                  )}
+
+                  {timeSchedule?.Friday?.evening?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Evening :{' '}
+                      {timeSchedule?.Friday?.evening?.start_time} -{' '}
+                      {timeSchedule?.Friday?.evening?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                      Evening :{' '}
+                      Close
+                    </Text>
+                  )}
+                </View>
+              )}
+            {/* ------------ */}
+            {/* --------- */}
+            {timeSchedule?.Saturday?.morning?.checked &&
+              timeSchedule?.Saturday?.evening?.checked && (
+                <View style={styles.timing_card_style}>
+                  <Text style={styles.day_name_style}>
+                    Saturday
+                  </Text>
+                  {timeSchedule?.Saturday?.morning?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Morning :{' '}
+                      {timeSchedule?.Saturday?.morning?.start_time} -{' '}
+                      {timeSchedule?.Saturday?.morning?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                      Morning :{' '}
+                      Close
+                    </Text>
+                  )}
+
+                  {timeSchedule?.Saturday?.evening?.checked ? (
+                    <Text style={styles.shift_style}>
+                      Evening :{' '}
+                      {timeSchedule?.Saturday?.evening?.start_time} -{' '}
+                      {timeSchedule?.Saturday?.evening?.end_time}
+                    </Text>
+                  ) : (
+                    <Text style={styles.shift_style}>
+                      Evening :{' '}
+                      Close
+                    </Text>
+                  )}
+                </View>
+              )}
+            {/* ------------ */}
+          </ScrollView>
           <View style={{...styles.card, backgroundColor: Color.white}}>
             <Text style={{...styles.cardTitle}}>Academic Information</Text>
             <View style={styles.cardContent}>
@@ -674,5 +947,46 @@ const styles = StyleSheet.create({
     top: 10,
     zIndex: 10,
     color: Color.white,
+  },
+  timing_card_style: {
+    marginLeft: 8,
+    marginTop: 10,
+    backgroundColor: Color.white,
+    paddingVertical: 15,
+    paddingHorizontal: 3,
+    width: Dimensions.get('window').width - 100,
+    borderRadius: 8,
+    elevation: 10,
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    //backgroundColor: '#25CCF7',
+    shadowColor: Color.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  day_name_style: {
+    fontFamily: Fonts.primarySemiBold,
+    color: Color.black,
+    borderBottomColor: Color.black,
+    borderBottomWidth: 0.5,
+    fontSize: 18,
+    width: '95%',
+    textAlign: 'center',
+    // paddingVertical: 5,
+  },
+  shift_style: {
+    fontFamily: Fonts.primaryRegular,
+    color: Color.black,
+    borderBottomColor: Color.black,
+    borderBottomWidth: 0.5,
+    width: '95%',
+    textAlign: 'center',
+    paddingVertical: 5,
+    fontSize: 17,
   },
 });
