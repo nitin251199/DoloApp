@@ -1825,6 +1825,7 @@ export default function AddDoctor({navigation}) {
                  
                 /> */}
                  <TouchableOpacity
+                 style={{backgroundColor:item.specialist == specialization ? '#aaaaaa80' : null,padding:10,borderRadius:2}}
                   activeOpacity={1}
                   onPress={() => setDoctorCategory(item.specialist)}>
                   <Text
