@@ -201,7 +201,7 @@ const setDoctorCategory = async (specialist,index) => {
       const [address, setAddress] = React.useState('');
       const [name, setName] = React.useState('');
       const [gender, setGender] = React.useState(
-        profileData?.gender?.toLowerCase() || 'male',
+        profileData?.gender || 'Male',
       );
       const [password, setPassword] = React.useState('');
       const [profilePic, setProfilePic] = React.useState('');
@@ -767,11 +767,11 @@ const setDoctorCategory = async (specialist,index) => {
                 marginTop: 5,
               }}>
               <TouchableOpacity
-                onPress={() => setGender('male')}
+                onPress={() => setGender('Male')}
                 style={{
                   ...styles.radioStyle,
                   backgroundColor:
-                    gender == 'male' ? `${Color.primary}50` : '#aaaaaa50',
+                    gender == 'Male' ? `${Color.primary}50` : '#aaaaaa50',
                 }}>
                 <Text
                   style={{
@@ -783,11 +783,11 @@ const setDoctorCategory = async (specialist,index) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => setGender('female')}
+                onPress={() => setGender('Female')}
                 style={{
                   ...styles.radioStyle,
                   backgroundColor:
-                    gender == 'female' ? `${Color.primary}50` : '#aaaaaa50',
+                    gender == 'Female' ? `${Color.primary}50` : '#aaaaaa50',
                   marginLeft: 5,
                 }}>
                 <Text
