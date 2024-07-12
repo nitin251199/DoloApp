@@ -313,10 +313,6 @@ def isNewArchitectureEnabled() {
     // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
-<<<<<<< HEAD
-apply plugin: 'com.google.gms.google-services' // <- Add this line
-=======
 
 apply plugin: 'com.google.gms.google-services' // <- Add this line
 
->>>>>>> d1975df8ed49d1788667332400a166743f1d1a3b
