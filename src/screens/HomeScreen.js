@@ -27,22 +27,24 @@ export default function HomeScreen({navigation}) {
   const [loading, setLoading] = React.useState(false);
   const [availabilityLoading, setAvailabilityLoading] = React.useState(false);
   const [flashMsg, setFlashMsg] = React.useState('No\nAnouncement');
+  const [firstAnnoucement,setFirstAnnoucement] = React.useState('');
+  const [annoucements,setAnnouncements] = React.useState([]);
 
   const user = useSelector(state => state.user);
-
+  console.log('docid-->',user?.userid);
+  
   const fetchAppointments = async () => {
     setLoading(true);
     const list = await getData(`appointment/${user?.userid}`);
+    console.log('appntmnts-->',list?.data);
     setAppointments(
       list?.data
-        .filter(
-          item =>
-            `${new Date(item.created_at).getDate()}/${new Date(
-              item.created_at,
-            ).getMonth()}/${new Date(item.created_at).getFullYear()}` ==
-            `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
-        )
-        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)),
+        // .filter(
+        //   item =>
+        //     item?.create_date ==
+        //     `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
+        // )
+        // .sort((a, b) => new Date(a.create_date) - new Date(b.create_date)),
     );
     setLoading(false);
   };
@@ -51,25 +53,76 @@ export default function HomeScreen({navigation}) {
     setAvailabilityLoading(true);
     let res = await getData(`dolo/profile/${user?.userid}`);
     if (res.status) {
+     
       setAvailable(res.data?.doctor_available);
-      setFlashMsg(res.data?.annoucement);
+      
     }
     setAvailabilityLoading(false);
   };
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
+  const getFirstAnnouncement = async () => {
+
+    setLoading(true);
+    let body = {
+      id:user?.userid,
+     
+    };
+
+    let res = await postData(`doctorannoucementfirst`,body);
+    
+    if (res.success) {
+       //console.log(res.data);
+     //  setFlashMsg(res.data?.annoucement_message);
+    }
+    setLoading(false);
+
+  }
+
+  const getAnnouncementList = async () => {
+
+    setLoading(true);
+    let body = {
+      id:user?.userid,
+     
+    };
+
+    let res = await postData(`doctorannoucementlist`,body);
+    
+    if (res.success) {
+     //  console.log(res.data);
+      setAnnouncements(res.data);
+    }
+    setLoading(false);
+
+  }
+
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', async() => {
+     
+  //    await getAnnouncementList();
+  //    await fetchAppointments();
+  //   },[]);
+
+   
+  //   return unsubscribe;
+    
+  // }, [appointments,annoucements]);
 
   useEffect(() => {
     fetchProfileInfo();
+    getFirstAnnouncement();
+     getAnnouncementList();
+      fetchAppointments();
+    
+  
   }, [flashMsg]);
 
   const handleAvailable = async () => {
     let body = {
-      id: user?.userid,
+      doctor_id: user?.userid,
       available: available == 1 ? 0 : 1,
     };
+    console.log('body==',body)
     let res = await postData('doctoravilableupdate', body);
     if (res?.success) {
       setAvailable(prev => !prev);
@@ -95,6 +148,7 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={styles.container}>
+      <ScrollView contentContainerStyle={{paddingBottom:30}} showsVerticalScrollIndicator={false}>
       <View
         style={{
           elevation: 10,
@@ -108,7 +162,7 @@ export default function HomeScreen({navigation}) {
         <View style={styles.cardContainer}>
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate('AppointmentList', {
+              navigation.navigate('Today', {
                 appointments: appointments,
                 type: 1,
                 t: t,
@@ -217,14 +271,16 @@ export default function HomeScreen({navigation}) {
               });
             }}
             style={styles.card}>
-            <MaterialCommunityIcons
+            {/* <MaterialCommunityIcons
               name="volume-source"
               size={42}
               color="#fff"
               style={styles.mainIcon}
-            />
-            <Text adjustsFontSizeToFit style={styles.mainText}>
-              {flashMsg ? flashMsg : t('doctorHome.noAnnouncement')}
+            /> */}
+            <Text adjustsFontSizeToFit style={{...styles.mainText,fontSize:40,marginTop:10}}>{annoucements.length}</Text>
+            <Text adjustsFontSizeToFit style={{...styles.mainText,marginTop:-18}}>
+              {/* {flashMsg ? flashMsg : t('doctorHome.noAnnouncement')} */}
+              {t('doctorHome.announcements')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -269,7 +325,7 @@ export default function HomeScreen({navigation}) {
               style={styles.mainIcon}
             />
             <Text style={styles.mainText}>{t('doctorHome.payment')}</Text>
-            <View
+            {/* <View
               style={{
                 width: 15,
                 height: 15,
@@ -278,10 +334,11 @@ export default function HomeScreen({navigation}) {
                 position: 'absolute',
                 bottom: 50,
                 right: 25,
-              }}></View>
+              }}></View> */}
           </TouchableOpacity>
         </View>
       </View>
+      </ScrollView>
     </View>
   );
 }
@@ -298,7 +355,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'space-between',
   },
   card: {
-    height: 130,
+    height: 150,
     flex: 1,
     margin: 10,
     borderRadius: 10,

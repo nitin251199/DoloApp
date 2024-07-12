@@ -13,6 +13,14 @@ import SettingScreen from '../screens/SettingScreen';
 import MapScreen from '../screens/MapScreen';
 import NotificationScreen from '../screens/NotificationScreen';
 
+import TodayAppointments from '../screens/TodayAppointments';
+import ProfileScreen from '../screens/ProfileScreen';
+import FeedbackDetails from '../screens/FeedbackDetails';
+import SearchPatient from '../screens/SearchPatient';
+import UpdateProfile from '../screens/UpdateProfile';
+import AllAppointments from '../screens/AllAppointments';
+import DisableAppointments from '../screens/DisableAppointments';
+import NotificationScreen from '../screens/NotificationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +44,13 @@ export const HomeStack = () => {
       <Stack.Screen name="Doctor" component={DoctorScreen} />
       <Stack.Screen name="AddDoctor" component={AddDoctor} />
       <Stack.Screen name="DoctorList" component={DoctorList} />
+      <Stack.Screen name="Today" component={TodayAppointments} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="FeedbackDetails" component={FeedbackDetails} />
+      <Stack.Screen name="SearchPatient" component={SearchPatient} />
+      <Stack.Screen name="UpdateProfile" component={UpdateProfile} />
+      <Stack.Screen name="AllAppointments" component={AllAppointments} />
+      <Stack.Screen name="DisableAppointments" component={DisableAppointments} />
       <Stack.Screen name="Notification" component={NotificationScreen} />
     </Stack.Navigator>
   );

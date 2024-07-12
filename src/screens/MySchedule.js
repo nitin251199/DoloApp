@@ -11,6 +11,7 @@ import React, {useEffect, useMemo} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
 import {getData} from '../API';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
 
 export default function MySchedule({navigation, route}) {
@@ -22,13 +23,15 @@ export default function MySchedule({navigation, route}) {
   const user = useSelector(state => state.user);
 
   const fetchAppointments = async () => {
-    const list = await getData(`appointment/${user?.userid}`);
-    // console.log(list, user?.userid);
+    const list = await getData(`allappointment/${user?.userid}`);
+    console.log('appointmentlistdata--',list?.data);
     setAllAppointments(list?.data);
     setLoading(false);
   };
+console.log('parrraaamm---',route?.params)
+  // const {t} = route?.params;
 
-  const {t} = route.params;
+  const {t} = useTranslation();
 
   useEffect(() => {
     fetchAppointments();
@@ -48,6 +51,8 @@ export default function MySchedule({navigation, route}) {
     t('scheduleScreen.nov'),
     t('scheduleScreen.dec'),
   ];
+
+ 
 
   const days = [
     t('scheduleScreen.sun'),
@@ -70,21 +75,52 @@ export default function MySchedule({navigation, route}) {
   useEffect(() => {
     let filteredAppointments = allAppointments.filter(
       item =>
-        new Date(item.created_at).getDate() === selectedDate.date &&
-        months[new Date(item.created_at).getMonth()] === selectedDate.month,
+         
+       new Date((item.create_date).split('/').reverse().join("-")).getDate() === selectedDate.date &&
+        months[new Date ((item.create_date).split('/').reverse().join("-")).getMonth()] === selectedDate.month,
+      
     );
+
+   
+  
     if (time === 'Morning') {
-      setAppointments(
-        filteredAppointments.filter(
-          item => new Date(item.created_at).getHours() < 12,
-        ),
-      );
+      // setAppointments(
+      //   filteredAppointments.filter(
+      //     item => new Date(item.created_at).getHours() < 12,
+      //   ),
+      // );
+
+      //  setAppointments(
+      //   filteredAppointments.filter(
+      //     item => item.shift_name == 'Morning',
+      //   ),
+      // );
+
+      var filterData =  filteredAppointments.filter(
+        item => item.shift_name == 'Morning',
+       );
+
+       setAppointments(filterData.sort((a, b) => a.token_no - b.token_no))
+
     } else {
-      setAppointments(
-        filteredAppointments.filter(
-          item => new Date(item.created_at).getHours() >= 12,
-        ),
-      );
+      // setAppointments(
+      //   filteredAppointments.filter(
+      //     item => new Date(item.created_at).getHours() >= 12,
+      //   ),
+      // );
+
+      // setAppointments(
+      //   filteredAppointments.filter(
+      //     item => item.shift_name == 'Evening',
+      //   ),
+      // );
+
+      var filterData1 =  filteredAppointments.filter(
+        item => item.shift_name == 'Evening',
+       );
+
+       setAppointments(filterData1.sort((a, b) => a.token_no - b.token_no))
+      
     }
   }, [selectedDate.date, selectedDate.month, time, allAppointments]);
 
@@ -105,6 +141,8 @@ export default function MySchedule({navigation, route}) {
   useEffect(() => {
     getDates();
   }, []);
+
+
 
   const slots = [
     '06:00',
@@ -175,7 +213,7 @@ export default function MySchedule({navigation, route}) {
               ...styles.btnText,
               fontFamily: Fonts.primaryRegular,
             }}>
-            {item.id}
+            {item.token_no}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -267,12 +305,15 @@ export default function MySchedule({navigation, route}) {
                     ...styles.dayContainer,
                     backgroundColor:
                       item.date === selectedDate.date &&
-                      item.day === selectedDate.day
+                      item.day === selectedDate.day &&
+                      item.month === selectedDate.month
                         ? `${Color.primary}80`
                         : null,
                     borderWidth:
                       item.date == new Date().getDate() &&
-                      item.day == days[new Date().getDay()]
+                      item.day == days[new Date().getDay()] &&
+                      item.month == months[new Date().getMonth()]
+                      
                         ? 0.5
                         : 0,
                     borderColor: '#999',

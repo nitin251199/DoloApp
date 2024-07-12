@@ -14,21 +14,21 @@ import {
  
   import { Color } from '../theme';
   import { getData, postData } from '../API';
-  import { useSelector } from 'react-redux';
-
- 
+import { useSelector } from 'react-redux';
   
   const NotificationScreen = ({navigation}) => {
     const user = useSelector(state => state.user);
+    console.log('USER==',user)
     const [notificationList, setNotificationList] = React.useState([]);
   
     const getNotificationList = async () => {
-      const res = await getData(`notificationlist/4`);
+      const res = await getData('notificationlist/5');
   
       if (res.success) {
         setNotificationList(res?.data);
        }
     };
+<<<<<<< HEAD
 
     const updateNotificationCount = async() =>{
       let body={
@@ -39,6 +39,8 @@ import {
 
       
     }
+=======
+>>>>>>> 8ef5a643b3bc1a7d540515c7073c0c062d8e9d7b
   
     useEffect(() => {
       getNotificationList();
@@ -58,6 +60,18 @@ import {
           BackHandler.removeEventListener('hardwareBackPress', onBackPress);
       }, []),
     );
+<<<<<<< HEAD
+=======
+
+    const updateNotificationCount = async() =>{
+      let body={
+        user_id: user?.userid,
+        roles: user?.role
+      }
+      const res = await postData('notificationpatientupdate',body)
+      
+    }
+>>>>>>> 8ef5a643b3bc1a7d540515c7073c0c062d8e9d7b
   
     return (
       <ScrollView style={{backgroundColor: Color.white}}>

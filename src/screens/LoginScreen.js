@@ -86,6 +86,8 @@ export default function LoginScreen({navigation, route}) {
 
     let fcmToken = await getSyncData('fcmToken');
 
+    console.log('tokkk--',fcmToken)
+
     let body = {
       email,
       password,
@@ -95,6 +97,7 @@ export default function LoginScreen({navigation, route}) {
     let apiUrl = type === 'doctor' ? 'doctor/login' : 'doctorassistantlogin';
     const response = await postData(apiUrl, body);
     if (response.success) {
+      console.log('rolll-->',response)
       successToast(t('login.loginSuccess'));
       setLoading(false);
       console.log('agentroll-->',response.data);
@@ -137,7 +140,7 @@ export default function LoginScreen({navigation, route}) {
       'keyboardDidShow',
       () => {
         // or some other action
-        setContentPadding(30);
+        setContentPadding(5);
       },
     );
     const keyboardDidHideListener = Keyboard.addListener(

@@ -17,11 +17,15 @@ import {getData, ServerURL} from '../API';
 import {Color} from '../theme';
 import {CommonActions} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
+import TodayAppointments from '../screens/TodayAppointments';
+import DisableAppointments from '../screens/DisableAppointments';
 
 export function DrawerContent(props) {
   //   const paperTheme = useTheme();
 
   const {t} = useTranslation();
+
+  console.log('td--->',t)
 
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
@@ -59,7 +63,7 @@ export function DrawerContent(props) {
 
   return (
     <View style={{flex: 1}}>
-      <DrawerContentScrollView {...props}>
+      <DrawerContentScrollView {...props} >
         <View style={styles.drawerContent}>
           <View style={styles.userInfoSection}>
             <View style={{flexDirection: 'column', marginTop: 15}}>
@@ -94,6 +98,36 @@ export function DrawerContent(props) {
                 props.navigation.navigate('Home1');
               }}
             /> */}
+              <DrawerItem
+              labelStyle={{fontFamily: 'Poppins-Medium'}}
+              icon={({color, size}) => (
+                <Icon name="home" size={size} color={color} />
+              )}
+              label={t('doctorHome.screenTitle')}
+              onPress={() => {
+                props.navigation.navigate('Home1');
+              }}
+            />
+               <DrawerItem
+              labelStyle={{fontFamily: 'Poppins-Medium'}}
+              icon={({color, size}) => (
+                <Icon name="text-box-search" size={size} color={color} />
+              )}
+              label={t('searchPatient.screenTitle')}
+              onPress={() => {
+                props.navigation.navigate('SearchPatient');
+              }}
+            />
+             <DrawerItem
+              labelStyle={{fontFamily: 'Poppins-Medium'}}
+              icon={({color, size}) => (
+                <Icon name="stethoscope" size={size} color={color} />
+              )}
+              label={t('todayAppointment.screenTitle')}
+              onPress={() => {
+                props.navigation.navigate('Today');
+              }}
+            />
             <DrawerItem
               labelStyle={{fontFamily: 'Poppins-Medium'}}
               icon={({color, size}) => (
@@ -102,6 +136,17 @@ export function DrawerContent(props) {
               label={t('doctorHome.schedule')}
               onPress={() => {
                 props.navigation.navigate('Schedule');
+              }}
+            />
+             <DrawerItem
+              labelStyle={{fontFamily: 'Poppins-Medium'}}
+              icon={({color, size}) => (
+                <Icon name="calendar-month" size={size} color={color} />
+              )}
+              // label={t('doctorHome.schedule')}
+              label={t('disableAppointments.screenTitle')}
+              onPress={() => {
+                props.navigation.navigate('DisableAppointments');
               }}
             />
             <DrawerItem

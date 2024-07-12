@@ -6,6 +6,7 @@
       "logout": "लॉग आउट"
     },
     "doctorHome": {
+      "screenTitle": "मुख्य पृष्ठ",
       "walkIn": "मरीजों की सूची आज",
       "available_now": "उपलब्ध ?",
       "schedule": "मेरी अनुसूची",
@@ -31,6 +32,30 @@
       "english": "अंग्रेज़ी",
       "hindi": "हिंदी"
     },
+    "patientQueue": {
+      "screenTitle": "मरीजों की कतार",
+    
+      "morning": "सुबह",
+      "evening": "शाम"
+    },
+    "engaementStatus": {
+      "screenTitle": "संलग्न स्थिति",
+    
+      "morning": "सुबह",
+      "evening": "शाम"
+    },
+    "uploadPrescription": {
+      "screenTitle": "नुस्खा अपलोड करें",
+    
+      "morning": "सुबह",
+      "evening": "शाम"
+    },
+    "todayAppointment": {
+      "screenTitle": "आज की नियुक्तियाँ",
+    
+      "morning": "सुबह",
+      "evening": "शाम"
+    },
     "login": {
       "screenTitle": "स्वागत !",
       "doctor": "चिकित्सक",
@@ -53,10 +78,10 @@
       "mobile": "मोबाइल न.",
       "referral": "रेफरल कोड",
       "register": "पंजीकरण करे",
-      "proceed": "आगे बढे",
+      "proceed": "जांच भेजें",
       "enterValidNo": "कृपया एक मान्य फोन नंबर दर्ज करें",
       "otpSent": "ओटीपी सफलतापूर्वक भेजा गया",
-      "registerSuccess": "पंजीकरण सफल",
+      "registerSuccess": "पूछताछ सफलतापूर्वक भेजी गई",
       "somethingWentWrong": "कुछ गलत हो गया",
       "verifyMob": "मोबाइल नंबर सत्यापित करें"
     },
@@ -91,6 +116,19 @@
       "appointments": "अपॉइंटमेंट",
       "noAppointments": "आज कोई अपॉइंटमेंट नहीं"
     },
+    "searchPatient": {
+      "screenTitle": "रोगी खोजें",
+      "Enter patient mobile number": "मरीज का मोबाइल नंबर दर्ज करें",
+      "Patient History" : "रोगी की जानकारी"
+    },
+    "disableAppointments": {
+      "screenTitle": "नियुक्तियों को अक्षम करें",
+      "Disable": "बंद करना",
+      "FromDate": "की तिथि से",
+      "ToDate": "तारीख तक",
+      "holidaysList": "छुट्टियों की सूची"
+      
+    },
     "scheduleScreen": {
       "screenTitle": "मेरे अनुसूची",
       "jan": "जनवरी",
@@ -123,7 +161,8 @@
       "screenTitle": "अपनी घोषणा दर्ज करें",
       "enterMsg": "अपना संदेश दर्ज करें",
       "submit": "जमा करें",
-      "updatedSuccess": "घोषणा सफलतापूर्वक अपडेट की गई"
+      "updatedSuccess": "घोषणा सफलतापूर्वक अपडेट की गई",
+      "List":"घोषणाओं की सूची"
     },
     "assistantDashboard": {
       "addNew": "नया सहायक जोड़ें",

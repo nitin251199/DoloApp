@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -9,6 +9,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  FlatList,
 } from 'react-native';
 import {Button, Checkbox} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -16,6 +17,12 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ImagePicker from 'react-native-image-crop-picker';
 import DocProfilePlaceholder from '../placeholders/DocProfilePlaceholder';
 import {Color, Dimension, Fonts} from '../theme';
+import HomeScreen from './HomeScreen';
+import {postData, getData} from '../API';
+import {successToast, errorToast} from '../components/toasts';
+import FeedbackDetails from './FeedbackDetails';
+import FeedbackCard from '../components/FeedbackCard';
+import SuccessModal from '../components/modals/SuccessModal';
 
 export default function DoctorScreen({navigation, route}) {
   const appointment = route.params.item;
@@ -23,7 +30,17 @@ export default function DoctorScreen({navigation, route}) {
   const [appointmentData, setAppointmentData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [feedBack, setFeedBack] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [showFeedback, setShowFeedback] = React.useState(true);
   const [prescriptions, setPrescriptions] = React.useState([]);
+  const [prescriptionList, setPrescriptionList] = React.useState([]);
+  const [imgList, setImgList] = React.useState([]);
+  const [prescriptionData, setPrescriptionData] = React.useState([]);
+  const [status, setStatus] = React.useState('');
+  const [currentAge, setCurrentAge] = React.useState('');
+  const [showModal, setShowModal] = React.useState(false);
+  const [sendLoading, setSendLoading] = React.useState(false);
+
 
   const fetchDocProfile = async () => {
     // let res = await getData(`doctor/profile/${docId}`);
@@ -31,37 +48,74 @@ export default function DoctorScreen({navigation, route}) {
     // if (res.success) {
     //   setAppointmentData(res.data);
     // }
-    console.log('appointment', appointment);
+     console.log('appointment', appointment);
     setTimeout(() => {
       setAppointmentData(appointment);
+      getAge(appointment?.age)
+      if(appointment.status === 0){
+        setStatus('Pending')
+      }
+      if(appointment.status === 2){
+        setStatus('Done')
+      }
+      if(appointment.status === 3){
+        setStatus('Absent')
+      }
       setLoading(false);
     }, 100);
   };
 
+  const getAge = (dateString) => {
+    var dates = dateString.split("/");
+    var d = new Date();
+
+    var userday = dates[0];
+    var usermonth = dates[1];
+    var useryear = dates[2];
+
+    var curday = d.getDate();
+    var curmonth = d.getMonth()+1;
+    var curyear = d.getFullYear();
+
+    var age = curyear - useryear;
+
+    if((curmonth < usermonth) || ( (curmonth == usermonth) && curday < userday )){
+
+        age--;
+
+    }
+    console.log('age1=',age);
+    return setCurrentAge(age);
+}
+
   const takePhotoFromCamera = () => {
     ImagePicker.openCamera({
-      compressImageMaxWidth: 300,
-      compressImageMaxHeight: 300,
+      compressImageMaxWidth: 2048,
+      compressImageMaxHeight: 1024,
       cropping: true,
-      compressImageQuality: 0.7,
+      compressImageQuality: 1,
       includeBase64: true,
       multiple: true,
     }).then(image => {
-      setPrescriptions(prev => [...prev, image?.path]);
+      setPrescriptions(prev => [...prev, image]);
+     
+    //  setShowFeedback(true)
     });
   };
 
   const choosePhotoFromLibrary = () => {
     ImagePicker.openPicker({
-      width: 300,
-      height: 300,
+      width: 2048,
+      height: 1024,
       cropping: true,
       compressImageQuality: 0.7,
       includeBase64: true,
       multiple: true,
     }).then(image => {
-      let images = image.map(item => item?.path);
-      setPrescriptions(prev => [...prev, images].flat());
+      // let images = image.map(item => item?.path);
+      setPrescriptions(prev => [...prev, image].flat());
+     
+     // setShowFeedback(true)
     });
   };
 
@@ -88,9 +142,82 @@ export default function DoctorScreen({navigation, route}) {
     );
   };
 
+  const sendPerscription = async () => {
+    // console.log('dt==',appointment?.patient_id,appointment?.doctor_id,feedBack,prescriptions)
+    setSendLoading(true);
+    var body = {
+      patient_id: appointment?.patient_id,
+      doctor_id: appointment?.doctor_id,
+      description: feedBack,
+      prescription: prescriptions.map(item => item?.data),
+      create_date:appointment?.create_date
+    };
+    const result = await postData('doctor_send_prescrition_patient', body);
+     console.log('body-->', body);
+    if (result.success) {
+      successToast('Feedback Send SuccessFullly');
+      setShowModal(true)
+      // navigation.navigate('Home1');
+    // navigation.goBack();
+    } else {
+      errorToast('Something Went Wrong Please Check');
+    }
+    setSendLoading(false);
+  
+     setPrescriptions([])
+     getFeedbackList();
+  };
+
+  const getFeedbackList = async () => {
+   // setLoading(true);
+    let res = await getData(
+      `doctorfeedback/${appointment?.doctor_id}/${appointment?.patient_id}`,
+    );
+
+    if (res.success) {
+    
+     console.log('feedbaclist==',res.data);
+      setPrescriptionList(res.data);
+
+    }
+   // setLoading(false);
+  };
+
+ const deleteFeedback = async (id) => {
+console.log('fid==',id);
+  setLoading(true);
+  let res = await getData(
+    `doctorfeedbackdelete/${id}`,
+  );
+  console.log('res==',res);
+  if (res.success) {
+  
+  successToast('Successfully Delete')
+
+  }
+  else{
+    errorToast('Something Went wrong please check')
+  }
+  setLoading(false);
+  getFeedbackList();
+
+
+ }
+
+
   useEffect(() => {
     fetchDocProfile();
+    getFeedbackList();
+    
+   
   }, []);
+
+  const onPrimaryPress = () => {
+    setPrescriptions([]);
+    setShowModal(false);
+    getFeedbackList();
+    setFeedBack('')
+  };
 
   return (
     <View style={styles.container}>
@@ -115,21 +242,22 @@ export default function DoctorScreen({navigation, route}) {
               <Text style={styles.doctorName}>
                 {appointmentData?.patient_name}
               </Text>
-              <Text style={styles.doctorSpeciality}>
+              {/* <Text style={styles.doctorSpeciality}>
                 {appointmentData?.category}
-              </Text>
+              </Text> */}
               <View style={styles.ratingContainer}>
                 <View style={styles.ratingIconContainer}>
-                  <MaterialCommunityIcons
+                  {/* <MaterialCommunityIcons
                     name="star"
                     size={20}
                     color={Color.yellow}
                     style={styles.ratingIcon}
-                  />
+                  /> */}
+                  <Text>📙</Text>
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.ratingText}>Appointment No.</Text>
-                  <Text style={styles.ratingStat}>{appointmentData?.id}</Text>
+                  <Text style={styles.ratingStat}>{appointmentData?.token_no}</Text>
                 </View>
               </View>
               <View style={{...styles.ratingContainer, marginTop: 10}}>
@@ -164,7 +292,8 @@ export default function DoctorScreen({navigation, route}) {
           contentContainerStyle={{
             paddingBottom: 30,
             padding: 10,
-          }}>
+
+          }} showsVerticalScrollIndicator={false}>
           {/* <View style={{...styles.card, backgroundColor: Color.white}}>
           <Text style={{...styles.cardTitle}}>Biography</Text>
           <View style={styles.cardContent}>
@@ -203,7 +332,41 @@ export default function DoctorScreen({navigation, route}) {
               }}>
               <Text style={{...styles.cardTitle}}>Status</Text>
               <View style={styles.cardContent}>
-                <Text style={{...styles.cardText}}>Waiting</Text>
+                <Text style={{...styles.cardText}}>{status}</Text>
+              </View>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+            }}>
+            <View
+              style={{
+                ...styles.card,
+                backgroundColor: Color.white,
+                flex: 1,
+              }}>
+              <Text style={{...styles.cardTitle}}>Payment Type</Text>
+              <View style={styles.cardContent}>
+                <Text style={{...styles.cardText}}>
+                {appointmentData.payment_status == '1' && appointmentData.consulation_charge !== '0'
+            ? 'Paid'
+            : appointmentData.payment_status == '1' && appointmentData.consulation_charge == '0'
+            ? 'Free'
+            : 'Pending'}
+                </Text>
+              </View>
+             
+            </View>
+            <View
+              style={{
+                ...styles.card,
+                backgroundColor: Color.white,
+                flex: 1,
+              }}>
+              <Text style={{...styles.cardTitle}}>Amount Paid</Text>
+              <View style={styles.cardContent}>
+                <Text style={{...styles.cardText}}>{appointmentData?.consulation_charge !== null ? appointmentData?.consulation_charge : 'Pending'}</Text>
               </View>
             </View>
           </View>
@@ -211,7 +374,7 @@ export default function DoctorScreen({navigation, route}) {
             <Text style={{...styles.cardTitle}}>Patient Problem</Text>
             <View style={styles.cardContent}>
               <Text style={{...styles.cardText}}>
-                {appointmentData?.patient_problem_description}
+                {appointmentData?.category}
               </Text>
             </View>
           </View>
@@ -236,7 +399,7 @@ export default function DoctorScreen({navigation, route}) {
               <Text style={{...styles.cardTitle}}>Age</Text>
               <View style={styles.cardContent}>
                 <Text style={{...styles.cardText}}>
-                  {appointmentData?.age} {appointmentData?.agetype}
+                  {currentAge} Years
                 </Text>
               </View>
             </View>
@@ -272,6 +435,7 @@ export default function DoctorScreen({navigation, route}) {
                 onChangeText={setFeedBack}
                 multiline={true}
                 numberOfLines={3}
+               // ref={input => {TextInput=input}}
               />
             </View>
           </View>
@@ -300,7 +464,9 @@ export default function DoctorScreen({navigation, route}) {
             </Button>
             <Button
               mode="contained"
+              loading={sendLoading}
               icon="send"
+              onPress={sendPerscription}
               uppercase={false}
               color={Color.white}
               labelStyle={{
@@ -327,45 +493,89 @@ export default function DoctorScreen({navigation, route}) {
               marginTop: 10,
               flexWrap: 'wrap',
             }}>
-            {prescriptions.map((prescription, index) => {
-              return (
-                <>
-                  <Image
-                    source={{uri: prescription}}
-                    style={{
-                      // flex: 1,
-                      width: '38%',
-                      height: 150,
-                      margin: 5,
-                      borderRadius: 5,
-                    }}
-                  />
-                  <TouchableOpacity
-                    onPress={() => {
-                      setPrescriptions(
-                        prescriptions.filter((item, i) => i !== index),
-                      );
-                    }}
-                    style={{
-                      // position: 'absolute',
-                      margin: 5,
-                      // top: index % 3 == 0 ? index * 130 : (index - 1) * 130,
-                      // right: Dimension.window.width * 0.3 * index,
-                      zIndex: 999,
-                    }}>
-                    <MaterialCommunityIcons
-                      name="close"
-                      size={24}
-                      color={Color.white}
-                      style={styles.closeIcon}
+          
+
+            <FlatList
+              data={prescriptions}
+              
+              nestedScrollEnabled={true}
+              numColumns={2}
+              renderItem={({item, index}) => {
+                return (
+                  <>
+                    <Image
+                      source={{uri: item?.path}}
+                      style={{
+                        flex: 0.5,
+                       // height: 150,
+                        minHeight:190,
+                        margin: 5,
+                        marginTop: 15,
+                        borderRadius: 5,
+                        borderWidth: 1,
+                        borderColor: '#ccc',
+                      }}
+                      resizeMode='center'
                     />
-                  </TouchableOpacity>
-                </>
-              );
-            })}
+                    <TouchableOpacity
+                      onPress={() => {
+                        setPrescriptions(
+                          prescriptions.filter((item, i) => i !== index),
+                        );
+                      }}
+                      style={{
+                        // position: 'absolute',
+                        margin: 5,
+                        marginTop: 15,
+                        // top: index % 3 == 0 ? index * 130 : (index - 1) * 130,
+                        // right: Dimension.window.width * 0.3 * index,
+                        zIndex: 999,
+                      }}>
+                      <MaterialCommunityIcons
+                        name="close"
+                        size={24}
+                        color={Color.black}
+                        style={styles.closeIcon}
+                      />
+                    </TouchableOpacity>
+                  </>
+                );
+              }}
+              keyExtractor={(item, index) => index.toString()}
+              contentContainerStyle={{
+                paddingHorizontal: 20,
+              }}
+            />
+    
           </View>
+
+          <Text
+            style={{
+              fontSize: 20,
+              fontFamily: Fonts.primaryBold,
+              color: Color.black,
+              marginTop: 20,
+            }}>
+            Feedback List
+          </Text>
+
+          {prescriptionList.map((item, index) => {
+            return (
+              <FeedbackCard 
+               onEdit={ () =>navigation.navigate('FeedbackDetails',{
+                desc:item.description != null ? item.description : 'Perscription',
+                date: new Date(item.date).toDateString().slice(3),
+                img:item.prescription,
+              })}
+              date={new Date(item.date).toDateString().slice(3)}
+              source={{uri: `data:image/png;base64,${item?.prescription[0]}`}}
+              description={item.description != null ? item.description : 'Perscription' }
+              onDelete={ () => deleteFeedback(item.id)}
+              />
+            );
+          })}
         </ScrollView>
-      )}
+       )} 
       {/* <View style={styles.bottom}>
         {new Date(appointmentData.date) >= new Date().setHours(0, 0, 0, 0) &&
         !appointmentData?.status ? (
@@ -433,6 +643,20 @@ export default function DoctorScreen({navigation, route}) {
           </Button>
         )}
       </View> */}
+      <SuccessModal
+        visible={showModal}
+        onRequestClose={() => setShowModal(false)}
+        title="Prescriptions Sent Successfully"
+        primaryBtnText="Add More"
+       onPrimaryPress={() => onPrimaryPress()}
+        secondaryBtnText="Go Back"
+        onSecondaryPress={() => {
+          setShowModal(false);
+          getFeedbackList();
+         navigation.goBack();
+         
+        }}
+      />
     </View>
   );
 }
@@ -547,5 +771,64 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     flexDirection: 'row',
+  },
+  card: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    padding: 15,
+    marginVertical: 10,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    elevation: 8,
+    shadowColor: Color.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+  },
+  listItem: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+   // padding: 15,
+    marginVertical: 10,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    elevation: 8,
+    shadowColor: Color.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    width: '100%',
+    marginTop:10
+  },
+  listImage: {
+    // height: 75,
+    // width: 75,
+    borderTopLeftRadius: 15,
+    borderBottomLeftRadius: 15,
+    marginRight: 15,
+    flex:1
+  },
+  listItemText: {
+    justifyContent: 'space-evenly',
+    flex: 1,
+    padding:10
+  },
+  listItemTitle: {
+    fontSize: 16,
+    color: Color.black,
+    // fontWeight: '700',
+    fontFamily: Fonts.primaryRegular,
+    width:'80%',
+    textAlign:'center'
+  },
+  listItemSubTitle: {
+    fontSize: 14,
+    lineHeight: 14 * 1.4,
+    fontFamily: Fonts.primaryRegular,
+    color: '#999',
   },
 });

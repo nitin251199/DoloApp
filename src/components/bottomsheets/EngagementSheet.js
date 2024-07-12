@@ -43,24 +43,36 @@ export default EngagementSheet = React.forwardRef((props, ref) => {
           style={{
             flexDirection: 'row',
             marginTop: 30,
-            justifyContent: 'space-between',
+            justifyContent: 'space-around',
           }}>
-          <View style={{alignItems: 'center', flex: 1}}>
-            <TouchableRipple
-              onPress={() => handleChange(item?.id, 1)}
-              style={styles.button}>
-              <Text style={styles.buttonLabel}>Set Active</Text>
-            </TouchableRipple>
-          </View>
-          <View style={{alignItems: 'center', flex: 1, marginLeft: 10}}>
-            <TouchableRipple
-              onPress={() => handleChange(item?.id, 3)}
-              style={{...styles.button, backgroundColor: 'red'}}>
-              <Text style={styles.buttonLabel}>Set Absent</Text>
-            </TouchableRipple>
-          </View>
+          {item?.status === 5 ? (
+            <View style={{alignItems: 'center', flex: 1}}>
+              <TouchableRipple
+                onPress={() => handleChange(item?.id, 0)}
+                style={{...styles.button, width: '50%'}}>
+                <Text style={styles.buttonLabel}>Set Verified</Text>
+              </TouchableRipple>
+            </View>
+          ) : (
+            <>
+              <View style={{alignItems: 'center', flex: 1}}>
+                <TouchableRipple
+                  onPress={() => handleChange(item?.id, 2)}
+                  style={{...styles.button, backgroundColor: 'green'}}>
+                  <Text style={styles.buttonLabel}>Set Engaged</Text>
+                </TouchableRipple>
+              </View>
+              <View style={{alignItems: 'center', flex: 1, marginLeft: 10}}>
+                <TouchableRipple
+                  onPress={() => handleChange(item?.id, 3)}
+                  style={{...styles.button, backgroundColor: 'red'}}>
+                  <Text style={styles.buttonLabel}>Set Absent</Text>
+                </TouchableRipple>
+              </View>
+            </>
+          )}
         </View>
-        <View
+        {/* <View
           style={{
             flexDirection: 'row',
             marginTop: 20,
@@ -82,7 +94,7 @@ export default EngagementSheet = React.forwardRef((props, ref) => {
               </Text>
             </TouchableRipple>
           </View>
-        </View>
+        </View> */}
       </View>
     </RBSheet>
   );

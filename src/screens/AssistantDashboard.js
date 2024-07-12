@@ -30,6 +30,7 @@ export default function AssistantDashboard({navigation}) {
   const fetchAssistants = async () => {
     const list = await getData(`doctorassistantlist/${user?.userid}`);
     setAssistantData(list?.data);
+    console.log('asslist==',list?.data);
     setLoading(false);
   };
 

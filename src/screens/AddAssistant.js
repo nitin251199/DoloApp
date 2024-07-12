@@ -250,6 +250,7 @@ export default function AddAssistant({navigation}) {
             value={email}
             mode="flat"
             underlineColor="#000"
+            keyboardType='email-address'
             activeUnderlineColor={Color.primary}
           />
         </View>
@@ -261,6 +262,7 @@ export default function AddAssistant({navigation}) {
             onChangeText={text => setMobile(text)}
             value={mobile}
             mode="flat"
+            keyboardType='number-pad'
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
           />

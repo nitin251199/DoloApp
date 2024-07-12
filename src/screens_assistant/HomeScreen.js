@@ -13,6 +13,7 @@ import {ActivityIndicator, Avatar} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {errorToast, successToast} from '../components/toasts';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 import {
   Menu,
   MenuOption,
@@ -26,11 +27,13 @@ import {useTranslation} from 'react-i18next';
 
 export default function HomeScreen({navigation}) {
   const user = useSelector(state => state.user);
-
+   
+  console.log('docId==',user?.doctor_id)
   const {t, i18n} = useTranslation();
 
   const [available, setAvailable] = React.useState(1);
   const [loading, setLoading] = React.useState(true);
+  const [profileData, setProfileData] = React.useState();
 
   const dispatch = useDispatch();
 
@@ -48,22 +51,37 @@ export default function HomeScreen({navigation}) {
   const fetchProfileInfo = async () => {
     setLoading(true);
     let res = await getData(`dolo/profile/${user?.doctor_id}`);
+ 
     if (res.status) {
       setAvailable(res.data?.doctor_available);
+      
+    }
+    setLoading(false);
+  };
+
+  const fetchAssProfileInfo = async () => {
+    setLoading(true);
+    let res = await getData(`doctorassitantprofile/${user?.userid}`);
+    console.log(`dolo/profile/${user?.userid}`, res);
+    if (res.success) {
+      // console.log(res);
+      setProfileData(res.data[0]);
     }
     setLoading(false);
   };
 
   useEffect(() => {
     fetchProfileInfo();
+    fetchAssProfileInfo();
   }, []);
 
   const handleAvailable = async () => {
     let body = {
-      id: user?.doctor_id,
+      doctor_id: user?.doctor_id,
       available: available == 1 ? 0 : 1,
     };
     let res = await postData('doctoravilableupdate', body);
+    console.log('Result==>',res)
     if (res?.success) {
       setAvailable(prev => !prev);
       successToast(t('assistantHome.statusUpdated'));
@@ -76,7 +94,7 @@ export default function HomeScreen({navigation}) {
     <View style={styles.container}>
       <StatusBar backgroundColor={Color.white} barStyle="dark-content" />
       <View style={styles.topContainer}>
-        <View style={{flex: 1}}>
+        <View style={{flex: 1,width:'75%'}}>
           <Text style={styles.topText}>
             {user?.username &&
               user?.username.charAt(0).toUpperCase() + user?.username.slice(1)}
@@ -91,18 +109,17 @@ export default function HomeScreen({navigation}) {
             Under: {user?.dolo_id}
           </Text>
         </View>
+        <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',width:'25%'}}>
         <Menu>
           <MenuTrigger>
             <Avatar.Image
-              size={45}
+              size={40}
               source={{
-                uri:
-                  //  profileData?.profileimage
-                  //   ? profileData?.profileimage.length > 20
-                  //     ? `data:image/png;base64,${profileData?.profileimage}`
-                  //     : `https://rapidhealth.me/assets/doctor/${profileData?.profileimage}`
-                  //   :
-                  'https://www.w3schools.com/w3images/avatar6.png',
+                uri: profileData?.profileimage
+                  ? profileData?.profileimage.length > 20
+                    ? `data:image/png;base64,${profileData?.profileimage}`
+                    : `https://rapidhealth.me/assets/doctor/${profileData?.profileimage}`
+                  : 'https://www.w3schools.com/w3images/avatar6.png',
               }}
             />
           </MenuTrigger>
@@ -170,9 +187,14 @@ export default function HomeScreen({navigation}) {
             />
           </MenuOptions>
         </Menu>
+        <TouchableOpacity onPress={() =>navigation.navigate('Notification')}>
+      <Fontisto name="bell" size={25} color={Color.black} />
+     
+      </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.mainContainer}>
-        <ScrollView style={styles.cardContainer}>
+        <ScrollView style={styles.cardContainer} showsVerticalScrollIndicator={false}>
           <TouchableOpacity
             activeOpacity={0.5}
             style={styles.addContainer}

@@ -9,7 +9,8 @@ import AppHeader from './AppHeader';
 import AssistantNavigator from './AssistantNavigator';
 import AuthStack from './AuthStack';
 import {DrawerContent} from './DrawerContent';
-import TabNavigator from './TabNavigator';
+import { HomeStack } from './HomeStack';
+
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -31,7 +32,7 @@ export const RootNavigator = () => {
       <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
         <Drawer.Screen
           name="DrawerNavigator"
-          component={TabNavigator}
+          component={HomeStack}
           options={{
             header: props => <AppHeader {...props} />,
           }}

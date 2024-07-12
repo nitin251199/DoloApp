@@ -1,7 +1,8 @@
 import {useEffect} from 'react';
 import {LogBox, StyleSheet, Text} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import {RootNavigator} from './src/navigation/RootNavigator';
+
+import  {RootNavigator}  from './src/navigation/RootNavigator';
 import {Fonts} from './src/theme';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
@@ -45,8 +46,8 @@ const App = () => {
   useEffect(() => {
     setDefaultFontFamily();
     SplashScreen.hide();
-    requestUserPermission();
-    notificationListener();
+   requestUserPermission();
+   notificationListener();
   }, []);
 
   return (

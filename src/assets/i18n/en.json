@@ -6,6 +6,7 @@
       "logout": "Logout"
     },
     "doctorHome": {
+      "screenTitle": "Home",
       "walkIn": "Walk In patients today",
       "available_now": "Available Now",
       "schedule": "My Schedule",
@@ -53,10 +54,10 @@
       "mobile": "Mobile No.",
       "register": "Register",
       "referral": "Referral Code",
-      "proceed": "Proceed",
+      "proceed": "Send Inquiry",
       "enterValidNo": "Please enter a valid phone number",
       "otpSent": "OTP sent successfully",
-      "registerSuccess": "Registration successful",
+      "registerSuccess": "Inquiry Send Successfully",
       "somethingWentWrong": "Something went wrong",
       "verifyMob": "Verify Mobile Number"
     },
@@ -91,6 +92,20 @@
       "appointments": "Appointments",
       "noAppointments": "No Appointments here"
     },
+    "searchPatient": {
+      "screenTitle": "Search Patient",
+      "Enter patient mobile number": "Enter patient mobile number",
+      "Patient History" : "Patient History"
+    },
+    "disableAppointments": {
+      "screenTitle": "Disable Appointments",
+      "Disable": "Disable",
+      "FromDate": "FromDate",
+      "ToDate": "To Date",
+      "holidaysList": "Holidays List"
+
+      
+    },
     "scheduleScreen": {
       "screenTitle": "My Schedule",
       "jan": "January",
@@ -123,7 +138,32 @@
       "screenTitle": "Enter your announcement",
       "enterMsg": "Enter your message",
       "submit": "Submit",
-      "updatedSuccess": "Announcement updated successfully"
+      "updatedSuccess": "Announcement updated successfully",
+      "List":"Announcements List"
+    },
+    "patientQueue": {
+      "screenTitle": "Patient Queue",
+    
+     "morning": "Morning",
+      "evening": "Evening"
+    },
+    "uploadPrescription": {
+      "screenTitle": "Upload Prescription",
+    
+     "morning": "Morning",
+      "evening": "Evening"
+    },
+    "todayAppointment": {
+      "screenTitle": "Today Appointments",
+    
+     "morning": "Morning",
+      "evening": "Evening"
+    },
+    "engagementStatus": {
+      "screenTitle": "Engagement Status",
+    
+     "morning": "Morning",
+      "evening": "Evening"
     },
     "assistantDashboard": {
       "addNew": "Add New Assistant",
