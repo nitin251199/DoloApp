@@ -17,6 +17,8 @@ export default function AppointmentList({navigation, route}) {
 
   const {t} = route.params;
 
+  console.log('ddd==',route.params?.doctors)
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>
@@ -50,7 +52,7 @@ export default function AppointmentList({navigation, route}) {
             <AppointmentCard
               key={index}
               item={item}
-              onPress={() => navigation.navigate('Appointment', {item})}
+              onPress={() => navigation.navigate('Doctor', {id: item?.doctor_id})}
             />
           );
         })}

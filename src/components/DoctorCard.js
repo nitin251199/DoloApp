@@ -218,6 +218,7 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     justifyContent: 'space-evenly',
+    width:'80%'
   },
   listItemTitle: {
     fontSize: 16,

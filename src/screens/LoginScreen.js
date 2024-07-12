@@ -27,6 +27,8 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import ForgetPass from '../components/bottomsheets/ForgetPass';
 import {getSyncData} from '../storage/AsyncStorage';
 import {useTranslation} from 'react-i18next';
+import {getSyncData,storeDatasync} from '../storage/AsyncStorage';
+import messaging from '@react-native-firebase/messaging';
 
 export default function LoginScreen({navigation, route}) {
   const {t} = useTranslation();
@@ -53,7 +55,33 @@ export default function LoginScreen({navigation, route}) {
 
   const dispatch = useDispatch();
 
+  const getFcmToken = async () => {
+    let fcmToken = await getSyncData('fcmToken');
+    // console.log('the old token', fcmToken);
+    if (!fcmToken) {
+      try {
+        const fcmToken = await messaging().getToken();
+        if (fcmToken) {
+          // user has a device token
+          console.log('the new token', fcmToken);
+          await storeDatasync('fcmToken', fcmToken);
+        }
+      } catch (error) {
+        console.log('error getting token', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    
+    getFcmToken();
+   
+  }, [])
+
   const signIn = async () => {
+    var fcmToken = await getSyncData('fcmToken');
+
+    console.log('fcm1==',fcmToken)
     setLoading(true);
 
     let fcmToken = await getSyncData('fcmToken');
@@ -69,6 +97,7 @@ export default function LoginScreen({navigation, route}) {
     if (response.success) {
       successToast(t('login.loginSuccess'));
       setLoading(false);
+      console.log('agentroll-->',response.data);
       dispatch({
         type: 'SET_TYPE',
         payload: type,

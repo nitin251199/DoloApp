@@ -33,11 +33,13 @@ export default function ProfileScreen({navigation}) {
 
   const fetchProfileInfo = async () => {
     setLoading(true);
-    let res = await getData(`dolo/profile/${user?.userid}`);
-    // console.log(`dolo/profile/${user?.userid}`, res);
+    let res = await getData(`agent/${user?.userid}`);
+    console.log(`agent/${user?.userid}`);
+    console.log('agentProfile==',res);
     if (res.status) {
-      // console.log(res);
-      setProfileData(res.data);
+    
+      setProfileData(res.agent);
+      console.log('agentProfile1==',res.agent);
     }
     setLoading(false);
   };

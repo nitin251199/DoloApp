@@ -6,8 +6,11 @@ import {
   ToastAndroid,
   TouchableOpacity,
   View,
+  FlatList,
+  Dimensions,
+  BackHandler
 } from 'react-native';
-import React from 'react';
+import React,{useEffect} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Color, Fonts} from '../theme';
 import {
@@ -21,14 +24,105 @@ import {
 } from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
-import {postData, postDataAndImage} from '../API';
+import {postData, postDataAndImage,getData} from '../API';
 import {Picker} from '@react-native-picker/picker';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import SuccessModal from '../components/modals/SuccessModal';
 import MapModal from '../components/modals/MapModal';
-
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import messaging from '@react-native-firebase/messaging';
+import { getSyncData, storeDatasync } from '../storage/AsyncStorage';
 export default function AddDoctor({navigation}) {
   const theme = {colors: {text: '#000', background: '#aaaaaa50'}}; // for text input
+  let morningSchedule = [
+    {
+      day: 'Sunday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: false,
+    },
+    {
+      day: 'Monday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Tuesday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Wednesday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Thursday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Friday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Saturday',
+      start_time: new Date(new Date().setHours(10, 0, 0)),
+      end_time: new Date(new Date().setHours(13, 0, 0)),
+      checked: true,
+    },
+  ];
+
+  let eveningSchedule = [
+    {
+      day: 'Sunday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: false,
+    },
+    {
+      day: 'Monday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Tuesday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Wednesday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Thursday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Friday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+    {
+      day: 'Saturday',
+      start_time: new Date(new Date().setHours(17, 0, 0)),
+      end_time: new Date(new Date().setHours(19, 0, 0)),
+      checked: true,
+    },
+  ];
 
   let defaultSchedule = [
     {
@@ -79,10 +173,12 @@ export default function AddDoctor({navigation}) {
 
   const [name, setName] = React.useState('');
   const [gender, setGender] = React.useState('Male');
-  const [dob, setDob] = React.useState(new Date());
+  const [dob, setDob] = React.useState('');
+  
   const [maritalStatus, setMaritalStatus] = React.useState('Married');
   const [pinCode, setPinCode] = React.useState('');
   const [email, setEmail] = React.useState('');
+  const [experience, setExperience] = React.useState('');
   const [location, setLocation] = React.useState('');
   const [adhar, setAdhar] = React.useState('');
   const [doctorContact, setDoctorContact] = React.useState('');
@@ -110,43 +206,263 @@ export default function AddDoctor({navigation}) {
   const [clinicLocations, setClinicLocations] = React.useState([]);
   const [clinicLocationText, setClinicLocationText] = React.useState('');
   const [schedule, setSchedule] = React.useState(defaultSchedule);
+  const [morningschedule, setMorningSchedule] = React.useState(morningSchedule);
+  const [eveningschedule, setEveningSchedule] = React.useState(eveningSchedule);
   const [doctor_fees, setDoctor_fees] = React.useState('');
   const [dolo_id, setDolo_id] = React.useState('');
   const [doctorPic, setDoctorPic] = React.useState('');
-
+  const [specialities,setSpecialities] = React.useState([]);
+  const [selectedId,setSelectedId] = React.useState([]);
+  const [cloading, setCloading] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [showModal, setShowModal] = React.useState(false);
   const [showMap, setShowMap] = React.useState(false);
+  const [latitude, setLatitude] = React.useState('');
+  const [docSpecialization, setDocSpecialization] = React.useState('');
+  const [longitude, setLongitude] = React.useState('');
+  const [categoryList,setCategoryList] = React.useState([]);
+  const [isChecked,setIschecked] = React.useState(false);
+  const [showDobDatePicker,setShowDobDatePicker] = React.useState(false);
+  const [showExperienceDatePicker,setShowExperienceDatePicker] = React.useState(false);
+  const [accountNumber,setAccountNumber] = React.useState('');
+  const [confirmAccountNumber,setConfirmAccountNumber] = React.useState('');
+  const [accountHolderName,setAccountHolderName] = React.useState('');
+  const [ifscCode,setIfscCode] = React.useState('');
+  const [bankName,setBankName] = React.useState('');
+
   const _scrollRef = React.useRef(null);
+  
+ validateEmail = email => {
+    var re =
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  };
+
+  const checkValidations = async() =>{
+    if(doctorPic === ''){
+      Alert.alert('Error', 'Please select profile pic');
+      
+    }
+    else if(name === ''){
+      Alert.alert('Error', 'Please enter name');
+      
+    }
+    else if(dob === ''){
+      Alert.alert('Error', 'Please enter Date of Birth');
+      
+    }
+  else if(email === ''){
+    Alert.alert('Error', 'Please enter email');
+   }
+
+    else if((!this.validateEmail(email))){
+      Alert.alert('Error', 'Please enter valid email');
+      
+    }
+
+   
+    
+
+    // else if(adhar === ''){
+    //   Alert.alert('Error', 'Please enter adhar');
+      
+    // }
+   
+
+    else if(doctor_fees === ''){
+      Alert.alert('Error', 'Please enter Fees');
+      
+    }
+
+    else if(experience === ''){
+      Alert.alert('Error', 'Please enter Experience');
+      
+    }
+
+    else if(doctorContact === ''){
+      Alert.alert('Error', 'Please enter Doctor Contact Number');
+      
+    }
+
+    else if(clinicContact === ''){
+      Alert.alert('Error', 'Please enter Clinic Contact Number');
+      
+    }
+
+    else if(location === ''){
+      Alert.alert('Error', 'Please select Location');
+      
+    }
+
+    else if(pinCode === ''){
+      Alert.alert('Error', 'Please select Pin Code');
+      
+    }
+
+    else if(registration_number === ''){
+      Alert.alert('Error', 'Please enter registration number');
+      
+    }
+   
+   
+   
+
+
+
+  //   else if(accountNumber === ''){
+  //     Alert.alert('Error', 'Please enter account number');
+      
+  //   }
+
+
+  //  else if (accountNumber !== confirmAccountNumber || confirmAccountNumber === '') {
+  //     Alert.alert('Error', 'Please Confirm Account Number');
+      
+  //   }
+
+  //   else if(accountHolderName === ''){
+  //     Alert.alert('Error', 'Please enter account holder name');
+      
+  //   }
+
+  //   else if(ifscCode === ''){
+  //     Alert.alert('Error', 'Please enter IFSC code');
+      
+  //   }
+
+  //   else if(bankName === ''){
+  //     Alert.alert('Error', 'Please enter bank name');
+      
+  //   }
+
+    else if(avgTime === ''){
+      Alert.alert('Error', 'Please enter avg time');
+      
+    }
+
+
+    else if(clinicLocationText === ''){
+      Alert.alert('Error', 'Please enter clinic location');
+      
+    }
+
+    else if(Degree === ''){
+      Alert.alert('Error', 'Please enter Degree');
+      
+    }
+
+    else if(collegename === ''){
+      Alert.alert('Error', 'Please enter College Name');
+      
+    }
+
+    else if(year_of_passout === ''){
+      Alert.alert('Error', 'Please enter passout year');
+      
+    }
+
+    else if(college_location === ''){
+      Alert.alert('Error', 'Please enter college location');
+      
+    }
+
+    else if(languages === ''){
+      Alert.alert('Error', 'Please enter languages');
+      
+    }
+
+    else if(specialization  === ''){
+      Alert.alert('Error', 'Please select specialization ');
+      
+    }
+
+    else{
+    await  addDoctor(); 
+    }
+
+  }
+
+
+  const getFcmToken = async () => {
+    let fcmToken = await getSyncData('fcmToken');
+    // console.log('the old token', fcmToken);
+    if (!fcmToken) {
+      try {
+        const fcmToken = await messaging().getToken();
+        if (fcmToken) {
+          // user has a device token
+          console.log('the new token', fcmToken);
+          await storeDatasync('fcmToken', fcmToken);
+        }
+      } catch (error) {
+        console.log('error getting token', error);
+      }
+    }
+  };
 
   const addDoctor = async () => {
-    if (doctorPic === '' || name === '' || email === '' || dolo_id === '') {
-      Alert.alert('Error', 'Please fill the required fields');
-      return;
-    }
+    var fcmToken = await getSyncData('fcmToken');
+    console.log('fcmToken==',fcmToken);
+    
+   
     setLoading(true);
 
-    let body = [
+    let body1 = 
       {
+        device_token: fcmToken,
         user_id: user?.userid,
         name,
         date_of_birth: dob,
         marital_status: maritalStatus,
         gender,
         email,
+        account_holdername:accountHolderName,
+        ifsc_code:ifscCode,
+        account_no:accountNumber,
         fees: doctor_fees,
-        do_lo_id: dolo_id,
+        experience: experience,
+        bank_name:bankName,
         doctorContact,
         clinic_contact: clinicContact,
         location,
+        latitude:latitude,
+        longitude:longitude,
         pincode: pinCode,
         adhar,
         registration_number,
-        schedule: schedule.map(item => {
+        schedule_morning: morningschedule.map(item => {
           return {
             day: item.day,
-            start_time: item.start_time.toString(),
-            end_time: item.end_time.toString(),
+            start_time: item.start_time
+            .toLocaleTimeString()
+            .replace(
+              item.start_time.toLocaleTimeString().slice(-6, -3),
+              '',
+            ),
+            end_time: item.end_time
+            .toLocaleTimeString()
+            .replace(
+              item.end_time.toLocaleTimeString().slice(-6, -3),
+              '',
+            ),
+            checked: item.checked,
+          };
+        }),
+        schedule_evening: eveningschedule.map(item => {
+          return {
+            day: item.day,
+            start_time: item.start_time
+            .toLocaleTimeString()
+            .replace(
+              item.start_time.toLocaleTimeString().slice(-6, -3),
+              '',
+            ),
+            end_time: item.end_time
+            .toLocaleTimeString()
+            .replace(
+              item.end_time.toLocaleTimeString().slice(-6, -3),
+              '',
+            ),
             checked: item.checked,
           };
         }),
@@ -154,7 +470,7 @@ export default function AddDoctor({navigation}) {
         clinicLocations:
           clinicLocations.length > 0 ? clinicLocations : [clinicLocationText],
         facilities,
-        specialization,
+        specialization:specialization,
         Degree,
         collegename,
         year_of_passout,
@@ -176,12 +492,13 @@ export default function AddDoctor({navigation}) {
             ? achievementList
             : [{achievement_specialization, achievement_year}],
         profileimage: doctorPic.data,
-      },
-    ];
-    // console.log(formData);
+      };
+    
+    const body = JSON.stringify(body1)
+    console.log('body-->',body1)
     // let result = await postDataAndImage('agent/doctorcreate', formData);
-    let result = await postData('agent/doctorcreate', body);
-    // console.log(result);
+    let result = await postData('agent/doctorcreate', body1);
+    // console.log('add doc==>',result);
     if (!result.success) {
       if (result.msg === 'Validation Error.') {
         Alert.alert('Error', 'Doctor already exists');
@@ -206,6 +523,7 @@ export default function AddDoctor({navigation}) {
       .catch(e => {
         console.log(e);
       });
+   
   };
 
   const setScheduleDay = index => {
@@ -218,6 +536,120 @@ export default function AddDoctor({navigation}) {
       temp[index]['checked'] = true;
       setSchedule(temp);
     }
+  };
+
+  const setMorningSchedules = index => {
+    let temp = [...morningschedule];
+    // console.log('temp', temp[index]['day']);
+    if (temp[index]['checked']) {
+      temp[index]['checked'] = false;
+      setMorningSchedule(temp);
+    } else {
+      temp[index]['checked'] = true;
+      setMorningSchedule(temp);
+    }
+  };
+
+  // const setDoctorCategory = index => {
+   
+  //   let temp = [...specialization];
+    
+  //   if (temp[index]['checked']) {
+  //     temp[index]['checked'] = false;
+  //     setSpecialization(temp);
+  //   } else {
+  //     temp[index]['checked'] = true;
+  //     setSpecialization(temp);
+  //   }
+   // let data = selectedId;
+    // let data2 = specialities;
+
+    // if (selectedId.includes(id)) {
+    //   var index = data.indexOf(id);
+    //   if (index !== -1) {
+    //     data.splice(index, 1);
+    //     data2.splice(index, 1);
+
+    //    setSelectedId(data)
+    //    setSpecialities(data2)
+      
+    //   }
+    // } else {
+    //   data.push(id);
+    //   data2.push(specialist);
+    //   setSelectedId(data)
+    //   setSpecialities(data2)
+      
+    // }
+   
+  // };
+
+  const setDoctorCategory = async (specialist,index) => {
+    setSpecialization(specialist);
+    };
+
+  const setEveningSchedules = index => {
+    let temp = [...eveningschedule];
+    // console.log('temp', temp[index]['day']);
+    if (temp[index]['checked']) {
+      temp[index]['checked'] = false;
+      setEveningSchedule(temp);
+    } else {
+      temp[index]['checked'] = true;
+      setEveningSchedule(temp);
+    }
+  };
+
+  const setMorningScheduleStartTime = index => {
+    let temp = [...morningschedule];
+    DateTimePickerAndroid.open({
+      value: temp[index]['start_time'],
+      onChange: (event, date) => {
+        temp[index]['start_time'] = date;
+        setMorningSchedule(temp);
+      },
+      mode: 'time',
+      is24Hour: false,
+    });
+  };
+
+  const setMorningScheduleEndTime = index => {
+    let temp = [...morningschedule];
+    DateTimePickerAndroid.open({
+      value: temp[index]['end_time'],
+      onChange: (event, date) => {
+        temp[index]['end_time'] = date;
+        setMorningSchedule(temp);
+      },
+      mode: 'time',
+      is24Hour: false,
+    });
+  };
+
+  const setEveningScheduleStartTime = index => {
+    let temp = [...eveningschedule];
+    DateTimePickerAndroid.open({
+      value: temp[index]['start_time'],
+      onChange: (event, date) => {
+        temp[index]['start_time'] = date;
+        setEveningSchedule(temp);
+      },
+      mode: 'time',
+      is24Hour: false,
+    });
+  };
+
+  const setEveningScheduleEndTime = index => {
+    let temp = [...eveningschedule];
+    DateTimePickerAndroid.open({
+      value: temp[index]['end_time'],
+      onChange: (event, date) => {
+        temp[index]['end_time'] = date;
+        setEveningSchedule(temp);
+      },
+      mode: 'time',
+      is24Hour: false,
+    });
   };
 
   const setScheduleStartTime = index => {
@@ -246,11 +678,27 @@ export default function AddDoctor({navigation}) {
     });
   };
 
+  
+  const showDobDatePicker1 = () =>{
+    setShowDobDatePicker(true)
+  }
+
   const openDobCalender = () => {
     DateTimePickerAndroid.open({
       value: dob,
       onChange: (event, date) => {
-        setDob(date);
+      //  setDob(date);
+      },
+      mode: 'date',
+      is24Hour: false,
+    });
+  };
+
+  const openExperienceCalender = () => {
+    DateTimePickerAndroid.open({
+      value: experience,
+      onChange: (event, date) => {
+       // setExperience(date);
       },
       mode: 'date',
       is24Hour: false,
@@ -334,26 +782,58 @@ export default function AddDoctor({navigation}) {
     );
   };
 
+  const hideDobDatePicker = () =>{
+    setShowDobDatePicker(false)
+  }
+
+  const showExperienceDatePicker1 = () =>{
+    setShowExperienceDatePicker(true)
+  }
+
+  const hideExperienceDatePicker = () =>{
+    setShowExperienceDatePicker(false)
+  }
+
   const getDateValue = date => {
     let d = new Date(date);
     let day = d.getDate();
     let month = d.getMonth() + 1;
     let year = d.getFullYear();
+    setDob(`${day}-${month}-${year}`);
+    setShowDobDatePicker(false)
+    return `${day}-${month}-${year}`;
+   
+  };
+
+  const getExperienceDateValue = date => {
+    let d = new Date(date);
+    let day = d.getDate();
+    let month = d.getMonth() + 1;
+    let year = d.getFullYear();
+    setExperience(`${day}-${month}-${year}`);
+    setShowExperienceDatePicker(false)
     return `${day}-${month}-${year}`;
   };
 
   const onPrimaryPress = () => {
     setName('');
     setGender('Male');
-    setDob(new Date());
+     setDob('');
+     setExperience('');
     setMaritalStatus('Married');
     setPinCode('');
     setDoctor_fees('');
-    setDolo_id('');
+    setConfirmAccountNumber('');
+   setAccountNumber('')
+   setAccountHolderName('')
+   setIfscCode('')
+   setBankName('')
     setEmail('');
     setDoctorContact('');
     setClinicContact('');
     setLocation('');
+    setLatitude('')
+    setLongitude('')
     setAdhar('');
     setRegistration_number('');
     setSchedule(defaultSchedule);
@@ -368,6 +848,8 @@ export default function AddDoctor({navigation}) {
     setCollege_location('');
     setChecked(false);
     setLanguages('');
+    setSpecialities([])
+    setSelectedId([]);
     setAwardList([]);
     setAward_name('');
     setAward_giving_authority_name('');
@@ -380,6 +862,37 @@ export default function AddDoctor({navigation}) {
     _scrollRef.current.scrollTo({x: 0, y: 0, animated: true});
     setShowModal(false);
   };
+
+   const fetchCategoryList = async () => {
+    setCloading(true)
+    let result = await getData('doctorspeacialist');
+        if (result?.success) {
+         
+        setCategoryList(result.data)
+       // console.log('clist==',result.data)
+        setCloading(false) 
+        }
+  };
+
+  useEffect(() => {
+   
+    fetchCategoryList();
+    getFcmToken();
+  }, []);
+
+  React.useEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.goBack();
+        return true;
+      };
+  
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+  
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, []),
+  );
 
   return (
     <View style={styles.container}>
@@ -397,6 +910,9 @@ export default function AddDoctor({navigation}) {
       />
       <MapModal
         setLocation={setLocation}
+        setLatitude={setLatitude}
+        setLongitude={setLongitude}
+
         onRequestClose={() => setShowMap(false)}
         onPress={() => {
           setShowMap(false);
@@ -449,7 +965,7 @@ export default function AddDoctor({navigation}) {
               fontFamily: Fonts.primaryRegular,
               marginVertical: 10,
             }}>
-            All fields markrd with * is required to fill.
+            All fields marked with * is required to fill.
           </Text>
           <Text style={styles.label}>Name*</Text>
           <TextInput
@@ -523,8 +1039,8 @@ export default function AddDoctor({navigation}) {
           </View>
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Date of Birth</Text>
-          <TextInput
+          <Text style={styles.label}>Date of Birth*</Text>
+          {/* <TextInput
             theme={theme}
             dense
             editable={false}
@@ -541,6 +1057,31 @@ export default function AddDoctor({navigation}) {
             mode="flat"
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
+          /> */}
+          <TextInput
+            // ref={_inputRef}
+            theme={theme}
+            //keyboardType="numeric"
+            dense
+            onChangeText={val => setDob(val)}
+            value={dob}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+            editable={false}
+            right={
+              <TextInput.Icon
+                icon="calendar"
+                color={Color.black}
+                onPress={() => showDobDatePicker1()}
+              />
+            }
+          />
+          <DateTimePickerModal
+            isVisible={showDobDatePicker}
+            mode="date"
+            onConfirm={e => getDateValue(e)}
+            onCancel={hideDobDatePicker}
           />
         </View>
         <View style={{marginTop: 15}}>
@@ -596,7 +1137,7 @@ export default function AddDoctor({navigation}) {
             marginTop: 15,
           }}>
           <View style={{marginRight: 10, flex: 1}}>
-            <Text style={styles.label}>Doctor Fees</Text>
+            <Text style={styles.label}>Doctor Fees*</Text>
             <TextInput
               theme={theme}
               dense
@@ -609,7 +1150,7 @@ export default function AddDoctor({navigation}) {
             />
           </View>
           <View style={{flex: 1}}>
-            <Text style={styles.label}>DOLO ID</Text>
+            {/* <Text style={styles.label}>DOLO ID</Text>
             <TextInput
               theme={theme}
               dense
@@ -618,7 +1159,53 @@ export default function AddDoctor({navigation}) {
               mode="flat"
               underlineColor="#000"
               activeUnderlineColor={Color.primary}
-            />
+            /> */}
+
+<Text style={styles.label}>Experience*</Text>
+          {/* <TextInput
+            theme={theme}
+            dense
+            editable={false}
+            onChangeText={text => setExperience(text)}
+            forceTextInputFocus={false}
+            right={
+              <TextInput.Icon
+                icon="calendar"
+                color={Color.primary}
+                onPress={openExperienceCalender}
+              />
+            }
+            value={getExperienceDateValue(experience)}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          /> */}
+
+          <TextInput
+            // ref={_inputRef}
+            theme={theme}
+            //keyboardType="numeric"
+            dense
+            onChangeText={val => setExperience(val)}
+            value={experience}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+            editable={false}
+            right={
+              <TextInput.Icon
+                icon="calendar"
+                color={Color.black}
+                onPress={() => showExperienceDatePicker1()}
+              />
+            }
+          />
+          <DateTimePickerModal
+            isVisible={showExperienceDatePicker}
+            mode="date"
+            onConfirm={e => getExperienceDateValue(e)}
+            onCancel={hideExperienceDatePicker}
+          />
           </View>
         </View>
         <View style={{marginTop: 15}}>
@@ -626,6 +1213,7 @@ export default function AddDoctor({navigation}) {
           <TextInput
             theme={theme}
             dense
+            keyboardType='email-address'
             onChangeText={text => setEmail(text)}
             value={email}
             mode="flat"
@@ -639,10 +1227,11 @@ export default function AddDoctor({navigation}) {
             marginTop: 15,
           }}>
           <View style={{marginRight: 10, flex: 1}}>
-            <Text style={styles.label}>Doctor Contact</Text>
+            <Text style={styles.label}>Doctor Contact*</Text>
             <TextInput
               theme={theme}
               dense
+              maxLength={10}
               keyboardType="numeric"
               onChangeText={text => setDoctorContact(text)}
               value={doctorContact}
@@ -652,10 +1241,11 @@ export default function AddDoctor({navigation}) {
             />
           </View>
           <View style={{flex: 1}}>
-            <Text style={styles.label}>Clinic Contact</Text>
+            <Text style={styles.label}>Clinic Contact*</Text>
             <TextInput
               theme={theme}
               dense
+              maxLength={10}
               keyboardType="numeric"
               onChangeText={text => setClinicContact(text)}
               value={clinicContact}
@@ -666,7 +1256,7 @@ export default function AddDoctor({navigation}) {
           </View>
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Location</Text>
+          <Text style={styles.label}>Location*</Text>
           {location.length > 0 && (
             <Text
               style={{
@@ -674,7 +1264,7 @@ export default function AddDoctor({navigation}) {
                 fontFamily: Fonts.primarySemiBold,
                 color: Color.black,
               }}>
-              {location}
+              {location}  
             </Text>
           )}
           {/* <TextInput
@@ -697,14 +1287,49 @@ export default function AddDoctor({navigation}) {
             Locate on Map
           </Button>
         </View>
+        {/* <View
+          style={{
+            flexDirection: 'row',
+            marginTop: 15,
+          }}>
+          <View style={{marginRight: 10, flex: 1}}>
+            <Text style={styles.label}>Latitude</Text>
+            <TextInput
+              theme={theme}
+              dense
+             // keyboardType="numeric"
+             // onChangeText={text => setAdhar(text)}
+              value={{latitude}}
+              mode="flat"
+              editable={false}
+              underlineColor="#000"
+              activeUnderlineColor={Color.primary}
+            />
+          </View>
+          <View style={{flex: 1}}>
+            <Text style={styles.label}>Longitude</Text>
+            <TextInput
+              theme={theme}
+              dense
+             // onChangeText={text => setRegistration_number(text)}
+              value={longitude}
+              editable={false}
+              mode="flat"
+              underlineColor="#000"
+              activeUnderlineColor={Color.primary}
+            />
+          </View>
+        </View> */}
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Pin Code</Text>
+          <Text style={styles.label}>Pin Code*</Text>
           <TextInput
             theme={theme}
             dense
             onChangeText={text => setPinCode(text)}
             value={pinCode}
             mode="flat"
+            maxLength={6}
+            keyboardType='numeric'
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
           />
@@ -720,15 +1345,17 @@ export default function AddDoctor({navigation}) {
               theme={theme}
               dense
               keyboardType="numeric"
+              maxLength={12}
               onChangeText={text => setAdhar(text)}
               value={adhar}
               mode="flat"
+             
               underlineColor="#000"
               activeUnderlineColor={Color.primary}
             />
           </View>
           <View style={{flex: 1}}>
-            <Text style={styles.label}>Registration Number</Text>
+            <Text style={styles.label}>Registration Number*</Text>
             <TextInput
               theme={theme}
               dense
@@ -747,9 +1374,80 @@ export default function AddDoctor({navigation}) {
               paddingVertical: 15,
               marginTop: 10,
             }}>
+            Bank Details
+          </Text>
+          <Text style={styles.label}>Account Number</Text>
+          <TextInput
+            theme={theme}
+            dense
+            onChangeText={text => setAccountNumber(text)}
+            value={accountNumber}
+            mode="flat"
+            keyboardType='numeric'
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          />
+          <View style={{marginTop:15}}>
+           <Text style={styles.label}>Confirm Account Number</Text>
+          <TextInput
+            theme={theme}
+            dense
+            onChangeText={text => setConfirmAccountNumber(text)}
+            value={confirmAccountNumber}
+            mode="flat"
+            keyboardType='numeric'
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          />
+          </View> 
+          <View style={{marginTop:15}}>
+          <Text style={styles.label}>Account Holder's Name</Text>
+          <TextInput
+            theme={theme}
+            dense
+            onChangeText={text => setAccountHolderName(text)}
+            value={accountHolderName}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          />
+          </View>
+          <View style={{marginTop:15}}>
+          <Text style={styles.label}>IFSC Code</Text>
+          <TextInput
+            theme={theme}
+            dense
+            onChangeText={text => setIfscCode(text)}
+            autoCapitalize='characters'
+            value={ifscCode}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          />
+          </View>
+          <View style={{marginTop:15}}>
+          <Text style={styles.label}>Bank Name</Text>
+          <TextInput
+            theme={theme}
+            dense
+            onChangeText={text => setBankName(text)}
+            value={bankName}
+            mode="flat"
+            underlineColor="#000"
+            activeUnderlineColor={Color.primary}
+          />
+          </View>
+          </View>
+        <View style={{marginTop: 15}}>
+          <Text
+            style={{
+              ...styles.sectionTitle,
+              paddingVertical: 15,
+              marginTop: 10,
+            }}>
             Clinic Details
           </Text>
-          <Text style={styles.label}>Clinic Schedule</Text>
+          {/* <Text style={styles.label}>Clinic Schedule</Text>
           {schedule.map((item, index) => (
             <View
               key={index}
@@ -829,22 +1527,187 @@ export default function AddDoctor({navigation}) {
                 </TouchableOpacity>
               </View>
             </View>
+          ))} */}
+
+         <Text style={styles.label}>Morning Schedule</Text>
+          {morningschedule.map((item, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 5,
+              }}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Checkbox
+                  uncheckedColor={Color.grey}
+                  color={Color.primary}
+                  onPress={() => setMorningSchedules(index)}
+                  status={item.checked ? 'checked' : 'unchecked'}
+                />
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => setMorningSchedules(index)}>
+                  <Text
+                    style={{
+                      color: '#000',
+                      fontFamily: Fonts.primaryRegular,
+                      marginHorizontal: 5,
+                    }}>
+                    {item.day}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <TouchableOpacity
+                  activeOpacity={item.checked ? 0.5 : 1}
+                  onPress={() =>
+                    item.checked ? setMorningScheduleStartTime(index) : null
+                  }>
+                  <Text
+                    style={{
+                      color: item.checked ? Color.black : '#ccc',
+                      fontSize: 16,
+                      fontFamily: Fonts.primaryRegular,
+                    }}>
+                    {item.start_time
+                      .toLocaleTimeString()
+                      .replace(
+                        item.start_time.toLocaleTimeString().slice(-6, -3),
+                        '',
+                      )}
+                  </Text>
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    marginHorizontal: 20,
+                    fontFamily: Fonts.primaryRegular,
+                    color: item.checked ? Color.black : '#ccc',
+                  }}>
+                  -
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={item.checked ? 0.5 : 1}
+                  onPress={() =>
+                    item.checked ? setMorningScheduleEndTime(index) : null
+                  }>
+                  <Text
+                    style={{
+                      color: item.checked ? Color.black : '#ccc',
+                      fontSize: 16,
+                      fontFamily: Fonts.primaryRegular,
+                    }}>
+                    {item.end_time
+                      .toLocaleTimeString()
+                      .replace(
+                        item.end_time.toLocaleTimeString().slice(-6, -3),
+                        '',
+                      )}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+
+<Text style={styles.label}>Evening Schedule</Text>
+          {eveningschedule.map((item, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 5,
+              }}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Checkbox
+                  uncheckedColor={Color.grey}
+                  color={Color.primary}
+                  onPress={() => setEveningSchedules(index)}
+                  status={item.checked ? 'checked' : 'unchecked'}
+                />
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => setEveningSchedules(index)}>
+                  <Text
+                    style={{
+                      color: '#000',
+                      fontFamily: Fonts.primaryRegular,
+                      marginHorizontal: 5,
+                    }}>
+                    {item.day}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <TouchableOpacity
+                  activeOpacity={item.checked ? 0.5 : 1}
+                  onPress={() =>
+                    item.checked ? setEveningScheduleStartTime(index) : null
+                  }>
+                  <Text
+                    style={{
+                      color: item.checked ? Color.black : '#ccc',
+                      fontSize: 16,
+                      fontFamily: Fonts.primaryRegular,
+                    }}>
+                    {item.start_time
+                      .toLocaleTimeString()
+                      .replace(
+                        item.start_time.toLocaleTimeString().slice(-6, -3),
+                        '',
+                      )}
+                  </Text>
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    marginHorizontal: 20,
+                    fontFamily: Fonts.primaryRegular,
+                    color: item.checked ? Color.black : '#ccc',
+                  }}>
+                  -
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={item.checked ? 0.5 : 1}
+                  onPress={() =>
+                    item.checked ? setEveningScheduleEndTime(index) : null
+                  }>
+                  <Text
+                    style={{
+                      color: item.checked ? Color.black : '#ccc',
+                      fontSize: 16,
+                      fontFamily: Fonts.primaryRegular,
+                    }}>
+                    {item.end_time
+                      .toLocaleTimeString()
+                      .replace(
+                        item.end_time.toLocaleTimeString().slice(-6, -3),
+                        '',
+                      )}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           ))}
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Avg. Time per patient (in mins.)</Text>
+          <Text style={styles.label}>Avg. Time per patient (in mins.)*</Text>
           <TextInput
             theme={theme}
             dense
             onChangeText={text => setAvgTime(text)}
             value={avgTime}
             mode="flat"
+            keyboardType='numeric'
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
           />
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Clinic Address</Text>
+          <Text style={styles.label}>Clinic Address*</Text>
           {clinicLocations.length > 0 &&
             clinicLocations.map((item, index) => (
               <View
@@ -900,7 +1763,7 @@ export default function AddDoctor({navigation}) {
           </Button>
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Facilities</Text>
+          <Text style={styles.label}>Facilities*</Text>
           <TextInput
             theme={theme}
             dense
@@ -922,7 +1785,7 @@ export default function AddDoctor({navigation}) {
             Enter different facilities seperated by commas.
           </HelperText>
         </View>
-        <View style={{marginTop: 15}}>
+        <View style={{marginTop: 15,}}>
           <Text
             style={{
               ...styles.sectionTitle,
@@ -931,19 +1794,75 @@ export default function AddDoctor({navigation}) {
             }}>
             Education Details
           </Text>
-          <Text style={styles.label}>Specialization</Text>
+          <Text style={styles.label}>Specialization*</Text>
           <TextInput
+           placeholderTextColor={Color.black}
             theme={theme}
             dense
-            onChangeText={text => setSpecialization(text)}
-            value={specialization}
+           // onChangeText={text => setDegree(text)}
+            value={specialization == '' ? 'Heart' : specialization}
             mode="flat"
+           // disabled={true}
             underlineColor="#000"
             activeUnderlineColor={Color.primary}
           />
+          {categoryList && 
+            <FlatList
+            data={categoryList}
+           
+            numColumns={2}
+           // keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
+             <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:10}}>
+             <View style={styles.specialization_container}>
+                {/* <Checkbox
+                  uncheckedColor={Color.grey}
+                  color={Color.primary}
+                 // onPress={() => setDoctorCategory(item.id,item.specialist,index)}
+                 onPress={() => setDoctorCategory(item.specialist,index)}
+                  //status={selectedId.includes(item.id) ? 'checked' : 'unchecked'}
+                  status={item.checked ? 'checked' : 'unchecked'}
+                 
+                /> */}
+                 <TouchableOpacity
+                 style={{backgroundColor:item.specialist == specialization ? '#aaaaaa80' : null,padding:10,borderRadius:2}}
+                  activeOpacity={1}
+                  onPress={() => setDoctorCategory(item.specialist)}>
+                  <Text
+                    style={{
+                      color: '#000',
+                      fontFamily: Fonts.primaryRegular,
+                     // marginHorizontal: 5,
+                     width:'100%'
+                    }}>
+                    {item.specialist}
+                  </Text>
+                </TouchableOpacity>
+
+           </View>
+
+           </View>
+
+
+          )}
+
+          />
+          
+          
+          
+          
+          
+          }
+        
+       
+
+
+
+
+         
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Degree</Text>
+          <Text style={styles.label}>Degree*</Text>
           <TextInput
             theme={theme}
             dense
@@ -955,7 +1874,7 @@ export default function AddDoctor({navigation}) {
           />
         </View>
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>College Name</Text>
+          <Text style={styles.label}>College Name*</Text>
           <TextInput
             theme={theme}
             dense
@@ -972,7 +1891,7 @@ export default function AddDoctor({navigation}) {
             marginTop: 15,
           }}>
           <View style={{marginRight: 10, flex: 1}}>
-            <Text style={styles.label}>Year of Passout</Text>
+            <Text style={styles.label}>Year of Passout*</Text>
             <TextInput
               theme={theme}
               dense
@@ -985,7 +1904,7 @@ export default function AddDoctor({navigation}) {
             />
           </View>
           <View style={{flex: 1}}>
-            <Text style={styles.label}>College Location</Text>
+            <Text style={styles.label}>College Location*</Text>
             <TextInput
               theme={theme}
               dense
@@ -1082,7 +2001,7 @@ export default function AddDoctor({navigation}) {
         </View>
 
         <View style={{marginTop: 15}}>
-          <Text style={styles.label}>Languages</Text>
+          <Text style={styles.label}>Languages*</Text>
           <TextInput
             theme={theme}
             dense
@@ -1350,7 +2269,7 @@ export default function AddDoctor({navigation}) {
           dark
           loading={loading}
           mode="contained"
-          onPress={() => addDoctor()}>
+          onPress={() => checkValidations()}>
           Submit Profile
         </Button>
       </ScrollView>
@@ -1406,4 +2325,13 @@ export default function AddDoctor({navigation}) {
     padding: 12,
     borderRadius: 5,
   },
+  specialization_container:{
+    flexDirection: 'row',
+   // alignItems: 'center',
+   // flex: 1,
+//    justifyContent: 'center',
+     width: '50%',
+   // padding: 12,
+    
+  }
 });

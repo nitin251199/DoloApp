@@ -1,4 +1,4 @@
-package com.doctorapp.newarchitecture.components;
+package com.doloagentapp.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;

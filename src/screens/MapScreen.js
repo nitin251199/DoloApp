@@ -32,6 +32,7 @@ export default MapScreen = props => {
   const [isMapReady, setIsMapReady] = React.useState(false);
   const [marginTop, setMarginTop] = React.useState(1);
   const [userLocation, setUserLocation] = React.useState('');
+
   const [regionChangeProgress, setRegionChangeProgress] = React.useState(false);
   const mapRef = React.useRef(null);
 
@@ -121,7 +122,9 @@ export default MapScreen = props => {
           latitudeDelta: 0.001,
           longitudeDelta: 0.001,
         };
+        console.log('region==',region)
         setRegion(region);
+       
         setLoading(false);
         mapRef.current.animateToRegion(region, 2 * 1000);
       },
@@ -150,12 +153,14 @@ export default MapScreen = props => {
         ',' +
         region.longitude +
         '&key=' +
-        'AIzaSyA-SzexRysHY0bGTeTjsss7BYw6JQzorqw',
+        'AIzaSyAlmvmgr042tQBiCVXD43bQfDWkZduGBGw',
     )
       .then(response => response.json())
       .then(responseJson => {
+       // console.log('map respo==',responseJson);
         const userLocation = responseJson.results[0].formatted_address;
         setUserLocation(userLocation);
+ 
         setRegionChangeProgress(false);
       })
       .catch(error => {
@@ -174,7 +179,9 @@ export default MapScreen = props => {
   // Action to be taken after select location button click
   const onLocationSelect = () => {
     // alert(userLocation);
-    props.setLocation('Gwalior');
+    props.setLocation(userLocation);
+    props.setLatitude(region.latitude);
+    props.setLongitude(region.longitude);
     props.onPress();
     // props.onPress ?  : null;
     // props.navigation.goBack();

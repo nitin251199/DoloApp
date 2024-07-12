@@ -5,6 +5,7 @@ import {
   ToastAndroid,
   TouchableOpacity,
   View,
+  StatusBar
 } from 'react-native';
 import React, {useEffect} from 'react';
 import {Color, Dimension, Fonts} from '../theme';
@@ -15,6 +16,8 @@ import {getData, postData} from '../API';
 import {useSelector} from 'react-redux';
 import {ActivityIndicator} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
+import DoctorPlaceholder from '../placeholders/DoctorPlaceholder';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 
 export default function HomeScreen({navigation}) {
   const {t} = useTranslation();
@@ -75,6 +78,20 @@ export default function HomeScreen({navigation}) {
       errorToast(t('assistantHome.somethingWentWrong'));
     }
   };
+
+  const getNotificationCount = async() =>{
+    const res = await getData(`notificationagentcount/${user?.userid}`);
+    console.log('Count--->',res)
+    if(res?.success){
+      setNotificationCount(res?.agent);
+    }
+  }
+
+  useEffect(() => {
+    setInterval(() => {
+    getNotificationCount();
+   }, 5000);
+}, []);
 
   return (
     <View style={styles.container}>

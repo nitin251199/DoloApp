@@ -1,4 +1,4 @@
-package com.doctorapp;
+package com.doloagentapp;
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;

@@ -21,18 +21,11 @@ export default function TodayAppointments({navigation}) {
 
   const fetchAppointments = async () => {
     setLoading(true);
-    const list = await getData(`appointment/${user?.userid}`);
-    setAppointmentData(
-      list?.data
-        .filter(
-          item =>
-            `${new Date(item.created_at).getDate()}/${new Date(
-              item.created_at,
-            ).getMonth()}/${new Date(item.created_at).getFullYear()}` ==
-            `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
-        )
-        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)),
-    );
+    let res = await getData(`agent/doctorview/${user?.userid}`);
+    if (res.success) {
+      
+      setDoctorData(res?.data?.filter(item => item?.status === '1'));
+    }
     setLoading(false);
   };
 
@@ -66,7 +59,7 @@ export default function TodayAppointments({navigation}) {
               <AppointmentCard
                 key={index}
                 item={item}
-                onPress={() => navigation.navigate('Appointment', {item})}
+                onPress={() => navigation.navigate('Doctor', {id: item?.doctor_id})}
               />
             );
           })}
